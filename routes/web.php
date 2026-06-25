@@ -42,6 +42,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('sales/exchange-products/search', [SaleController::class, 'searchExchangeProducts'])->name('sales.exchange-products.search');
         Route::post('sales/exchange-products/store', [SaleController::class, 'storeExchangeProduct'])->name('sales.exchange-products.store');
         Route::resource('sales', SaleController::class)->except(['show']);
+        Route::get('sales/{sale}/exchange-voucher/print', [SaleController::class, 'printExchangeVoucher'])->name('sales.exchange-voucher.print');
+        Route::get('sales/{sale}/exchange-voucher/download', [SaleController::class, 'downloadExchangeVoucher'])->name('sales.exchange-voucher.download');
         Route::resource('invoices', InvoiceController::class)->except(['show']);
         Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
         Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');

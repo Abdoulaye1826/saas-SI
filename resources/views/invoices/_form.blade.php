@@ -32,20 +32,14 @@
     @error('issued_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
-  <div class="col-md-4">
-    <label for="subtotal_ht" class="form-label">Sous-total HT</label>
+  <div class="col-md-6">
+    <label for="subtotal_ht" class="form-label">Sous-total</label>
     <input type="number" step="0.01" name="subtotal_ht" id="subtotal_ht" value="{{ old('subtotal_ht', $invoice?->subtotal_ht ?? 0) }}" class="form-control @error('subtotal_ht') is-invalid @enderror">
     @error('subtotal_ht')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
-  <div class="col-md-4">
-    <label for="tax_amount" class="form-label">Taxe</label>
-    <input type="number" step="0.01" name="tax_amount" id="tax_amount" value="{{ old('tax_amount', $invoice?->tax_amount ?? 0) }}" class="form-control @error('tax_amount') is-invalid @enderror">
-    @error('tax_amount')<div class="invalid-feedback">{{ $message }}</div>@enderror
-  </div>
-
-  <div class="col-md-4">
-    <label for="total_ttc" class="form-label">Total TTC</label>
+  <div class="col-md-6">
+    <label for="total_ttc" class="form-label">Total final</label>
     <input type="number" step="0.01" name="total_ttc" id="total_ttc" value="{{ old('total_ttc', $invoice?->total_ttc ?? 0) }}" class="form-control @error('total_ttc') is-invalid @enderror">
     @error('total_ttc')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>

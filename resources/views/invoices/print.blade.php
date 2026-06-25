@@ -448,11 +448,10 @@
       <thead>
         <tr>
           <th style="width:5%;text-align:center;">#</th>
-          <th style="width:40%;text-align:left;">Désignation</th>
-          <th class="num" style="width:10%;">Qté</th>
-          <th class="amount" style="width:20%;">P. Unitaire</th>
-          <th class="amount" style="width:10%;">TVA</th>
-          <th class="amount" style="width:15%;">Total TTC</th>
+          <th style="width:45%;text-align:left;">Désignation</th>
+          <th class="num" style="width:15%;">Qté</th>
+          <th class="amount" style="width:17%;">P. Unitaire</th>
+          <th class="amount" style="width:18%;">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -467,7 +466,6 @@
             </td>
             <td class="qty"><span class="qty-badge">{{ $item->quantity }}</span></td>
             <td class="unit">{{ number_format($item->unit_price, 0, ',', ' ') }} FCFA</td>
-            <td class="unit">{{ $item->tax_rate ?? 0 }} %</td>
             <td class="total">{{ number_format($item->total_ttc ?? ($item->quantity * $item->unit_price), 0, ',', ' ') }} FCFA</td>
           </tr>
         @empty
@@ -479,13 +477,12 @@
                 <td class="desc">{{ $item->product?->name ?? $item->designation ?? '—' }}</td>
                 <td class="qty"><span class="qty-badge">{{ $item->quantity }}</span></td>
                 <td class="unit">{{ number_format($item->unit_price, 0, ',', ' ') }} FCFA</td>
-                <td class="unit">{{ $item->tax_rate ?? 18 }} %</td>
-                <td class="total">{{ number_format($item->total_ttc ?? ($item->quantity * $item->unit_price * 1.18), 0, ',', ' ') }} FCFA</td>
+                <td class="total">{{ number_format($item->line_total ?? ($item->quantity * $item->unit_price), 0, ',', ' ') }} FCFA</td>
               </tr>
             @endforeach
           @else
             <tr>
-              <td colspan="6" style="text-align:center;padding:30px;color:#9fa8da;">Aucun article</td>
+              <td colspan="5" style="text-align:center;padding:30px;color:#9fa8da;">Aucun article</td>
             </tr>
           @endif
         @endforelse
@@ -497,21 +494,23 @@
   <div class="totals-row">
     <div class="totals-box">
       @php
-        $ht  = $invoice->total_ht  ?? ($invoice->total_ttc / 1.18);
-        $tva = $invoice->total_tva ?? ($invoice->total_ttc - $ht);
-        $ttc = $invoice->total_ttc;
+        $discount = (float) ($invoice->sale?->discount_amount ?? 0);
+        $subtotal = (float) $invoice->total_ttc + $discount;
+        $total = (float) $invoice->total_ttc;
       @endphp
       <div class="totals-line">
-        <span class="label">Sous-total HT</span>
-        <span class="val">{{ number_format($ht, 0, ',', ' ') }} FCFA</span>
+        <span class="label">Sous-total</span>
+        <span class="val">{{ number_format($subtotal, 0, ',', ' ') }} FCFA</span>
       </div>
-      <div class="totals-line">
-        <span class="label">TVA (18%)</span>
-        <span class="val">{{ number_format($tva, 0, ',', ' ') }} FCFA</span>
-      </div>
+      @if($discount > 0)
+        <div class="totals-line">
+          <span class="label">Remise</span>
+          <span class="val">-{{ number_format($discount, 0, ',', ' ') }} FCFA</span>
+        </div>
+      @endif
       <div class="totals-grand">
-        <span class="label">Total TTC</span>
-        <span class="val">{{ number_format($ttc, 0, ',', ' ') }} FCFA</span>
+        <span class="label">Total final</span>
+        <span class="val">{{ number_format($total, 0, ',', ' ') }} FCFA</span>
       </div>
     </div>
   </div>

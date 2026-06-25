@@ -84,6 +84,11 @@
             <td>{{ number_format($sale->total_ttc, 2, ',', ' ') }} FCFA</td>
             <td><span class="badge {{ $sale->status->badgeClass() }}">{{ $sale->status->label() }}</span></td>
             <td class="text-end">
+              @if($sale->isEchange())
+                <a href="{{ route('sales.exchange-voucher.print', $sale) }}" class="btn btn-sm btn-outline-secondary" title="Bon d'échange" target="_blank">
+                  <i class="bi bi-receipt"></i>
+                </a>
+              @endif
               <a href="{{ route('sales.edit', $sale) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                 <i class="bi bi-pencil"></i>
               </a>

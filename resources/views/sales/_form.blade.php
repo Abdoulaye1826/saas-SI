@@ -148,7 +148,7 @@
 </div>
 
 <div id="exchangeFields" class="border rounded p-3 mb-3" style="display: {{ old('sale_type', $sale?->sale_type->value ?? 'vente') === 'echange' ? 'block' : 'none' }};">
-  <h5 class="mb-3"><i class="bi bi-arrow-left-right me-2"></i>Produit retourn&eacute;</h5>
+  <h5 class="mb-3"><i class="bi bi-arrow-left-right me-2"></i>Produit apport&eacute; par le client</h5>
 
   {{-- Champ hidden pour stocker l'ID du produit s&eacute;lectionn&eacute; --}}
   <input type="hidden" id="exchange_product_id" name="exchange_product_id"
@@ -156,7 +156,7 @@
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <label for="exchange_product_search" class="form-label">Rechercher un produit retourn&eacute; <span class="text-danger">*</span></label>
+      <label for="exchange_product_search" class="form-label">Produit apport&eacute; <span class="text-danger">*</span></label>
       <div class="position-relative">
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -201,35 +201,25 @@
     </div>
 
     <div class="col-md-2 mb-3">
-      <label for="exchange_quantity" class="form-label">Quantit&eacute;</label>
+      <label for="exchange_quantity" class="form-label">Quantit&eacute; apport&eacute;e</label>
       <input type="number" step="1" min="1" class="form-control @error('exchange_quantity') is-invalid @enderror"
              id="exchange_quantity" name="exchange_quantity" value="{{ old('exchange_quantity', $sale?->exchange_details['quantity'] ?? 1) }}">
       @error('exchange_quantity')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-    <div class="col-md-4 mb-3">
-      <label for="exchange_product_condition" class="form-label">&Eacute;tat du produit</label>
-      <select id="exchange_product_condition" name="exchange_product_condition" class="form-select @error('exchange_product_condition') is-invalid @enderror">
-        <option value="">— S&eacute;lectionnez —</option>
-        <option value="neuf" @selected(old('exchange_product_condition', $sale?->exchange_details['condition'] ?? '') === 'neuf')>Neuf</option>
-        <option value="tres_bon_etat" @selected(old('exchange_product_condition', $sale?->exchange_details['condition'] ?? '') === 'tres_bon_etat')>Tr&egrave;s bon &eacute;tat</option>
-        <option value="bon_etat" @selected(old('exchange_product_condition', $sale?->exchange_details['condition'] ?? '') === 'bon_etat')>Bon &eacute;tat</option>
-        <option value="defectueux" @selected(old('exchange_product_condition', $sale?->exchange_details['condition'] ?? '') === 'defectueux')>D&eacute;fectueux</option>
-      </select>
-      @error('exchange_product_condition')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-4 mb-3">
-      <label for="exchange_product_estimated_value" class="form-label">Valeur estim&eacute;e</label>
-      <input type="number" step="0.01" min="0" class="form-control @error('exchange_product_estimated_value') is-invalid @enderror"
-             id="exchange_product_estimated_value" name="exchange_product_estimated_value" value="{{ old('exchange_product_estimated_value', $sale?->exchange_details['estimated_value'] ?? '') }}">
-      @error('exchange_product_estimated_value')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <label for="exchange_added_amount" class="form-label">Montant ajout&eacute; par le client (FCFA)</label>
+      <input type="number" step="0.01" min="0" class="form-control @error('exchange_added_amount') is-invalid @enderror"
+             id="exchange_added_amount" name="exchange_added_amount" value="{{ old('exchange_added_amount', $sale?->exchange_details['added_amount'] ?? 0) }}">
+      @error('exchange_added_amount')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <div class="form-text">Montant saisi manuellement, sans calcul automatique.</div>
     </div>
   </div>
 </div>
 
-<div class="row">
+<div class="row" id="venteTotalsRow" style="display: {{ old('sale_type', $sale?->sale_type->value ?? 'vente') === 'echange' ? 'none' : 'flex' }};">
   <div class="col-md-4 mb-3">
     <label for="discount_amount" class="form-label">Remise (FCFA)</label>
     <input type="number" step="0.01" min="0" class="form-control @error('discount_amount') is-invalid @enderror"
@@ -246,7 +236,7 @@
 </div>
 
 <div class="mb-3">
-  <label for="notes" class="form-label">Notes</label>
+  <label for="notes" class="form-label">Observations</label>
   <textarea class="form-control @error('notes') is-invalid @enderror"
             id="notes" name="notes" rows="3">{{ old('notes', $sale->notes ?? '') }}</textarea>
   @error('notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -283,9 +273,16 @@
       @endforeach
     };
 
+    const venteTotalsRow = document.getElementById('venteTotalsRow');
+
     if (saleTypeField && exchangeFields) {
       saleTypeField.addEventListener('change', function () {
-        exchangeFields.style.display = this.value === 'echange' ? 'block' : 'none';
+        const isEchange = this.value === 'echange';
+        exchangeFields.style.display = isEchange ? 'block' : 'none';
+        if (venteTotalsRow) {
+          venteTotalsRow.style.display = isEchange ? 'none' : 'flex';
+        }
+        calculateTotals();
       });
     }
 
@@ -308,6 +305,12 @@
 
         total += lineTotal;
       });
+
+      // Aucun calcul automatique pour les échanges : le total est géré côté serveur
+      // à partir du montant ajouté par le client, saisi manuellement.
+      if (saleTypeField && saleTypeField.value === 'echange') {
+        return;
+      }
 
       const discount = parseFloat(document.getElementById('discount_amount')?.value || 0) || 0;
       const netTotal = Math.max(0, total - discount);
@@ -537,12 +540,6 @@
       exchangeSearchInput.value = product.reference + ' \u2014 ' + product.name;
       exchangeDropdown.style.display = 'none';
       exchangeProductNotFound.style.display = 'none';
-
-      // Mettre \u00e0 jour la valeur estim\u00e9e
-      const estimatedValueField = document.getElementById('exchange_product_estimated_value');
-      if (estimatedValueField && !estimatedValueField.value) {
-        estimatedValueField.value = product.sale_price;
-      }
 
       // Afficher le produit s\u00e9lectionn\u00e9
       exchangeProductSelectedText.innerHTML = `

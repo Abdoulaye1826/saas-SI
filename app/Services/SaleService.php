@@ -88,8 +88,6 @@ class SaleService
 
             $saleTotals = $this->calculateTotals($data);
             $data['subtotal_ht'] = 0;
-            $data['tax_amount'] = 0;
-            $data['tax_rate'] = 0;
             $data['total_ttc'] = $saleTotals['total'];
 
             $sale = Sale::create($data);
@@ -138,8 +136,6 @@ class SaleService
 
             $saleTotals = $this->calculateTotals($data);
             $data['subtotal_ht'] = 0;
-            $data['tax_amount'] = 0;
-            $data['tax_rate'] = 0;
             $data['total_ttc'] = $saleTotals['total'];
 
             $sale->update($data);
@@ -282,10 +278,9 @@ class SaleService
             'reference' => $product->reference,
             'brand' => $product->brand,
             'description' => $product->description,
-            'condition' => $data['exchange_product_condition'] ?? null,
-            'estimated_value' => $data['exchange_product_estimated_value'] ?? null,
             'category_id' => $product->category_id,
             'quantity' => $data['exchange_quantity'] ?? 0,
+            'added_amount' => $data['exchange_added_amount'] ?? 0,
         ];
     }
 
@@ -335,6 +330,18 @@ class SaleService
 
     private function calculateTotals(array $data): array
     {
+        $saleType = $data['sale_type'] ?? null;
+
+        if ($saleType === SaleType::Echange) {
+            // Aucun calcul automatique pour les échanges : le montant ajouté
+            // par le client est saisi manuellement et utilisé tel quel.
+            return [
+                'subtotal' => 0,
+                'tax' => 0,
+                'total' => (float) ($data['exchange_added_amount'] ?? 0),
+            ];
+        }
+
         $items = $this->buildSaleItems($data);
         $total = array_sum(array_column($items, 'line_total'));
         $discount = isset($data['discount_amount']) ? (float) $data['discount_amount'] : 0;

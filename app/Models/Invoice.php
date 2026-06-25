@@ -20,7 +20,6 @@ class Invoice extends Model
         'customer_id',
         'issued_at',
         'subtotal_ht',
-        'tax_amount',
         'total_ttc',
         'status',
         'pdf_path',
@@ -29,7 +28,6 @@ class Invoice extends Model
     protected $casts = [
         'issued_at' => 'date',
         'subtotal_ht' => 'decimal:2',
-        'tax_amount' => 'decimal:2',
         'total_ttc' => 'decimal:2',
         'status' => InvoiceStatus::class,
     ];

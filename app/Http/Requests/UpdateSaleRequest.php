@@ -24,8 +24,7 @@ class UpdateSaleRequest extends FormRequest
                         'sale_type' => ['required', 'in:vente,echange'],
             'exchange_product_id' => ['exclude_unless:sale_type,echange', 'required', 'exists:products,id'],
             'exchange_quantity' => ['exclude_unless:sale_type,echange', 'required', 'integer', 'min:1'],
-            'exchange_product_condition' => ['nullable', 'in:neuf,tres_bon_etat,bon_etat,defectueux'],
-            'exchange_product_estimated_value' => ['nullable', 'numeric', 'min:0'],
+            'exchange_added_amount' => ['exclude_unless:sale_type,echange', 'nullable', 'numeric', 'min:0'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'in:draft,validated,cancelled'],
             'notes' => ['nullable', 'string'],
@@ -38,6 +37,7 @@ class UpdateSaleRequest extends FormRequest
             'sale_type' => $this->filled('sale_type') ? $this->input('sale_type') : 'vente',
             'discount_amount' => $this->filled('discount_amount') ? $this->input('discount_amount') : 0,
             'exchange_quantity' => $this->filled('exchange_quantity') ? $this->input('exchange_quantity') : 1,
+            'exchange_added_amount' => $this->filled('exchange_added_amount') ? $this->input('exchange_added_amount') : 0,
         ]);
     }
 }

@@ -55,8 +55,9 @@
               <div class="invalid-feedback" id="new_exchange_product_purchase_price_error"></div>
             </div>
             <div class="col-md-4 mb-3">
-              <label for="new_exchange_product_stock_quantity" class="form-label">Quantit&eacute; en stock <span class="text-danger">*</span></label>
-              <input type="number" step="1" min="0" id="new_exchange_product_stock_quantity" name="stock_quantity" class="form-control" value="1" required>
+              <label for="new_exchange_product_stock_quantity" class="form-label">Quantit&eacute; en stock</label>
+              <input type="number" step="1" min="0" id="new_exchange_product_stock_quantity" name="stock_quantity" class="form-control" value="0" readonly>
+              <div class="form-text">Le stock sera incr&eacute;ment&eacute; automatiquement lors de la validation de l'&eacute;change.</div>
               <div class="invalid-feedback" id="new_exchange_product_stock_quantity_error"></div>
             </div>
           </div>

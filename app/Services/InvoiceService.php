@@ -89,7 +89,6 @@ class InvoiceService
             'customer_id' => $sale->customer_id,
             'issued_at' => $sale->sale_date,
             'subtotal_ht' => $sale->subtotal_ht,
-            'tax_amount' => $sale->tax_amount,
             'total_ttc' => $sale->total_ttc,
             'status' => InvoiceStatus::Issued,
             'invoice_number' => $this->generateInvoiceNumberFromSale($sale),

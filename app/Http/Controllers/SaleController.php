@@ -8,9 +8,11 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\SaleService;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -110,7 +112,6 @@ class SaleController extends Controller
             'sale_price' => ['required', 'numeric', 'min:0'],
             'purchase_price' => ['nullable', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
-            'stock_quantity' => ['required', 'integer', 'min:0'],
         ]);
 
         if (empty($validated['reference'])) {
@@ -122,6 +123,9 @@ class SaleController extends Controller
         }
 
         $validated['purchase_price'] = $validated['purchase_price'] ?? 0;
+        // Le stock est mis à 0 ici : il sera incrémenté par SaleService::applyStockChanges()
+        // lors de la validation de l'échange, pour éviter un double comptage.
+        $validated['stock_quantity'] = 0;
         $validated['minimum_stock'] = 5;
         $validated['is_active'] = true;
 
@@ -136,5 +140,40 @@ class SaleController extends Controller
             'category_id' => $product->category_id,
             'stock_quantity' => $product->stock_quantity,
         ], 201);
+    }
+
+    /**
+     * Affiche le bon d'échange imprimable d'une vente de type échange.
+     */
+    public function printExchangeVoucher(Sale $sale): View
+    {
+        abort_unless($sale->isEchange(), 404);
+
+        $sale->load(['customer', 'user', 'items.product']);
+
+        return view('sales.exchange_voucher', compact('sale'));
+    }
+
+    /**
+     * Télécharge le bon d'échange en PDF.
+     */
+    public function downloadExchangeVoucher(Sale $sale): Response
+    {
+        abort_unless($sale->isEchange(), 404);
+
+        $sale->load(['customer', 'user', 'items.product']);
+
+        $pdf = PDF::loadView('sales.exchange_voucher', compact('sale'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'DejaVu Sans')
+            ->setOption('isHtml5ParserEnabled', true);
+
+        $fileName = "{$sale->exchange_voucher_number}.pdf";
+        $content = $pdf->output();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/pdf; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ]);
     }
 }

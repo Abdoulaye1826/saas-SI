@@ -18,7 +18,6 @@ class StoreInvoiceRequest extends FormRequest
             'customer_id' => ['nullable', 'exists:customers,id'],
             'issued_at' => ['required', 'date'],
             'subtotal_ht' => ['required', 'numeric', 'min:0'],
-            'tax_amount' => ['required', 'numeric', 'min:0'],
             'total_ttc' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:issued,paid,cancelled'],
             'pdf_path' => ['nullable', 'string', 'max:255'],
@@ -29,7 +28,6 @@ class StoreInvoiceRequest extends FormRequest
     {
         $this->merge([
             'subtotal_ht' => $this->filled('subtotal_ht') ? $this->input('subtotal_ht') : 0,
-            'tax_amount' => $this->filled('tax_amount') ? $this->input('tax_amount') : 0,
             'total_ttc' => $this->filled('total_ttc') ? $this->input('total_ttc') : 0,
         ]);
     }
