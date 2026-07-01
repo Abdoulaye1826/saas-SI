@@ -4,6 +4,8 @@
 @section('page-title', 'Tableau de bord')
 
 @section('content')
+@php $isCashier = auth()->user()->hasRole('cashier'); @endphp
+
 <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
   <div>
     <h1>Tableau de bord</h1>
@@ -22,18 +24,21 @@
 <div class="row g-3 mb-4">
   @php
     $kpis = [
-      ['label' => 'CA du jour', 'value' => number_format($stats['revenue_today'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-currency-exchange', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'CA du mois', 'value' => number_format($stats['revenue_month'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-graph-up-arrow', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Ventes validées', 'value' => $stats['sales_count'], 'icon' => 'bi-cart-check', 'color' => 'bg-info bg-opacity-10 text-info'],
-      ['label' => 'Factures émises', 'value' => $stats['invoices_count'], 'icon' => 'bi-file-earmark-text', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
-      ['label' => 'Factures payées', 'value' => $stats['paid_invoices_count'], 'icon' => 'bi-wallet2', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Impayés', 'value' => $stats['pending_invoices_count'], 'icon' => 'bi-hourglass-split', 'color' => 'bg-warning bg-opacity-10 text-warning'],
-      ['label' => 'Clients', 'value' => $stats['customers_count'], 'icon' => 'bi-people', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'Nouveaux clients (mois)', 'value' => $stats['new_customers_month'], 'icon' => 'bi-person-plus', 'color' => 'bg-info bg-opacity-10 text-info'],
-      ['label' => 'Valeur du stock', 'value' => number_format($stats['stock_value'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-box-seam', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
-      ['label' => 'Panier moyen (mois)', 'value' => number_format($stats['average_sale_amount'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-basket3', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'Marge brute (mois)', 'value' => number_format($stats['margin_month'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-graph-up', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Échanges (mois)', 'value' => $stats['exchanges_count_month'], 'icon' => 'bi-arrow-left-right', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'CA du jour',             'value' => number_format($stats['revenue_today'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-currency-exchange', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'CA du mois',             'value' => number_format($stats['revenue_month'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-graph-up-arrow',   'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Ventes validées',        'value' => $stats['sales_count'],                                         'icon' => 'bi-cart-check',         'color' => 'bg-info bg-opacity-10 text-info'],
+      ['label' => 'Factures émises',        'value' => $stats['invoices_count'],                                      'icon' => 'bi-file-earmark-text',   'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Factures payées',        'value' => $stats['paid_invoices_count'],                                 'icon' => 'bi-wallet2',             'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Impayés',                'value' => $stats['pending_invoices_count'],                              'icon' => 'bi-hourglass-split',     'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Clients',                'value' => $stats['customers_count'],                                     'icon' => 'bi-people',              'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Nouveaux clients (mois)','value' => $stats['new_customers_month'],                                 'icon' => 'bi-person-plus',         'color' => 'bg-info bg-opacity-10 text-info'],
+      // Masqué pour le caissier — non présents sur le rapport
+      ...($isCashier ? [] : [
+        ['label' => 'Valeur du stock',    'value' => number_format($stats['stock_value'], 0, ',', ' ') . ' FCFA',        'icon' => 'bi-box-seam',        'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+        ['label' => 'Panier moyen (mois)','value' => number_format($stats['average_sale_amount'], 0, ',', ' ') . ' FCFA', 'icon' => 'bi-basket3',        'color' => 'bg-primary bg-opacity-10 text-primary'],
+        ['label' => 'Marge brute (mois)', 'value' => number_format($stats['margin_month'], 0, ',', ' ') . ' FCFA',       'icon' => 'bi-graph-up',        'color' => 'bg-success bg-opacity-10 text-success'],
+        ['label' => 'Échanges (mois)',    'value' => $stats['exchanges_count_month'],                                     'icon' => 'bi-arrow-left-right','color' => 'bg-warning bg-opacity-10 text-warning'],
+      ]),
     ];
   @endphp
 
@@ -54,7 +59,8 @@
   @endforeach
 </div>
 
-{{-- Graphiques --}}
+{{-- Graphique journalier — masqué pour le caissier --}}
+@unless($isCashier)
 <div class="row g-3 mb-4">
   <div class="col-lg-12">
     <div class="chart-card">
@@ -63,7 +69,9 @@
     </div>
   </div>
 </div>
+@endunless
 
+{{-- Ventes par mois + Ventes par catégorie --}}
 <div class="row g-3 mb-4">
   <div class="col-lg-8">
     <div class="chart-card">
@@ -79,6 +87,8 @@
   </div>
 </div>
 
+{{-- Statut factures + Ventes vs Échanges + Mouvements de stock — masqués pour le caissier --}}
+@unless($isCashier)
 <div class="row g-3 mb-4">
   <div class="col-lg-4">
     <div class="chart-card h-100">
@@ -135,7 +145,9 @@
     </div>
   </div>
 </div>
+@endunless
 
+{{-- Factures récentes --}}
 <div class="row g-3 mb-4">
   <div class="col-lg-12">
     <div class="table-card h-100">
@@ -181,6 +193,7 @@
   </div>
 </div>
 
+{{-- Top clients + Vendeurs performants --}}
 <div class="row g-3 mb-4">
   <div class="col-lg-6">
     <div class="table-card h-100">
@@ -207,7 +220,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="4" class="text-center text-muted py-4">Aucun client n’a encore passé de commande</td>
+                <td colspan="4" class="text-center text-muted py-4">Aucun client n'a encore passé de commande</td>
               </tr>
             @endforelse
           </tbody>
@@ -251,8 +264,9 @@
   </div>
 </div>
 
+{{-- Top produits + Alertes stock — masqués pour le caissier --}}
+@unless($isCashier)
 <div class="row g-3">
-  {{-- Top produits --}}
   <div class="col-lg-7">
     <div class="table-card">
       <div class="p-3 border-bottom">
@@ -287,7 +301,6 @@
     </div>
   </div>
 
-  {{-- Alertes stock --}}
   <div class="col-lg-5">
     <div class="table-card">
       <div class="p-3 border-bottom">
@@ -329,6 +342,7 @@
     </div>
   </div>
 </div>
+@endunless
 @endsection
 
 @push('scripts')
@@ -336,6 +350,7 @@
 <script>
   const chartDefaults = { responsive: true, maintainAspectRatio: true };
 
+  @unless($isCashier)
   // Évolution journalière des ventes (30 derniers jours)
   new Chart(document.getElementById('salesByDayChart'), {
     type: 'line',
@@ -373,6 +388,7 @@
       }
     }
   });
+  @endunless
 
   // Ventes par mois
   new Chart(document.getElementById('salesByMonthChart'), {
@@ -415,6 +431,8 @@
     }
   });
 
+  @unless($isCashier)
+  // Statut des factures
   const invoiceLabels = @json($invoiceStatusSummary['labels']);
   const invoiceData = @json($invoiceStatusSummary['values']);
   const invoiceColors = ['#0d6efd', '#198754', '#ffc107', '#dc3545'];
@@ -436,6 +454,8 @@
     }
   });
 
+  @endunless
+  @unless($isCashier)
   // Ventes vs Échanges
   const salesTypeLabels = @json($salesTypeBreakdown['labels']);
   const salesTypeData = @json($salesTypeBreakdown['data']);
@@ -456,5 +476,6 @@
       }
     }
   });
+  @endunless
 </script>
 @endpush

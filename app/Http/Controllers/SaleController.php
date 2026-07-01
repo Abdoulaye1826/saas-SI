@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\SaleService;
@@ -92,6 +93,23 @@ class SaleController extends Controller
     /**
      * Recherche de produits pour l'autocomplétion du module d'échange.
      */
+    /**
+     * Recherche de clients pour l'autocomplétion du formulaire de vente
+     * (nom, téléphone, email).
+     */
+    public function searchCustomers(Request $request): JsonResponse
+    {
+        $term = $request->input('q', '');
+
+        $customers = Customer::query()
+            ->search($term)
+            ->orderBy('full_name')
+            ->limit(15)
+            ->get(['id', 'full_name', 'phone', 'email']);
+
+        return response()->json($customers);
+    }
+
     public function searchExchangeProducts(Request $request): JsonResponse
     {
         $term = $request->input('q', '');

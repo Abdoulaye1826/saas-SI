@@ -1,20 +1,54 @@
 <div class="row">
   <div class="col-md-6 mb-3">
-    <label for="customer_id" class="form-label">Client</label>
-    <div class="d-flex gap-2 align-items-start">
-      <select id="customer_id" name="customer_id" class="form-select @error('customer_id') is-invalid @enderror">
-        <option value="">— Client anonyme —</option>
-        @foreach($customers as $customer)
-          <option value="{{ $customer->id }}" @selected(old('customer_id', $sale?->customer_id ?? '') == $customer->id)>
-            {{ $customer->full_name }}
-          </option>
-        @endforeach
-      </select>
-      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
-        <i class="bi bi-person-plus"></i>
+    <label for="customer_search" class="form-label">Client</label>
+
+    {{-- Champ hidden pour stocker l'ID du client sélectionné --}}
+    <input type="hidden" id="customer_id" name="customer_id" value="{{ old('customer_id', $sale?->customer_id ?? '') }}">
+
+    <div class="position-relative">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control @error('customer_id') is-invalid @enderror"
+               id="customer_search" autocomplete="off"
+               placeholder="Tapez le nom, le téléphone ou l'email..."
+               value="{{ old('customer_id', $sale?->customer_id ?? '') ? optional($sale?->customer ?? \App\Models\Customer::find(old('customer_id')))->full_name : '' }}">
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal" title="Ajouter un client">
+          <i class="bi bi-person-plus"></i>
+        </button>
+      </div>
+      @error('customer_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+
+      {{-- Liste d'autocomplétion --}}
+      <div id="customerDropdown" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1050; max-height: 250px; overflow-y: auto; display: none;"></div>
+    </div>
+
+    {{-- Client sélectionné --}}
+    @php $selectedCustomer = old('customer_id', $sale?->customer_id ?? '') ? ($sale?->customer ?? \App\Models\Customer::find(old('customer_id'))) : null; @endphp
+    <div id="customerSelected" class="alert alert-success d-flex align-items-center justify-content-between mt-2 py-2 px-3"
+         style="display: {{ $selectedCustomer ? 'flex' : 'none' }} !important;">
+      <span id="customerSelectedText">
+        @if($selectedCustomer)
+          <i class="bi bi-check-circle me-1"></i>
+          <strong>{{ $selectedCustomer->full_name }}</strong>
+          @if($selectedCustomer->phone) <span class="text-muted">({{ $selectedCustomer->phone }})</span> @endif
+        @endif
+      </span>
+      <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="customerClear">
+        <i class="bi bi-x-lg"></i>
       </button>
     </div>
-    @error('customer_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+
+    {{-- Bouton ajouter un client (visible quand aucun résultat) --}}
+    <div id="customerNotFound" class="mt-2" style="display: none;">
+      <div class="alert alert-warning py-2 px-3 d-flex align-items-center justify-content-between mb-0">
+        <small><i class="bi bi-exclamation-triangle me-1"></i>Aucun client trouvé pour cette recherche.</small>
+        <button type="button" class="btn btn-sm btn-primary" id="openNewCustomerModalFromSearch">
+          <i class="bi bi-plus-circle me-1"></i>Ajouter un client
+        </button>
+      </div>
+    </div>
+
+    <div class="form-text">Laissez vide pour un client anonyme.</div>
   </div>
   <div class="col-md-4 mb-3">
     <label for="sale_type" class="form-label">Type de transaction <span class="text-danger">*</span></label>
@@ -222,14 +256,14 @@
     </div>
   </div>
 
-  <div class="row" id="exchangeImeiRow" style="display:none;">
+  <div class="row">
     <div class="col-md-6 mb-3">
-      <label for="exchange_imei" class="form-label">IMEI du t&eacute;l&eacute;phone apport&eacute; <span class="text-danger">*</span></label>
+      <label for="exchange_imei" class="form-label">IMEI du produit apporté</label>
       <input type="text" class="form-control @error('exchange_imei') is-invalid @enderror"
              id="exchange_imei" name="exchange_imei" value="{{ old('exchange_imei', $sale?->exchange_details['imei'] ?? '') }}"
-             placeholder="Scanner ou saisir l'IMEI" autocomplete="off">
+             placeholder="Scanner ou saisir l'IMEI (optionnel)" autocomplete="off">
       @error('exchange_imei')<div class="invalid-feedback">{{ $message }}</div>@enderror
-      <div class="form-text">Ce t&eacute;l&eacute;phone sera ajout&eacute; au stock et marqu&eacute; disponible apr&egrave;s validation.</div>
+      <div class="form-text">Obligatoire uniquement pour les téléphones. Sera enregistré avec le produit après validation.</div>
     </div>
   </div>
 
@@ -246,6 +280,7 @@
 
 @php
   $existingPaymentsCount = $sale?->invoice?->payments?->count() ?? 0;
+  $currentPaymentMethod = old('payment_method', $sale?->invoice?->payments?->first()?->method?->value ?? '');
 @endphp
 <div class="row">
   <div class="col-md-4 mb-3" id="totalColumn" style="display: {{ old('sale_type', $sale?->sale_type->value ?? 'vente') === 'echange' ? 'none' : 'block' }};">
@@ -259,9 +294,9 @@
     <label for="payment_method" class="form-label">Mode de paiement</label>
     <select id="payment_method" name="payment_method" class="form-select @error('payment_method') is-invalid @enderror">
       <option value="">— Non renseigné —</option>
-      <option value="wave" @selected(old('payment_method') === 'wave')>Wave</option>
-      <option value="orange_money" @selected(old('payment_method') === 'orange_money')>Orange Money</option>
-      <option value="cash" @selected(old('payment_method') === 'cash')>Espèces</option>
+      <option value="wave" @selected($currentPaymentMethod === 'wave')>Wave</option>
+      <option value="orange_money" @selected($currentPaymentMethod === 'orange_money')>Orange Money</option>
+      <option value="cash" @selected($currentPaymentMethod === 'cash')>Espèces</option>
     </select>
     @error('payment_method')<div class="invalid-feedback">{{ $message }}</div>@enderror
     @if($existingPaymentsCount > 0)
@@ -515,13 +550,155 @@
     calculateTotals();
 
     // ───────────────────────────────────────────────────────────────
-    // Modale création client (existant)
+    // Autocomplétion client (nom, téléphone, email)
+    // ───────────────────────────────────────────────────────────────
+    const customerSearchInput = document.getElementById('customer_search');
+    const customerIdField = document.getElementById('customer_id');
+    const customerDropdown = document.getElementById('customerDropdown');
+    const customerSelected = document.getElementById('customerSelected');
+    const customerSelectedText = document.getElementById('customerSelectedText');
+    const customerNotFound = document.getElementById('customerNotFound');
+    const customerClear = document.getElementById('customerClear');
+    const openNewCustomerModalFromSearch = document.getElementById('openNewCustomerModalFromSearch');
+
+    let customerSearchTimeout = null;
+    let customerActiveIndex = -1;
+
+    if (customerSearchInput) {
+      customerSearchInput.addEventListener('input', function () {
+        const query = this.value.trim();
+        customerActiveIndex = -1;
+        customerIdField.value = '';
+
+        if (query.length < 2) {
+          customerDropdown.style.display = 'none';
+          customerNotFound.style.display = 'none';
+          return;
+        }
+
+        clearTimeout(customerSearchTimeout);
+        customerSearchTimeout = setTimeout(() => fetchCustomers(query), 300);
+      });
+
+      customerSearchInput.addEventListener('keydown', function (e) {
+        const items = customerDropdown.querySelectorAll('.list-group-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          customerActiveIndex = Math.min(customerActiveIndex + 1, items.length - 1);
+          updateActiveCustomerItem(items);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          customerActiveIndex = Math.max(customerActiveIndex - 1, 0);
+          updateActiveCustomerItem(items);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (customerActiveIndex >= 0 && items[customerActiveIndex]) {
+            items[customerActiveIndex].click();
+          }
+        } else if (e.key === 'Escape') {
+          customerDropdown.style.display = 'none';
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!customerSearchInput.contains(e.target) && !customerDropdown.contains(e.target)) {
+          customerDropdown.style.display = 'none';
+        }
+      });
+    }
+
+    function updateActiveCustomerItem(items) {
+      items.forEach((item, idx) => item.classList.toggle('active', idx === customerActiveIndex));
+      if (items[customerActiveIndex]) {
+        items[customerActiveIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    async function fetchCustomers(query) {
+      try {
+        const response = await fetch(`{{ route('sales.customers.search') }}?q=${encodeURIComponent(query)}`, {
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          }
+        });
+
+        const customers = await response.json();
+        customerDropdown.innerHTML = '';
+
+        if (customers.length === 0) {
+          customerDropdown.style.display = 'none';
+          customerNotFound.style.display = 'block';
+          return;
+        }
+
+        customerNotFound.style.display = 'none';
+
+        customers.forEach((customer) => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'list-group-item list-group-item-action py-2 px-3';
+          item.innerHTML = `
+            <div>
+              <strong>${customer.full_name}</strong>
+              ${customer.phone ? '<span class="text-muted">— ' + customer.phone + '</span>' : ''}
+              ${customer.email ? '<br><small class="text-muted">' + customer.email + '</small>' : ''}
+            </div>
+          `;
+          item.addEventListener('click', () => selectCustomer(customer));
+          customerDropdown.appendChild(item);
+        });
+
+        customerDropdown.style.display = 'block';
+      } catch (error) {
+        console.error('Erreur lors de la recherche de clients :', error);
+      }
+    }
+
+    function selectCustomer(customer) {
+      customerIdField.value = customer.id;
+      customerSearchInput.value = customer.full_name;
+      customerDropdown.style.display = 'none';
+      customerNotFound.style.display = 'none';
+
+      customerSelectedText.innerHTML = `
+        <i class="bi bi-check-circle me-1"></i>
+        <strong>${customer.full_name}</strong>
+        ${customer.phone ? '<span class="text-muted">(' + customer.phone + ')</span>' : ''}
+      `;
+      customerSelected.style.display = 'flex';
+    }
+
+    if (customerClear) {
+      customerClear.addEventListener('click', function () {
+        customerIdField.value = '';
+        customerSearchInput.value = '';
+        customerSelected.style.display = 'none';
+        customerSelectedText.innerHTML = '';
+        customerSearchInput.focus();
+      });
+    }
+
+    // ───────────────────────────────────────────────────────────────
+    // Modale création client
     // ───────────────────────────────────────────────────────────────
     const saveCustomerButton = document.getElementById('saveNewCustomerButton');
     const newCustomerForm = document.getElementById('newCustomerForm');
-    const customerSelect = document.getElementById('customer_id');
 
-    if (saveCustomerButton && newCustomerForm && customerSelect) {
+    if (openNewCustomerModalFromSearch) {
+      openNewCustomerModalFromSearch.addEventListener('click', function () {
+        const nameField = document.getElementById('new_customer_full_name');
+        if (nameField && customerSearchInput.value.trim()) {
+          nameField.value = customerSearchInput.value.trim();
+        }
+        const modalEl = document.getElementById('newCustomerModal');
+        new bootstrap.Modal(modalEl).show();
+      });
+    }
+
+    if (saveCustomerButton && newCustomerForm) {
       saveCustomerButton.addEventListener('click', async function () {
         const formData = new FormData(newCustomerForm);
 
@@ -559,11 +736,7 @@
           return;
         }
 
-        const option = document.createElement('option');
-        option.value = data.id;
-        option.textContent = data.full_name;
-        option.selected = true;
-        customerSelect.appendChild(option);
+        selectCustomer(data);
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('newCustomerModal'));
         modal.hide();
@@ -717,11 +890,8 @@
      * et on verrouille la quantit\u00e9 \u00e0 1 (un t\u00e9l\u00e9phone = une unit\u00e9).
      */
     function syncExchangeImeiField(tracksImei) {
-      const imeiRow = document.getElementById('exchangeImeiRow');
       const quantityField = document.getElementById('exchange_quantity');
-      const exchangeImeiInput = document.getElementById('exchange_imei');
 
-      if (imeiRow) imeiRow.style.display = tracksImei ? '' : 'none';
       if (quantityField) {
         if (tracksImei) {
           quantityField.value = 1;
@@ -729,9 +899,6 @@
         } else {
           quantityField.readOnly = false;
         }
-      }
-      if (!tracksImei && exchangeImeiInput) {
-        exchangeImeiInput.value = '';
       }
     }
 
@@ -810,6 +977,13 @@
           }
 
           // S\u00e9lectionner automatiquement le nouveau produit
+          // Transf\u00e9rer l'IMEI saisi dans la modale vers le champ principal
+          const modalImeiInput = document.getElementById('new_exchange_product_imei');
+          const mainImeiInput  = document.getElementById('exchange_imei');
+          if (modalImeiInput && mainImeiInput && modalImeiInput.value.trim()) {
+            mainImeiInput.value = modalImeiInput.value.trim();
+          }
+
           selectExchangeProduct(data);
 
           // Fermer la modale

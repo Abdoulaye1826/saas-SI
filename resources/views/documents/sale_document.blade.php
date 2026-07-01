@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+?<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     $documentType = $isEchange ? "Bon d'échange" : 'Facture';
     $documentNumber = $isEchange ? $sale->exchange_voucher_number : ($invoice->invoice_number ?? $sale->sale_number);
   @endphp
-  <title>SEN SOLUTION ELECTRONIQUE — {{ $documentType }} {{ $documentNumber }}</title>
+  <title>MBOUP GAMING — {{ $documentType }} {{ $documentNumber }}</title>
   <style>
     /* ============================================================
        Modèle économique en encre : pas de fonds colorés ni de
@@ -238,10 +238,10 @@
     <div class="header-inner">
       <div class="brand">
         <div class="brand-icon">
-          <img src="{{ asset('images/logo.png') }}" alt="SEN SOLUTION ELECTRONIQUE">
+          <img src="{{ asset('images/logo.jpeg') }}" alt="MBOUP GAMING">
         </div>
         <div>
-          <div class="brand-name">SEN SOLUTION ELECTRONIQUE</div>
+          <div class="brand-name">MBOUP GAMING</div>
           <div class="brand-sub">Système d'information</div>
         </div>
       </div>
@@ -447,6 +447,7 @@
       <div>📧 {{ config('company.email') }}</div>
       <div>📞 {{ config('company.phone') }}</div>
       <div>📍 {{ config('company.address_line1') }}, {{ config('company.address_line2') }}</div>
+      <div>Ninea : {{ config('company.ninea') }} — RC : {{ config('company.rc') }}</div>
     </div>
     <div class="footer-thanks">
       <strong>Merci de votre confiance</strong>

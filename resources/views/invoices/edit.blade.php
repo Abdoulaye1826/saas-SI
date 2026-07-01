@@ -76,12 +76,18 @@
         <div class="progress-bar bg-success" style="width: {{ $progress }}%"></div>
       </div>
 
-      @if($remaining > 0.01 && $invoice->status->value !== 'cancelled')
+      @if($invoice->status->value === 'cancelled')
+        <div class="alert alert-secondary">Cette facture est annulée : aucun paiement ne peut y être ajouté.</div>
+      @else
+        @if($remaining <= 0.01)
+          <div class="alert alert-success py-2"><i class="bi bi-check-circle me-1"></i>Facture entièrement payée — vous pouvez tout de même ajouter un mode de paiement complémentaire si nécessaire.</div>
+        @endif
+
         <form action="{{ route('invoices.payments.store', $invoice) }}" method="POST" data-ui-form novalidate class="row g-3 align-items-end mb-4 pb-4 border-bottom">
           @csrf
           <div class="col-md-3 field-group mb-0">
             <label for="payment_amount" class="form-label">Montant <span class="req">*</span></label>
-            <input type="number" step="0.01" min="0.01" max="{{ $remaining }}" name="amount" id="payment_amount"
+            <input type="number" step="0.01" min="0.01" name="amount" id="payment_amount"
                    class="form-control" placeholder="{{ $remaining }}" required>
           </div>
           <div class="col-md-3 field-group mb-0">
@@ -101,13 +107,9 @@
             <input type="text" name="reference" id="payment_reference" class="form-control" placeholder="N° transaction">
           </div>
           <div class="col-12">
-            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Enregistrer le paiement</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Ajouter un mode de paiement</button>
           </div>
         </form>
-      @elseif($invoice->status->value === 'cancelled')
-        <div class="alert alert-secondary">Cette facture est annulée : aucun paiement ne peut y être ajouté.</div>
-      @else
-        <div class="alert alert-success"><i class="bi bi-check-circle me-1"></i>Facture entièrement payée.</div>
       @endif
 
       <div class="table-responsive">

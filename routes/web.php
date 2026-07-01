@@ -1,4 +1,4 @@
-<?php
+?<?php
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Routes Web — SEN SOLUTION ELECTRONIQUE SI
+| Routes Web — MBOUP GAMING SI
 |--------------------------------------------------------------------------
 */
 
@@ -59,6 +59,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ── Clients, Ventes, Factures (Admin, Gestionnaire, Caissier)
     Route::middleware('role:admin,manager,cashier')->group(function () {
         Route::resource('customers', CustomerController::class)->except(['show']);
+        Route::get('sales/customers/search', [SaleController::class, 'searchCustomers'])->name('sales.customers.search');
         Route::get('sales/exchange-products/search', [SaleController::class, 'searchExchangeProducts'])->name('sales.exchange-products.search');
         Route::post('sales/exchange-products/store', [SaleController::class, 'storeExchangeProduct'])->name('sales.exchange-products.store');
         Route::get('products/{product}/available-imeis', [ProductImeiController::class, 'available'])->name('products.imeis.available');

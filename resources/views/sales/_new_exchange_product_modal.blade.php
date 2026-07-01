@@ -61,6 +61,15 @@
               <div class="invalid-feedback" id="new_exchange_product_stock_quantity_error"></div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="new_exchange_product_imei" class="form-label">IMEI</label>
+              <input type="text" id="new_exchange_product_imei" name="_modal_imei" class="form-control"
+                     placeholder="Scanner ou saisir l'IMEI (optionnel)" autocomplete="off">
+              <div class="form-text">Si c'est un téléphone, saisissez l'IMEI ici.</div>
+              <div class="invalid-feedback" id="new_exchange_product_imei_error"></div>
+            </div>
+          </div>
           <div class="mb-3">
             <label for="new_exchange_product_description" class="form-label">Description</label>
             <textarea id="new_exchange_product_description" name="description" class="form-control" rows="2"></textarea>

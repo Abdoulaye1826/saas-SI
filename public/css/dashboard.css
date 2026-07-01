@@ -1,5 +1,5 @@
-/* ============================================================
-   SEN SOLUTION ELECTRONIQUE SI — Dashboard Layout
+?/* ============================================================
+   MBOUP GAMING SI — Dashboard Layout
    Design system : "Circuit / Ledger"
    ============================================================ */
 
@@ -363,6 +363,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     align-items: center;
     gap: .4rem;
 }
+
 
 .kpi-live-dot {
     width: 6px;
