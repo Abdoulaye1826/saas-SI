@@ -14,6 +14,6 @@ return [
     'address_line1' => env('COMPANY_ADDRESS_LINE1', 'Médina Rue 29 x Blaise Diagne'),
     'address_line2' => env('COMPANY_ADDRESS_LINE2', 'Dakar, Sénégal'),
 
-    'ninea' => env('COMPANY_NINEA', '011591642'),
-    'rc' => env('COMPANY_RC', 'SN.DKR.2024.A.41902'),
+    'ninea' => env('COMPANY_NINEA', '012188547'),
+    'rc' => env('COMPANY_RC', 'SN.DKR.2025.A.21351'),
 ];

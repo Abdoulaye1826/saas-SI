@@ -88,7 +88,7 @@
   const isCashier = @json($isCashier);
   const dashboardUrl = @json(route('dashboard'));
   const chartDefaults = { responsive: true, maintainAspectRatio: true };
-  const categoryColors = ['#d4af37', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
+  const categoryColors = ['#1e3a5f', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
   let charts = {};
   let inFlightController = null;
@@ -110,8 +110,8 @@
           datasets: [{
             label: 'Ventes',
             data: evo.count,
-            borderColor: '#d4af37',
-            backgroundColor: 'rgba(212, 175, 55, 0.12)',
+            borderColor: '#1e3a5f',
+            backgroundColor: 'rgba(30, 58, 95, 0.12)',
             fill: true,
             tension: 0.35,
             pointRadius: 2,
@@ -136,7 +136,7 @@
           datasets: [{
             label: 'CA (FCFA)',
             data: evo.revenue,
-            backgroundColor: 'rgba(138, 111, 31, 0.75)',
+            backgroundColor: 'rgba(20, 40, 63, 0.75)',
             borderRadius: 6,
           }]
         },
@@ -171,7 +171,7 @@
     if (!isCashier) {
       const invoiceLabels = data.invoiceStatusSummary.labels;
       const invoiceValues = data.invoiceStatusSummary.values;
-      const invoiceColors = ['#d4af37', '#198754', '#ffc107', '#dc3545'];
+      const invoiceColors = ['#1e3a5f', '#198754', '#ffc107', '#dc3545'];
       charts.invoiceStatus = new Chart(document.getElementById('invoiceStatusChart'), {
         type: 'doughnut',
         data: {
@@ -195,7 +195,7 @@
           labels: typeLabels,
           datasets: [{
             data: typeData.some(v => v > 0) ? typeData : [1, 0],
-            backgroundColor: ['#d4af37', '#fd7e14'],
+            backgroundColor: ['#1e3a5f', '#fd7e14'],
           }]
         },
         options: {

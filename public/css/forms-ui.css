@@ -1,5 +1,5 @@
 /* ============================================================
-   GAPS APPLE SI — UI des formulaires (ajout/modif)
+   Mboup Gaming SI — UI des formulaires (ajout/modif)
    S'appuie sur les variables de design définies dans dashboard.css
    (--copper, --ink, --surface, --card, --border, --font-*…).
    N'affecte ni .top-navbar ni .sidebar : ce fichier ne déclare
@@ -28,7 +28,7 @@
 .form-card__header {
     padding: 1.5rem 1.75rem 1.1rem;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, rgba(212, 175, 55, .06), transparent);
+    background: linear-gradient(180deg, rgba(30, 58, 95, .06), transparent);
 }
 
 .form-card__header h2 {
@@ -242,7 +242,7 @@
 .page-content .btn-primary {
     background-color: var(--copper);
     border-color: var(--copper);
-    color: var(--ink);
+    color: #ffffff;
     font-weight: 600;
     border-radius: 10px;
     padding: .55rem 1.3rem;
@@ -253,8 +253,8 @@
 .page-content .btn-primary:focus {
     background-color: var(--copper-dark);
     border-color: var(--copper-dark);
-    color: var(--ink);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, .28);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(30, 58, 95, .28);
 }
 
 .page-content .btn-primary:active {

@@ -8,7 +8,7 @@
     $documentType = $isEchange ? "Bon d'échange" : 'Facture';
     $documentNumber = $isEchange ? $sale->exchange_voucher_number : ($invoice->invoice_number ?? $sale->sale_number);
   @endphp
-  <title>GAPS APPLE — {{ $documentType }} {{ $documentNumber }}</title>
+  <title>Mboup Gaming — {{ $documentType }} {{ $documentNumber }}</title>
   <style>
     /* ============================================================
        Modèle économique en encre : pas de fonds colorés ni de
@@ -24,9 +24,9 @@
     }
 
     :root {
-      --ink: #8a6f1f;
-      --accent: #8a6f1f;
-      --accent-dark: #6e5718;
+      --ink: #1e3a5f;
+      --accent: #1e3a5f;
+      --accent-dark: #14283f;
       --text: #1a1a2e;
       --text-muted: #5b6479;
       --line: #c7cad6;
@@ -212,7 +212,7 @@
 
     @media screen {
       body { padding: 20px 0 40px; background: #f0f1f4; }
-      .page { box-shadow: 0 4px 30px rgba(138,111,31,0.10); border-radius: 4px; }
+      .page { box-shadow: 0 4px 30px rgba(30,58,95,0.10); border-radius: 4px; }
     }
   </style>
 </head>
@@ -225,21 +225,21 @@
   // restait vide dans le PDF envoyé/téléchargé, alors qu'il s'affichait
   // normalement dans l'aperçu navigateur (simple HTML, pas de DomPDF).
   // Le data URI fonctionne à l'identique dans les deux contextes.
-  $logoPath = public_path('images/profil.jpeg');
+  $logoPath = public_path('images/logo.jpeg');
   $logoSrc = is_file($logoPath)
       ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
-      : asset('images/profil.jpeg');
+      : asset('images/logo.jpeg');
 @endphp
 
 <div class="no-print" style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
   <a href="{{ url()->previous() }}" class="btn btn-outline-secondary" style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;">
     🔙 Retour
   </a>
-  <button onclick="window.print()" style="background:#8a6f1f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
+  <button onclick="window.print()" style="background:#1e3a5f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
     🖨️ Imprimer
   </button>
   @if(!empty($downloadUrl))
-    <a href="{{ $downloadUrl }}" style="background:#6e5718;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
+    <a href="{{ $downloadUrl }}" style="background:#14283f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
       ⬇️ Télécharger PDF
     </a>
   @endif
@@ -252,10 +252,10 @@
     <div class="header-inner">
       <div class="brand">
         <div class="brand-icon">
-          <img src="{{ $logoSrc }}" alt="GAPS APPLE">
+          <img src="{{ $logoSrc }}" alt="Mboup Gaming">
         </div>
         <div>
-          <div class="brand-name">GAPS APPLE</div>
+          <div class="brand-name">Mboup Gaming</div>
           <div class="brand-sub">Système d'information</div>
         </div>
       </div>
@@ -304,7 +304,7 @@
       </div>
       @if(!$isEchange)
         <h4 style="margin-top:14px;">Vente associée</h4>
-        <p style="font-weight:600;color:#8a6f1f;">{{ $sale->sale_number }}</p>
+        <p style="font-weight:600;color:#1e3a5f;">{{ $sale->sale_number }}</p>
       @endif
     </div>
   </div>

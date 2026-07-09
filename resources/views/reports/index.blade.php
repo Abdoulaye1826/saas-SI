@@ -446,7 +446,7 @@
   // ---------- Statut des factures ----------
   const invoiceLabels = @json($invoiceStatusSummary['labels']);
   const invoiceData = @json($invoiceStatusSummary['values']);
-  const invoiceColors = ['#d4af37','#198754','#ffc107','#dc3545'];
+  const invoiceColors = ['#1e3a5f','#198754','#ffc107','#dc3545'];
 
   new Chart(document.getElementById('invoiceStatusChart'), {
     type: 'doughnut',

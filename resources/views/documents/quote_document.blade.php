@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GAPS APPLE — Devis {{ $quote->quote_number }}</title>
+  <title>Mboup Gaming — Devis {{ $quote->quote_number }}</title>
   <style>
     /* Même charte visuelle "encre" que documents/sale_document.blade.php,
        pour rester cohérent entre devis, factures et bons d'échange. */
@@ -14,9 +14,9 @@
     }
 
     :root {
-      --ink: #8a6f1f;
-      --accent: #8a6f1f;
-      --accent-dark: #6e5718;
+      --ink: #1e3a5f;
+      --accent: #1e3a5f;
+      --accent-dark: #14283f;
       --text: #1a1a2e;
       --text-muted: #5b6479;
       --line: #c7cad6;
@@ -140,7 +140,7 @@
 
     @media screen {
       body { padding: 20px 0 40px; background: #f0f1f4; }
-      .page { box-shadow: 0 4px 30px rgba(138,111,31,0.10); border-radius: 4px; }
+      .page { box-shadow: 0 4px 30px rgba(30,58,95,0.10); border-radius: 4px; }
     }
   </style>
 </head>
@@ -151,21 +151,21 @@
   // distantes par défaut, donc le logo restait vide dans le PDF envoyé/
   // téléchargé. Le data URI base64 fonctionne à l'identique dans l'aperçu
   // navigateur et dans le PDF généré par DomPDF.
-  $logoPath = public_path('images/profil.jpeg');
+  $logoPath = public_path('images/logo.jpeg');
   $logoSrc = is_file($logoPath)
       ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
-      : asset('images/profil.jpeg');
+      : asset('images/logo.jpeg');
 @endphp
 
 <div class="no-print" style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
   <a href="{{ url()->previous() }}" class="btn btn-outline-secondary" style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;">
     🔙 Retour
   </a>
-  <button onclick="window.print()" style="background:#8a6f1f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
+  <button onclick="window.print()" style="background:#1e3a5f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
     🖨️ Imprimer
   </button>
   @if(!empty($downloadUrl))
-    <a href="{{ $downloadUrl }}" style="background:#6e5718;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
+    <a href="{{ $downloadUrl }}" style="background:#14283f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
       ⬇️ Télécharger PDF
     </a>
   @endif
@@ -177,10 +177,10 @@
     <div class="header-inner">
       <div class="brand">
         <div class="brand-icon">
-          <img src="{{ $logoSrc }}" alt="GAPS APPLE">
+          <img src="{{ $logoSrc }}" alt="Mboup Gaming">
         </div>
         <div>
-          <div class="brand-name">GAPS APPLE</div>
+          <div class="brand-name">Mboup Gaming</div>
           <div class="brand-sub">Système d'information</div>
         </div>
       </div>
@@ -217,7 +217,7 @@
       </div>
       @if($quote->valid_until)
         <h4 style="margin-top:14px;">Valable jusqu'au</h4>
-        <p style="font-weight:600;color:#8a6f1f;">{{ $quote->valid_until->format('d/m/Y') }}</p>
+        <p style="font-weight:600;color:#1e3a5f;">{{ $quote->valid_until->format('d/m/Y') }}</p>
       @endif
     </div>
   </div>

@@ -1,5 +1,5 @@
 /* ============================================================
-   GAPS APPLE SI — Dashboard Layout
+   Mboup Gaming SI — Dashboard Layout
    Design system : "Circuit / Ledger"
    ============================================================ */
 
@@ -9,14 +9,14 @@
     --sidebar-width: 260px;
     --navbar-height: 64px;
 
-    /* ── Palette principale — Noir & Or ──────────────────────── */
-    --ink: #0a0a0a;
-    --ink-soft: #1c1c1c;
-    --ink-line: #303030;
+    /* ── Palette principale — Noir & Bleu Marine ─────────────── */
+    --ink: #14283f;
+    --ink-soft: #1c3654;
+    --ink-line: #2c4a6e;
 
-    --copper: #d4af37;
-    --copper-dark: #a8862b;
-    --copper-soft: rgba(212, 175, 55, .14);
+    --copper: #4c7ab5;
+    --copper-dark: #4c7ab5;
+    --copper-soft: rgba(30, 58, 95, .14);
 
     --circuit-blue: #52504a;
     --blue-soft: rgba(82, 80, 74, .12);
@@ -370,14 +370,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     height: 6px;
     border-radius: 50%;
     background: var(--copper);
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, .6);
+    box-shadow: 0 0 0 0 rgba(65, 106, 161, 0.6);
     animation: pulseDot 1.8s infinite;
 }
 
 @keyframes pulseDot {
-    0%   { box-shadow: 0 0 0 0 rgba(212, 175, 55, .5); }
-    70%  { box-shadow: 0 0 0 5px rgba(212, 175, 55, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+    0%   { box-shadow: 0 0 0 0 rgba(64, 105, 160, 0.5); }
+    70%  { box-shadow: 0 0 0 5px rgba(30, 58, 95, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(30, 58, 95, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -804,7 +804,7 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("/images/auth2.jpeg");
+    background-image: url("/images/pp.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -900,17 +900,17 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
 }
 
 .auth-card .btn-primary {
-    background: rgba(212, 175, 55, 0.55);
+    background: rgba(30, 58, 95, 0.55);
     border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #1a1400;
+    color: #ffffff;
     font-weight: 600;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(30, 58, 95, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .auth-card .btn-primary:hover {
-    background: rgba(212, 175, 55, 0.7);
+    background: rgba(30, 58, 95, 0.7);
 }
 
 .auth-logo {
