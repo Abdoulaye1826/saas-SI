@@ -1,5 +1,5 @@
 /* ============================================================
-   MBOUP GAMING SI — Dashboard Layout
+   GAPS APPLE SI — Dashboard Layout
    Design system : "Circuit / Ledger"
    ============================================================ */
 
@@ -9,17 +9,17 @@
     --sidebar-width: 260px;
     --navbar-height: 64px;
 
-    /* ── Palette principale ───────────────────────────────── */
-    --ink: #10182b;
-    --ink-soft: #1c2742;
-    --ink-line: #2a3658;
+    /* ── Palette principale — Noir & Or ──────────────────────── */
+    --ink: #0a0a0a;
+    --ink-soft: #1c1c1c;
+    --ink-line: #303030;
 
-    --copper: #d97706;
-    --copper-dark: #b45309;
-    --copper-soft: rgba(217, 119, 6, .12);
+    --copper: #d4af37;
+    --copper-dark: #a8862b;
+    --copper-soft: rgba(212, 175, 55, .14);
 
-    --circuit-blue: #2563eb;
-    --blue-soft: rgba(37, 99, 235, .12);
+    --circuit-blue: #52504a;
+    --blue-soft: rgba(82, 80, 74, .12);
 
     --surface: #f5f6fa;
     --card: #ffffff;
@@ -141,7 +141,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
 
 .sidebar-brand .brand-sub {
     font-size: 0.7rem;
-    color: #7f8bab;
+    color: #9a9a9a;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
@@ -155,7 +155,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #5b6889;
+    color: #7a7a7a;
     padding: 0.75rem 0.75rem 0.25rem;
     font-weight: 600;
 }
@@ -166,7 +166,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 0.75rem 0.65rem 0.9rem;
-    color: #b7c0d8;
+    color: #c2c2c2;
     border-radius: 8px;
     margin-bottom: 2px;
     text-decoration: none;
@@ -200,7 +200,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--ink-line);
     font-size: 0.75rem;
-    color: #5b6889;
+    color: #7a7a7a;
 }
 
 /* ── Main content ────────────────────────────────────────── */
@@ -370,14 +370,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     height: 6px;
     border-radius: 50%;
     background: var(--copper);
-    box-shadow: 0 0 0 0 rgba(217, 119, 6, .6);
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, .6);
     animation: pulseDot 1.8s infinite;
 }
 
 @keyframes pulseDot {
-    0%   { box-shadow: 0 0 0 0 rgba(217, 119, 6, .5); }
-    70%  { box-shadow: 0 0 0 5px rgba(217, 119, 6, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+    0%   { box-shadow: 0 0 0 0 rgba(212, 175, 55, .5); }
+    70%  { box-shadow: 0 0 0 5px rgba(212, 175, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -728,7 +728,7 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
     border-radius: 12px;
     display: grid;
     place-items: center;
-    background: rgba(37, 99, 235, .08);
+    background: var(--neutral-soft);
 }
 
 .summary-card-value {
@@ -753,6 +753,41 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
     background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(248,250,252,.95));
 }
 
+/* ── Filtre de période du tableau de bord ───────────────────
+   Le <select> doit toujours rester assez large pour "Période
+   personnalisée" (l'option la plus longue), même quand le
+   conteneur flex se resserre : sans min-width, le texte déborde
+   de la bordure sur petits écrans / fenêtres étroites. ── */
+.filter-field {
+    width: 100%;
+}
+
+.filter-field-custom {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .filter-field-period {
+        width: auto;
+        min-width: 220px;
+        margin-left: 1.5rem;
+    }
+
+    .filter-field-custom {
+        width: auto;
+    }
+
+    .filter-field-date {
+        width: auto;
+        min-width: 170px;
+    }
+
+    /* Poussée jusqu'à la limite droite de la carte de filtre. */
+    .filter-period-label {
+        margin-left: auto;
+    }
+}
+
 #productsLoading {
     font-style: italic;
 }
@@ -769,7 +804,7 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("/images/pp.jpeg");
+    background-image: url("/images/auth2.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -865,15 +900,17 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
 }
 
 .auth-card .btn-primary {
-    background: rgba(37, 99, 235, 0.55);
+    background: rgba(212, 175, 55, 0.55);
     border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #1a1400;
+    font-weight: 600;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .auth-card .btn-primary:hover {
-    background: rgba(37, 99, 235, 0.7);
+    background: rgba(212, 175, 55, 0.7);
 }
 
 .auth-logo {

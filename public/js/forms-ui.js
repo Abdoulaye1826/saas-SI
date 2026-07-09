@@ -1,5 +1,5 @@
 /**
- * MBOUP GAMING SI — UI des formulaires (ajout/modification)
+ * GAPS APPLE SI — UI des formulaires (ajout/modification)
  *
  * Fournit, sans dépendance externe :
  *  - un système de toasts de confirmation,

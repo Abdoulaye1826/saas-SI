@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImeiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\SaleController;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Routes Web — MBOUP GAMING SI
+| Routes Web — GAPS APPLE SI
 |--------------------------------------------------------------------------
 */
 
@@ -35,6 +36,8 @@ Route::get('invoices/{invoice}/public-pdf', [InvoiceController::class, 'publicPd
     ->name('invoices.public-pdf')->middleware('signed');
 Route::get('sales/{sale}/exchange-voucher/public-pdf', [SaleController::class, 'publicExchangeVoucherPdf'])
     ->name('sales.exchange-voucher.public-pdf')->middleware('signed');
+Route::get('quotes/{quote}/public-pdf', [QuoteController::class, 'publicPdf'])
+    ->name('quotes.public-pdf')->middleware('signed');
 
 Route::middleware(['auth', 'active'])->group(function () {
 
@@ -96,6 +99,14 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         // ── Garanties ─────────────────────────────────────────
         Route::get('warranties', [WarrantyController::class, 'index'])->name('warranties.index');
+
+        // ── Devis ─────────────────────────────────────────────
+        Route::resource('quotes', QuoteController::class)->except(['show']);
+        Route::get('quotes/{quote}/print', [QuoteController::class, 'print'])->name('quotes.print');
+        Route::get('quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+        Route::get('quotes/{quote}/whatsapp-payload', [QuoteController::class, 'whatsAppPayload'])->name('quotes.whatsapp.payload');
+        Route::get('quotes/{quote}/whatsapp', [QuoteController::class, 'sendWhatsApp'])->name('quotes.whatsapp');
+        Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert'])->name('quotes.convert');
     });
 
     // ── Utilisateurs (Admin et Gestionnaire) ─────────────────

@@ -65,6 +65,12 @@ class MenuService
                 'roles' => ['admin', 'manager', 'cashier'],
             ],
             [
+                'label' => 'Devis',
+                'route' => 'quotes.index',
+                'icon' => 'bi-file-earmark-ruled',
+                'roles' => ['admin', 'manager', 'cashier'],
+            ],
+            [
                 'label' => 'Ventes',
                 'route' => 'sales.index',
                 'icon' => 'bi-cart-check',

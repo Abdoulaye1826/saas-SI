@@ -1,10 +1,10 @@
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
     <div class="brand-icon">
-      <img src="{{ asset('images/logo.jpeg') }}" alt="MBOUP GAMING">
+      <img src="{{ asset('images/profil.jpeg') }}" alt="GAPS APPLE">
     </div>
     <div>
-      <div class="brand-text">MBOUP GAMING</div>
+      <div class="brand-text">GAPS APPLE</div>
       <div class="brand-sub">SI Boutique</div>
     </div>
   </div>
@@ -21,6 +21,6 @@
   </nav>
 
   <div class="sidebar-footer">
-    &copy; {{ date('Y') }} MBOUP GAMING SI
+    &copy; {{ date('Y') }} GAPS APPLE SI
   </div>
 </aside>

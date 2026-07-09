@@ -328,6 +328,7 @@
       <option value="cash" @selected($currentPaymentMethod === 'cash')>Espèces</option>
     </select>
     @error('payment_method')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    <div class="form-text">Si aucun mode n'est choisi à la validation, la facture reste "Non payé" — vous pourrez ajouter un paiement plus tard depuis la fiche facture.</div>
   </div>
   @php $currentWarrantyDuration = old('warranty_duration', $sale?->warranty_duration?->value ?? '30d'); @endphp
   <div class="col-md-4 mb-3">
@@ -367,7 +368,7 @@
   }
   #exchangeProductDropdown .list-group-item:hover,
   #exchangeProductDropdown .list-group-item.active {
-    background-color: #0d6efd;
+    background-color: #8a6f1f;
     color: #fff;
   }
   #exchangeProductDropdown .list-group-item.active .text-muted {

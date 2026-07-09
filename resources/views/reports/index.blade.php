@@ -173,6 +173,43 @@
   @endforeach
 </div>
 
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-clipboard-data me-1"></i>Produits, échanges, garanties &amp; devis (toutes périodes)</h6>
+<div class="row g-3 mb-4">
+  @php
+    $p = $stats['period'];
+    $extraKpis = [
+      ['label' => 'Produits vendus', 'value' => $p['products_sold_qty'], 'raw' => $p['products_sold_qty'], 'suffix' => '', 'icon' => 'bi-box-seam', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Produits en rupture', 'value' => $stats['out_of_stock_count'], 'raw' => $stats['out_of_stock_count'], 'suffix' => '', 'icon' => 'bi-x-octagon', 'color' => 'bg-danger bg-opacity-10 text-danger'],
+      ['label' => 'Produits à faible stock', 'value' => $stats['low_stock_count'], 'raw' => $stats['low_stock_count'], 'suffix' => '', 'icon' => 'bi-exclamation-triangle', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Valeur du stock', 'value' => number_format($stats['stock_value'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['stock_value'], 'suffix' => 'FCFA', 'icon' => 'bi-boxes', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Panier moyen', 'value' => number_format($p['average_sale'], 0, ',', ' ') . ' FCFA', 'raw' => $p['average_sale'], 'suffix' => 'FCFA', 'icon' => 'bi-basket3', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Marge brute', 'value' => number_format($p['margin'], 0, ',', ' ') . ' FCFA', 'raw' => $p['margin'], 'suffix' => 'FCFA', 'icon' => 'bi-graph-up', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Nombre d\'échanges', 'value' => $p['exchanges_count'], 'raw' => $p['exchanges_count'], 'suffix' => '', 'icon' => 'bi-arrow-left-right', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Montant ajouté par les clients', 'value' => number_format($p['exchanges_added_amount'], 0, ',', ' ') . ' FCFA', 'raw' => $p['exchanges_added_amount'], 'suffix' => 'FCFA', 'icon' => 'bi-plus-circle', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Garanties actives', 'value' => $p['warranties_active_count'], 'raw' => $p['warranties_active_count'], 'suffix' => '', 'icon' => 'bi-shield-check', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Garanties expirées', 'value' => $p['warranties_expired_count'], 'raw' => $p['warranties_expired_count'], 'suffix' => '', 'icon' => 'bi-shield-x', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Devis en attente', 'value' => $stats['quotes_pending_count'], 'raw' => $stats['quotes_pending_count'], 'suffix' => '', 'icon' => 'bi-file-earmark-ruled', 'color' => 'bg-info bg-opacity-10 text-info'],
+      ['label' => 'Devis acceptés', 'value' => $stats['quotes_accepted_count'], 'raw' => $stats['quotes_accepted_count'], 'suffix' => '', 'icon' => 'bi-check-circle', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Taux de conversion devis', 'value' => $stats['quotes_conversion_rate'] . ' %', 'raw' => $stats['quotes_conversion_rate'], 'suffix' => '%', 'icon' => 'bi-arrow-right-circle', 'color' => 'bg-dark bg-opacity-10 text-dark'],
+    ];
+  @endphp
+  @foreach($extraKpis as $kpi)
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="kpi-card">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon {{ $kpi['color'] }}">
+            <i class="bi {{ $kpi['icon'] }}"></i>
+          </div>
+          <div>
+            <div class="kpi-label">{{ $kpi['label'] }}</div>
+            <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
 <div class="row g-3 mb-4">
   <div class="col-lg-4">
     <div class="chart-card h-100">
@@ -409,7 +446,7 @@
   // ---------- Statut des factures ----------
   const invoiceLabels = @json($invoiceStatusSummary['labels']);
   const invoiceData = @json($invoiceStatusSummary['values']);
-  const invoiceColors = ['#0d6efd','#198754','#ffc107','#dc3545'];
+  const invoiceColors = ['#d4af37','#198754','#ffc107','#dc3545'];
 
   new Chart(document.getElementById('invoiceStatusChart'), {
     type: 'doughnut',

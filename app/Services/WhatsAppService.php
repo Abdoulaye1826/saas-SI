@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\PhoneHelper;
 use App\Models\Invoice;
+use App\Models\Quote;
 use App\Models\Sale;
 
 /**
@@ -36,6 +37,41 @@ class WhatsAppService
             $lines[] = '';
             $lines[] = 'Garantie : ' . $sale->warranty_duration->label()
                 . ($sale->warranty_end_date ? ' — valable jusqu\'au ' . $sale->warranty_end_date->format('d/m/Y') : '');
+        }
+
+        $lines = array_merge($lines, [
+            '',
+            'Merci de votre confiance.',
+            '',
+            'Pour toute information complémentaire :',
+            $companyPhone,
+        ]);
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Construit le message d'envoi d'un devis (pas de section paiement/
+     * garantie contrairement à buildMessage() : un devis n'est ni payé ni
+     * couvert par une garantie, juste une proposition de prix).
+     */
+    public function buildQuoteMessage(Quote $quote, string $documentUrl): string
+    {
+        $customerName = $quote->customer?->full_name ?? 'cher client';
+        $companyPhone = config('company.phone');
+
+        $lines = [
+            "Bonjour {$customerName},",
+            '',
+            'Veuillez trouver votre devis.',
+            '',
+            "Référence : {$quote->quote_number}",
+            $documentUrl,
+        ];
+
+        if ($quote->valid_until !== null) {
+            $lines[] = '';
+            $lines[] = 'Devis valable jusqu\'au ' . $quote->valid_until->format('d/m/Y') . '.';
         }
 
         $lines = array_merge($lines, [

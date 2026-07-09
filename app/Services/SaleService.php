@@ -505,7 +505,7 @@ class SaleService
      * ventes et échanges pour garantir une suite ininterrompue, jamais
      * réinitialisée par jour.
      */
-    private function generateSaleNumber(SaleType $type): string
+    public function generateSaleNumber(SaleType $type): string
     {
         $prefix = $type === SaleType::Vente ? 'V' : 'E';
         $next = $this->nextContinuousNumber(Sale::query(), 'sale_number');
