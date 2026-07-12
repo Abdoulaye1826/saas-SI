@@ -19,20 +19,8 @@ class UserSeeder extends Seeder
             [
                 'role' => RoleSlug::Admin,
                 'name' => 'Système',
-                'email' => 'admin@gaming-store.local',
+                'email' => 'abdoulaye01012002@gmail.com',
                 'phone' => '+221 77 000 00 01',
-            ],
-            [
-                'role' => RoleSlug::Manager,
-                'name' => 'Moussa Diop',
-                'email' => 'gestionnaire@gaming-store.local',
-                'phone' => '+221 77 000 00 02',
-            ],
-            [
-                'role' => RoleSlug::Cashier,
-                'name' => 'Fatou Sall',
-                'email' => 'caissier@gaming-store.local',
-                'phone' => '+221 77 000 00 03',
             ],
         ];
 
@@ -44,7 +32,7 @@ class UserSeeder extends Seeder
                 [
                     'role_id' => $role->id,
                     'name' => $data['name'],
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make('azertyuiop'),
                     'phone' => $data['phone'],
                     'is_active' => true,
                     'email_verified_at' => now(),
