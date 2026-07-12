@@ -51,4 +51,15 @@
         background: rgba({{ $entreprise->accent_color_rgb }}, .18);
         color: {{ $entreprise->accent_color_light }};
     }
+
+    {{-- Lien de menu actif dans la sidebar : mis en évidence avec un
+         dégradé en couleur secondaire plutôt que le fond plat en couleur
+         primaire de dashboard.css. --}}
+    .sidebar-nav .nav-link.active {
+        background: linear-gradient(90deg, rgba({{ $entreprise->secondary_color_rgb }}, .9) 0%, rgba({{ $entreprise->secondary_color_rgb }}, .15) 100%);
+        border-left-color: {{ $entreprise->secondary_color ?: \App\Models\Entreprise::DEFAULT_SECONDARY_COLOR }};
+        color: #fff;
+    }
+
+    .sidebar-nav .nav-link.active i { color: #fff; }
 </style>
