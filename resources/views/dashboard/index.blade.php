@@ -19,10 +19,12 @@
   </div>
 </div>
 
-@include('dashboard.partials.filter-bar', ['period' => $period])
+<div class="dashboard-hero mb-2">
+  <div id="dashboardKpisWrapper">
+    @include('dashboard.partials.kpis', ['stats' => $stats, 'isCashier' => $isCashier, 'period' => $period])
+  </div>
 
-<div id="dashboardKpisWrapper" class="mb-2">
-  @include('dashboard.partials.kpis', ['stats' => $stats, 'isCashier' => $isCashier])
+  @include('dashboard.partials.filter-bar', ['period' => $period])
 </div>
 
 {{-- Actions rapides --}}
@@ -69,6 +71,77 @@
   ])
 </div>
 @endsection
+
+@push('styles')
+<style>
+    /* ── Filtre de période intégré au KPI principal ────────────────────
+       .hero-period-control est un frère de #dashboardKpisWrapper (jamais
+       remplacé par l'AJAX), positionné en absolu par-dessus le coin
+       supérieur droit de .kpi-card--hero grâce à .dashboard-hero en
+       position: relative. */
+    .dashboard-hero { position: relative; }
+
+    .hero-period-control {
+        position: absolute;
+        top: 1.5rem;
+        right: 2rem;
+        z-index: 3;
+    }
+
+    .hero-period-select {
+        background: rgba(255, 255, 255, .16);
+        border: 1px solid rgba(255, 255, 255, .35);
+        color: #fff;
+        border-radius: 8px;
+        padding: .4rem 1.75rem .4rem .75rem;
+        font-size: .8rem;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        cursor: pointer;
+    }
+
+    .hero-period-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+    }
+
+    /* Le menu déroulant natif reste blanc : le texte des options doit
+       rester lisible dessus, indépendamment de la couleur de marque. */
+    .hero-period-select option { color: #1a1a2e; }
+
+    .hero-period-popover {
+        position: absolute;
+        top: calc(100% + .5rem);
+        right: 0;
+        background: var(--card);
+        border-radius: 10px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
+        padding: 1rem;
+        width: 230px;
+        z-index: 4;
+    }
+
+    @media (max-width: 575.98px) {
+        .hero-period-control { position: static; margin-top: .75rem; display: block; }
+        .hero-period-select { width: 100%; }
+        .hero-period-popover { right: auto; left: 0; width: 100%; }
+    }
+
+    /* Libellé de la période affichée sous "Chiffre d'affaires" (ex:
+       "Ce mois-ci"), mis à jour par le même JS que le select puisqu'il
+       est recherché par id à chaque rafraîchissement AJAX. */
+    .kpi-hero__period {
+        display: block;
+        font-size: .7rem;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: normal;
+        color: rgba(255, 255, 255, .65);
+        margin-top: .2rem;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>

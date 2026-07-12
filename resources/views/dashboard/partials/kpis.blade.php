@@ -13,7 +13,10 @@
     <div class="kpi-card kpi-card--hero">
       <div class="kpi-hero__icon"><i class="bi bi-currency-exchange"></i></div>
       <div>
-        <div class="kpi-hero__label">Chiffre d'affaires</div>
+        <div class="kpi-hero__label">
+          Chiffre d'affaires
+          <span class="kpi-hero__period" id="periodLabel"><i class="bi bi-calendar3"></i> <span>{{ $period->label }}</span></span>
+        </div>
         <div class="kpi-hero__value">{{ number_format($p['revenue'], 0, ',', ' ') }} <span>FCFA</span></div>
       </div>
     </div>
