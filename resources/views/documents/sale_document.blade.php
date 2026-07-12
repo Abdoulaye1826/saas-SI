@@ -23,8 +23,8 @@
     }
 
     :root {
-      --accent: #1e3a5f;
-      --accent-dark: #14283f;
+      --accent: {{ $entreprise->accent_color ?: '#1e3a5f' }};
+      --accent-dark: {{ $entreprise->accent_color_dark }};
       --accent-light: #4c7ab5;
       --text: #1a1a2e;
       --text-muted: #5b6479;
@@ -115,7 +115,7 @@
        document. */
     .items-table { width: 100%; border-collapse: collapse; }
     .items-table thead th {
-      background: #14283f; color: #fff;
+      background: {{ $entreprise->accent_color_dark }}; color: #fff;
       padding: 10px 12px; font-size: 10px; font-weight: 700; letter-spacing: 1px;
       text-transform: uppercase; text-align: left;
     }
@@ -210,11 +210,11 @@
   <a href="{{ url()->previous() }}" class="btn btn-outline-secondary" style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;">
     🔙 Retour
   </a>
-  <button onclick="window.print()" style="background:#1e3a5f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
+  <button onclick="window.print()" style="background:{{ $entreprise->accent_color ?: '#1e3a5f' }};color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
     🖨️ Imprimer
   </button>
   @if(!empty($downloadUrl))
-    <a href="{{ $downloadUrl }}" style="background:#14283f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
+    <a href="{{ $downloadUrl }}" style="background:{{ $entreprise->accent_color_dark }};color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
       ⬇️ Télécharger PDF
     </a>
   @endif

@@ -14,6 +14,7 @@
          une version en cache après un déploiement. --}}
     <link href="{{ asset('css/dashboard.css') }}?v={{ @filemtime(public_path('css/dashboard.css')) ?: '1' }}" rel="stylesheet">
     <link href="{{ asset('css/forms-ui.css') }}?v={{ @filemtime(public_path('css/forms-ui.css')) ?: '1' }}" rel="stylesheet">
+    @include('layouts.partials.brand-theme')
 
     @stack('styles')
 </head>

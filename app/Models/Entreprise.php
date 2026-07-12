@@ -76,4 +76,56 @@ class Entreprise extends Model
             ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($default))
             : '';
     }
+
+    public const DEFAULT_ACCENT_COLOR = '#153BFF';
+
+    /**
+     * Variante assombrie de accent_color, pour les états hover/actifs des
+     * boutons et de la sidebar (même logique que --copper-dark dans
+     * dashboard.css, mais calculée à partir de la couleur du client).
+     */
+    public function getAccentColorDarkAttribute(): string
+    {
+        return self::shadeHex($this->accent_color ?: self::DEFAULT_ACCENT_COLOR, -0.22);
+    }
+
+    /**
+     * Variante tramée (faible opacité) de accent_color, pour les fonds
+     * discrets (badges, focus ring) — équivalent de --copper-soft.
+     */
+    public function getAccentColorSoftAttribute(): string
+    {
+        [$r, $g, $b] = self::hexToRgb($this->accent_color ?: self::DEFAULT_ACCENT_COLOR);
+
+        return "rgba($r, $g, $b, .14)";
+    }
+
+    /**
+     * "r, g, b" bruts, pour composer des rgba() à alpha variable dans les
+     * vues (ex: le bouton translucide de la page de connexion).
+     */
+    public function getAccentColorRgbAttribute(): string
+    {
+        return implode(', ', self::hexToRgb($this->accent_color ?: self::DEFAULT_ACCENT_COLOR));
+    }
+
+    private static function hexToRgb(string $hex): array
+    {
+        $hex = ltrim($hex, '#');
+
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+
+        return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
+    }
+
+    private static function shadeHex(string $hex, float $percent): string
+    {
+        [$r, $g, $b] = self::hexToRgb($hex);
+
+        $shade = fn (int $c) => (int) max(0, min(255, $c + ($percent < 0 ? $c * $percent : (255 - $c) * $percent)));
+
+        return sprintf('#%02x%02x%02x', $shade($r), $shade($g), $shade($b));
+    }
 }
