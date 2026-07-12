@@ -129,17 +129,6 @@
     }
     .amount-words span { font-weight: 700; color: var(--text); }
 
-    /* ── SIGNATURE / CACHET — espace réservé pour la validation manuscrite,
-       occupe l'espace en flux normal (pas de min-height forcé). */
-    .signature-section {
-      display: table; width: 100%; table-layout: fixed;
-      padding: 0 32px; margin-top: 270px;
-    }
-    .signature-col { display: table-cell; width: 50%; vertical-align: bottom; padding-right: 24px; }
-    .signature-col:last-child { padding-right: 0; padding-left: 24px; }
-    .signature-line { border-top: 1px solid var(--line); margin-bottom: 6px; height: 1px; }
-    .signature-col p { font-size: 11px; color: var(--text-muted); text-align: center; }
-
     /* Un seul bloc pour les conditions et le contact, comme sur le modèle
        de référence : un filet supérieur, pas de filet entre les deux. */
     .bottom-section { margin-top: 22px; padding: 16px 32px 14px; border-top: 1px solid var(--line); }
@@ -305,17 +294,6 @@
 
   <div class="amount-words">
     Devis établi pour la somme de : <span>{{ \App\Helpers\NumberHelper::toWords($total) ?? number_format($total, 0, ',', ' ') . ' Francs CFA' }}</span>
-  </div>
-
-  <div class="signature-section">
-    <div class="signature-col">
-      <div class="signature-line"></div>
-      <p>Date et signature du client</p>
-    </div>
-    <div class="signature-col">
-      <div class="signature-line"></div>
-      <p>Cachet et signature Mboup Gaming</p>
-    </div>
   </div>
 
   <div class="bottom-section">

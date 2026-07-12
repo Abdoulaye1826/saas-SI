@@ -290,7 +290,10 @@
 
 @php
   $existingPaymentsCount = $sale?->invoice?->payments?->count() ?? 0;
-  $currentPaymentMethod = old('payment_method', $sale?->invoice?->payments?->first()?->method?->value ?? '');
+  // Espèces par défaut à la création (mode de paiement le plus courant en
+  // boutique) ; en modification, on reflète toujours le paiement réellement
+  // enregistré (ou aucun s'il n'y en a pas).
+  $currentPaymentMethod = old('payment_method', $sale?->invoice?->payments?->first()?->method?->value ?? ($sale ? '' : 'cash'));
   $currentAmountGiven = old('amount_given', $existingPaymentsCount > 0 ? $sale?->invoice?->amount_paid : null);
 @endphp
 <div class="row" id="totalColumn" style="display: {{ old('sale_type', $sale?->sale_type->value ?? 'vente') === 'echange' ? 'none' : 'flex' }};">
@@ -344,10 +347,16 @@
   </div>
   <div class="col-md-4 mb-3">
     <label for="status" class="form-label">Statut <span class="text-danger">*</span></label>
+    @php
+      // Validée par défaut à la création (cas le plus courant en boutique :
+      // une vente saisie est déjà conclue) ; en modification, on reflète le
+      // statut réel de la vente.
+      $currentStatus = old('status', $sale?->status->value ?? ($sale ? 'draft' : 'validated'));
+    @endphp
     <select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>
-      <option value="draft" @selected(old('status', $sale?->status->value ?? 'draft') === 'draft')>Brouillon</option>
-      <option value="validated" @selected(old('status', $sale?->status->value ?? '') === 'validated')>Validée</option>
-      <option value="cancelled" @selected(old('status', $sale?->status->value ?? '') === 'cancelled')>Annulée</option>
+      <option value="draft" @selected($currentStatus === 'draft')>Brouillon</option>
+      <option value="validated" @selected($currentStatus === 'validated')>Validée</option>
+      <option value="cancelled" @selected($currentStatus === 'cancelled')>Annulée</option>
     </select>
     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>

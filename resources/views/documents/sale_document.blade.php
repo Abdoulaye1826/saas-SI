@@ -13,8 +13,8 @@
     /* ============================================================
        Gabarit calqué sur le modèle de référence (bandeau d'accent,
        bloc client sur fond gris clair, tableau à en-tête sombre,
-       zone signature/cachet, conditions en pied de page) — même
-       structure, en bleu marine (charte Mboup Gaming) plutôt que doré.
+       conditions en pied de page) — même structure, en bleu marine
+       (charte Mboup Gaming) plutôt que doré.
        ============================================================ */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -164,18 +164,6 @@
       font-size: 11.5px; color: var(--text-muted);
     }
     .amount-words span { font-weight: 700; color: var(--text); }
-
-    /* ── SIGNATURE / CACHET — espace réservé pour la validation manuscrite,
-       occupe l'espace en flux normal (pas de min-height forcé : DomPDF gère
-       mal cette technique et recrée une page vide). */
-    .signature-section {
-      display: table; width: 100%; table-layout: fixed;
-      padding: 0 32px; margin-top: 270px;
-    }
-    .signature-col { display: table-cell; width: 50%; vertical-align: bottom; padding-right: 24px; }
-    .signature-col:last-child { padding-right: 0; padding-left: 24px; }
-    .signature-line { border-top: 1px solid var(--line); margin-bottom: 6px; height: 1px; }
-    .signature-col p { font-size: 11px; color: var(--text-muted); text-align: center; }
 
     /* ── BLOC BAS DE PAGE — un seul encadré : garantie + conditions puis,
        juste en dessous (sans filet supplémentaire), la ligne de contact.
@@ -473,18 +461,6 @@
       Arrêtée la présente facture à la somme de : <span>{{ \App\Helpers\NumberHelper::toWords($total) ?? number_format($total, 0, ',', ' ') . ' Francs CFA' }}</span>
     </div>
   @endif
-
-  {{-- ── SIGNATURE / CACHET ── --}}
-  <div class="signature-section">
-    <div class="signature-col">
-      <div class="signature-line"></div>
-      <p>Date et signature du client</p>
-    </div>
-    <div class="signature-col">
-      <div class="signature-line"></div>
-      <p>Cachet et signature Mboup Gaming</p>
-    </div>
-  </div>
 
   {{-- ── CONDITIONS + CONTACT ── un seul bloc, comme sur le modèle de
        référence. La garantie est affichée sous chaque produit dans le
