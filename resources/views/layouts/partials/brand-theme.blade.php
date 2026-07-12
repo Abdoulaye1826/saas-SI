@@ -31,4 +31,15 @@
     .auth-card .btn-primary:hover {
         background: rgba({{ $entreprise->accent_color_rgb }}, 0.7);
     }
+
+    {{-- KPI principal (chiffre d'affaires) du tableau de bord : dégradé et
+         icône codés en dur dans dashboard.css, indépendants de --copper. --}}
+    .kpi-card--hero {
+        background: linear-gradient(135deg, var(--copper) 0%, var(--copper) 100%);
+    }
+
+    .kpi-card--hero .kpi-hero__icon {
+        background: rgba({{ $entreprise->accent_color_rgb }}, .18);
+        color: {{ $entreprise->accent_color_light }};
+    }
 </style>

@@ -109,6 +109,15 @@ class Entreprise extends Model
         return implode(', ', self::hexToRgb($this->accent_color ?: self::DEFAULT_ACCENT_COLOR));
     }
 
+    /**
+     * Variante éclaircie de accent_color, pour les icônes sur fond foncé
+     * (ex : le KPI principal du tableau de bord).
+     */
+    public function getAccentColorLightAttribute(): string
+    {
+        return self::shadeHex($this->accent_color ?: self::DEFAULT_ACCENT_COLOR, 0.45);
+    }
+
     private static function hexToRgb(string $hex): array
     {
         $hex = ltrim($hex, '#');
