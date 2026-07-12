@@ -19,7 +19,7 @@ class Entreprise extends Model
         'name', 'legal_name', 'logo_path', 'email', 'phone',
         'whatsapp_number', 'address_line1', 'address_line2',
         'city', 'country', 'ninea', 'rccm', 'website',
-        'currency', 'invoice_footer_note', 'accent_color',
+        'currency', 'invoice_footer_note', 'accent_color', 'secondary_color',
     ];
 
     public const CACHE_KEY = 'entreprise.settings';
@@ -116,6 +116,34 @@ class Entreprise extends Model
     public function getAccentColorLightAttribute(): string
     {
         return self::shadeHex($this->accent_color ?: self::DEFAULT_ACCENT_COLOR, 0.45);
+    }
+
+    public const DEFAULT_SECONDARY_COLOR = '#52504a';
+
+    /**
+     * Variante assombrie de secondary_color — voir accent_color_dark.
+     */
+    public function getSecondaryColorDarkAttribute(): string
+    {
+        return self::shadeHex($this->secondary_color ?: self::DEFAULT_SECONDARY_COLOR, -0.22);
+    }
+
+    /**
+     * Variante tramée de secondary_color — voir accent_color_soft.
+     */
+    public function getSecondaryColorSoftAttribute(): string
+    {
+        [$r, $g, $b] = self::hexToRgb($this->secondary_color ?: self::DEFAULT_SECONDARY_COLOR);
+
+        return "rgba($r, $g, $b, .14)";
+    }
+
+    /**
+     * "r, g, b" bruts de secondary_color — voir accent_color_rgb.
+     */
+    public function getSecondaryColorRgbAttribute(): string
+    {
+        return implode(', ', self::hexToRgb($this->secondary_color ?: self::DEFAULT_SECONDARY_COLOR));
     }
 
     private static function hexToRgb(string $hex): array

@@ -89,10 +89,18 @@
           <input type="text" class="form-control @error('rccm') is-invalid @enderror" id="rccm" name="rccm" value="{{ old('rccm', $entreprise->rccm) }}">
           @error('rccm')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
-        <div class="col-md-4 mb-3">
-          <label for="accent_color" class="form-label">Couleur de marque</label>
-          <input type="color" class="form-control form-control-color @error('accent_color') is-invalid @enderror" id="accent_color" name="accent_color" value="{{ old('accent_color', $entreprise->accent_color ?? '#1e3a5f') }}">
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="accent_color" class="form-label">Couleur primaire</label>
+          <input type="color" class="form-control form-control-color @error('accent_color') is-invalid @enderror" id="accent_color" name="accent_color" value="{{ old('accent_color', $entreprise->accent_color ?? \App\Models\Entreprise::DEFAULT_ACCENT_COLOR) }}">
           @error('accent_color')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="secondary_color" class="form-label">Couleur secondaire</label>
+          <input type="color" class="form-control form-control-color @error('secondary_color') is-invalid @enderror" id="secondary_color" name="secondary_color" value="{{ old('secondary_color', $entreprise->secondary_color ?? \App\Models\Entreprise::DEFAULT_SECONDARY_COLOR) }}">
+          @error('secondary_color')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
       </div>
 

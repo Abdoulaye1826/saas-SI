@@ -17,6 +17,13 @@
              bleu marine. --}}
         --ink-line: var(--copper-dark);
         --ink-soft: var(--copper-dark);
+
+        {{-- Couleur secondaire : réutilise le rôle sémantique "info"
+             (carte KPI, bouton rapide, badges), déjà séparé du reste des
+             couleurs de statut (succès/alerte/danger, qui doivent rester
+             vert/orange/rouge quoi qu'il arrive). --}}
+        --circuit-blue: {{ $entreprise->secondary_color ?: \App\Models\Entreprise::DEFAULT_SECONDARY_COLOR }};
+        --blue-soft: {{ $entreprise->secondary_color_soft }};
     }
 
     .sidebar { background: var(--copper); }
@@ -33,9 +40,11 @@
     }
 
     {{-- KPI principal (chiffre d'affaires) du tableau de bord : dégradé et
-         icône codés en dur dans dashboard.css, indépendants de --copper. --}}
+         icône codés en dur dans dashboard.css, indépendants de --copper.
+         Dégradé primaire → secondaire pour donner sa place aux deux
+         couleurs choisies. --}}
     .kpi-card--hero {
-        background: linear-gradient(135deg, var(--copper) 0%, var(--copper) 100%);
+        background: linear-gradient(135deg, var(--copper) 0%, {{ $entreprise->secondary_color ?: \App\Models\Entreprise::DEFAULT_SECONDARY_COLOR }} 100%);
     }
 
     .kpi-card--hero .kpi-hero__icon {
