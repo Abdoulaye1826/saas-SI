@@ -23,9 +23,9 @@
     }
 
     :root {
-      --accent: #1e3a5f;
-      --accent-dark: #14283f;
-      --accent-light: #4c7ab5;
+      --accent: #153BFF;
+      --accent-dark: #0A1C73;
+      --accent-light: #153BFF;
       --text: #1a1a2e;
       --text-muted: #5b6479;
       --line: #c7cad6;
@@ -115,11 +115,11 @@
        document. */
     .items-table { width: 100%; border-collapse: collapse; }
     .items-table thead th {
-      background: #14283f; color: #fff;
+      background: #0A1C73; color: #fff;
       padding: 10px 12px; font-size: 10px; font-weight: 700; letter-spacing: 1px;
       text-transform: uppercase; text-align: left;
     }
-    .items-table thead th.num    { text-align: center; background: #4c7ab5; }
+    .items-table thead th.num    { text-align: center; }
     .items-table thead th.amount { text-align: right; }
 
     .items-table tbody tr { border-bottom: 1px solid #e3e5ec; }
@@ -188,7 +188,7 @@
 
     @media screen {
       body { padding: 20px 0 40px; background: #f0f1f4; }
-      .page { box-shadow: 0 4px 30px rgba(30,58,95,0.10); border-radius: 4px; }
+      .page { box-shadow: 0 4px 30px rgba(21,59,255,0.10); border-radius: 4px; }
     }
   </style>
   @if(empty($isPdf))
@@ -223,11 +223,11 @@
   <a href="{{ url()->previous() }}" class="btn btn-outline-secondary" style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;">
     🔙 Retour
   </a>
-  <button onclick="window.print()" style="background:#1e3a5f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
+  <button onclick="window.print()" style="background:#153BFF;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
     🖨️ Imprimer
   </button>
   @if(!empty($downloadUrl))
-    <a href="{{ $downloadUrl }}" style="background:#14283f;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
+    <a href="{{ $downloadUrl }}" style="background:#0A1C73;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
       ⬇️ Télécharger PDF
     </a>
   @endif

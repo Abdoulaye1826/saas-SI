@@ -28,7 +28,7 @@
 .form-card__header {
     padding: 1.5rem 1.75rem 1.1rem;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, rgba(30, 58, 95, .06), transparent);
+    background: linear-gradient(180deg, rgba(21, 59, 255, .06), transparent);
 }
 
 .form-card__header h2 {
@@ -254,7 +254,7 @@
     background-color: var(--copper-dark);
     border-color: var(--copper-dark);
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(30, 58, 95, .28);
+    box-shadow: 0 6px 16px rgba(21, 59, 255, .28);
 }
 
 .page-content .btn-primary:active {

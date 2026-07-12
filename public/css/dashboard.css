@@ -10,13 +10,13 @@
     --navbar-height: 64px;
 
     /* ── Palette principale — Noir & Bleu Marine ─────────────── */
-    --ink: #14283f;
-    --ink-soft: #1c3654;
-    --ink-line: #2c4a6e;
+    --ink: #0A1C73;
+    --ink-soft: #0D2399;
+    --ink-line: #142FB0;
 
-    --copper: #4c7ab5;
-    --copper-dark: #4c7ab5;
-    --copper-soft: rgba(30, 58, 95, .14);
+    --copper: #153BFF;
+    --copper-dark: #0F2ACC;
+    --copper-soft: rgba(21, 59, 255, .14);
 
     --circuit-blue: #52504a;
     --blue-soft: rgba(82, 80, 74, .12);
@@ -84,7 +84,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
-    background: var(--ink);
+    background: #1432CA;
     color: #e2e8f0;
     z-index: 1040;
     display: flex;
@@ -360,7 +360,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     align-items: center;
     gap: 1.75rem;
     padding: 1.75rem 2rem;
-    background: linear-gradient(135deg, #14283f 0%, #1c3654 100%);
+    background: linear-gradient(135deg, #1432ca 0%, #1432ca 100%);
     border: none;
 }
 
@@ -504,8 +504,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
 
 @keyframes pulseDot {
     0%   { box-shadow: 0 0 0 0 rgba(64, 105, 160, 0.5); }
-    70%  { box-shadow: 0 0 0 5px rgba(30, 58, 95, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(30, 58, 95, 0); }
+    70%  { box-shadow: 0 0 0 5px rgba(21, 59, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(21, 59, 255, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1028,17 +1028,17 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
 }
 
 .auth-card .btn-primary {
-    background: rgba(30, 58, 95, 0.55);
+    background: rgba(21, 59, 255, 0.55);
     border: 1px solid rgba(255, 255, 255, 0.35);
     color: #ffffff;
     font-weight: 600;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(30, 58, 95, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(21, 59, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .auth-card .btn-primary:hover {
-    background: rgba(30, 58, 95, 0.7);
+    background: rgba(21, 59, 255, 0.7);
 }
 
 .auth-logo {

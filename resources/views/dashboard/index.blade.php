@@ -101,8 +101,8 @@
           datasets: [{
             label: 'CA (FCFA)',
             data: evoRevenue,
-            borderColor: '#14283f',
-            backgroundColor: 'rgba(20, 40, 63, 0.12)',
+            borderColor: '#0A1C73',
+            backgroundColor: 'rgba(10, 28, 115, 0.12)',
             fill: true,
             tension: 0.35,
             pointRadius: 2,
