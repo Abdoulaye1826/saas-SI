@@ -9,6 +9,14 @@
         --copper-soft: {{ $entreprise->accent_color_soft }};
         --sidebar-active: var(--copper);
         --primary: var(--copper);
+
+        {{-- La sidebar a sa propre palette "Encre" (--ink-line pour les
+             bordures/la scrollbar, --ink-soft pour le survol des liens),
+             distincte de --copper dans dashboard.css. Sans ce recalage, la
+             sidebar se retteinte mais sa scrollbar et ses bordures restent
+             bleu marine. --}}
+        --ink-line: var(--copper-dark);
+        --ink-soft: var(--copper-dark);
     }
 
     .sidebar { background: var(--copper); }
