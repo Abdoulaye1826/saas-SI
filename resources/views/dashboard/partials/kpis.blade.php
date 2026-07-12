@@ -8,8 +8,8 @@
   $p = $stats['period'];
 @endphp
 
-<div class="row g-3">
-  <div class="col-12 col-lg-6">
+<div class="row g-3 mb-3">
+  <div class="col-12">
     <div class="kpi-card kpi-card--hero">
       <div class="kpi-hero__icon"><i class="bi bi-currency-exchange"></i></div>
       <div>
@@ -18,7 +18,10 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-lg-3">
+</div>
+
+<div class="row g-3">
+  <div class="col-6">
     <div class="kpi-card">
       <div class="d-flex align-items-center gap-3">
         <div class="kpi-icon bg-info text-info">
@@ -31,7 +34,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-lg-3">
+  <div class="col-6">
     <div class="kpi-card">
       <div class="d-flex align-items-center gap-3">
         <div class="kpi-icon bg-success text-success">

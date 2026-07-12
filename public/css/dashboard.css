@@ -358,37 +358,39 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
 .kpi-card--hero {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-soft) 100%);
+    gap: 1.75rem;
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg, #14283f 0%, #1c3654 100%);
     border: none;
 }
 
 .kpi-card--hero::before { display: none; }
 
 .kpi-card--hero .kpi-hero__icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 14px;
+    width: 84px;
+    height: 84px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--copper-soft);
-    color: var(--copper);
-    font-size: 1.75rem;
+    background: rgba(76, 122, 181, .18);
+    color: #6f9bd6;
+    font-size: 2.4rem;
     flex-shrink: 0;
 }
 
 .kpi-card--hero .kpi-hero__label {
-    font-size: .8rem;
-    color: rgba(255, 255, 255, .65);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, .68);
     text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: .35rem;
+    letter-spacing: .1em;
+    font-weight: 600;
+    margin-bottom: .5rem;
 }
 
 .kpi-card--hero .kpi-hero__value {
     font-family: var(--font-mono);
-    font-size: 2.1rem;
+    font-size: 3.25rem;
     font-weight: 700;
     color: #fff;
     letter-spacing: -.02em;
@@ -396,10 +398,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
 }
 
 .kpi-card--hero .kpi-hero__value span {
-    font-size: 1rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, .7);
-    margin-left: .35rem;
+    color: rgba(255, 255, 255, .75);
+    margin-left: .5rem;
+}
+
+@media (max-width: 575.98px) {
+    .kpi-card--hero .kpi-hero__value { font-size: 2.1rem; }
+    .kpi-card--hero .kpi-hero__icon { width: 64px; height: 64px; font-size: 1.75rem; }
 }
 
 .kpi-card .kpi-label {
