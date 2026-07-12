@@ -27,7 +27,7 @@ class InvoiceDocumentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Votre {$this->documentLabel} {$this->documentNumber} — " . config('company.name'),
+            subject: "Votre {$this->documentLabel} {$this->documentNumber} — " . entreprise()->name,
         );
     }
 

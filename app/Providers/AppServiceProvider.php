@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\AppNotification;
+use App\Models\Entreprise;
 use App\Services\MenuService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
@@ -18,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        View::composer('*', function ($view) {
+            $view->with('entreprise', Entreprise::current());
+        });
 
         View::composer(['layouts.partials.sidebar', 'layouts.partials.navbar'], function ($view) {
             $user = auth()->user();

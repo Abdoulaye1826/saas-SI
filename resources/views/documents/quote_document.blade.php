@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mboup Gaming — Devis {{ $quote->quote_number }}</title>
+  <title>{{ $entreprise->name }} — Devis {{ $quote->quote_number }}</title>
   <style>
     /* Même gabarit que documents/sale_document.blade.php (voir ce fichier
        pour le détail des choix DomPDF : pas de var() sur <th>/<td>, pas de
@@ -161,17 +161,6 @@
 </head>
 <body>
 
-@php
-  // Voir sale_document.blade.php : DomPDF ne charge pas les images
-  // distantes par défaut, donc le logo restait vide dans le PDF envoyé/
-  // téléchargé. Le data URI base64 fonctionne à l'identique dans l'aperçu
-  // navigateur et dans le PDF généré par DomPDF.
-  $logoPath = public_path('images/logo.jpeg');
-  $logoSrc = is_file($logoPath)
-      ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
-      : asset('images/logo.jpeg');
-@endphp
-
 @if(empty($isPdf))
 <div class="no-print" style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
   <a href="{{ url()->previous() }}" class="btn btn-outline-secondary" style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:600;">
@@ -195,10 +184,10 @@
     <div class="brand">
       <div class="brand-row">
         <div class="brand-icon">
-          <img src="{{ $logoSrc }}" alt="Mboup Gaming">
+          <img src="{{ $entreprise->logo_base64 }}" alt="{{ $entreprise->name }}">
         </div>
         <div>
-          <div class="brand-name">Mboup Gaming</div>
+          <div class="brand-name">{{ $entreprise->name }}</div>
           <div class="brand-sub">Système d'information</div>
         </div>
       </div>
@@ -314,12 +303,12 @@
     </div>
 
     <div class="footer-line">
-      Tél : <strong>{{ config('company.phone') }}</strong>
-      &nbsp;&nbsp;·&nbsp;&nbsp;Email : {{ config('company.email') }}
-      &nbsp;&nbsp;·&nbsp;&nbsp;{{ config('company.address_line1') }}, {{ config('company.address_line2') }}
+      Tél : <strong>{{ $entreprise->phone }}</strong>
+      &nbsp;&nbsp;·&nbsp;&nbsp;Email : {{ $entreprise->email }}
+      &nbsp;&nbsp;·&nbsp;&nbsp;{{ $entreprise->address_line1 }}, {{ $entreprise->address_line2 }}
     </div>
     <div class="footer-legal">
-      Ninea : {{ config('company.ninea') }} — RC : {{ config('company.rc') }}
+      Ninea : {{ $entreprise->ninea }} — RC : {{ $entreprise->rccm }}
     </div>
   </div>
 

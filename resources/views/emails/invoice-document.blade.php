@@ -30,8 +30,8 @@
 
   <p>
     Pour toute information complémentaire :<br>
-    {{ config('company.phone') }}<br>
-    {{ config('company.email') }}
+    {{ $entreprise->phone }}<br>
+    {{ $entreprise->email }}
   </p>
 </body>
 </html>

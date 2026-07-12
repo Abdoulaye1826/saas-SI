@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EntrepriseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -117,6 +118,12 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ── Utilisateurs (Admin et Gestionnaire) ─────────────────
     Route::middleware('role:admin,manager')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+    });
+
+    // ── Informations de l'entreprise (Admin uniquement) ──────
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('entreprise', [EntrepriseController::class, 'edit'])->name('entreprise.edit');
+        Route::put('entreprise', [EntrepriseController::class, 'update'])->name('entreprise.update');
     });
 });
 

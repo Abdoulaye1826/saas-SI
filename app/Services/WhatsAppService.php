@@ -10,14 +10,14 @@ use App\Models\Sale;
 /**
  * Construit les messages et liens WhatsApp pour l'envoi des factures de vente
  * et des bons d'échange, en utilisant le numéro WhatsApp officiel de
- * l'entreprise (config('company.whatsapp_number')) comme référence de contact.
+ * l'entreprise (entreprise()->whatsapp_number) comme référence de contact.
  */
 class WhatsAppService
 {
     public function buildMessage(Sale $sale, string $documentLabel, string $documentNumber, string $documentUrl, ?Invoice $invoice = null): string
     {
         $customerName = $sale->customer?->full_name ?? 'cher client';
-        $companyPhone = config('company.phone');
+        $companyPhone = entreprise()->phone;
 
         $lines = [
             "Bonjour {$customerName},",
@@ -58,7 +58,7 @@ class WhatsAppService
     public function buildQuoteMessage(Quote $quote, string $documentUrl): string
     {
         $customerName = $quote->customer?->full_name ?? 'cher client';
-        $companyPhone = config('company.phone');
+        $companyPhone = entreprise()->phone;
 
         $lines = [
             "Bonjour {$customerName},",
