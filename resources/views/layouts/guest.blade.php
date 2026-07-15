@@ -11,22 +11,39 @@
     @include('layouts.partials.brand-theme')
 </head>
 <body>
-    <div class="auth-wrapper">
-        <div class="auth-card">
-            <div class="auth-logo">
-                <div class="logo-icon">
+    <div class="auth-shell">
+        <div class="auth-shell__brand">
+            <div class="auth-brand__content">
+                <div class="auth-brand__logo">
                     <img src="{{ $entreprise->logo_url ?? asset('images/logo.jpeg') }}" alt="{{ $entreprise->name }}">
                 </div>
-                <h4 class="fw-bold mb-0">{{ $entreprise->name }}</h4>
-                <small class="text-muted">Système d'information</small>
+                <div class="auth-brand__name">{{ $entreprise->name }}</div>
+                <p class="auth-brand__tagline">Gérez vos ventes, votre stock et votre facturation depuis un seul endroit.</p>
             </div>
-            @if (session('status'))
-                <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span>{{ session('status') }}</span>
+            <div class="auth-brand__footer">&copy; {{ date('Y') }} {{ $entreprise->name }}</div>
+        </div>
+
+        <div class="auth-shell__form">
+            <div class="auth-form-panel">
+                <div class="auth-mobile-brand">
+                    <div class="auth-mobile-brand__icon">
+                        <img src="{{ $entreprise->logo_url ?? asset('images/logo.jpeg') }}" alt="{{ $entreprise->name }}">
+                    </div>
+                    <div class="auth-mobile-brand__name">{{ $entreprise->name }}</div>
                 </div>
-            @endif
-            @yield('content')
+
+                <h4 class="fw-bold mb-1">@yield('title', 'Connexion')</h4>
+                <p class="text-muted small mb-4">Système d'information</p>
+
+                @if (session('status'))
+                    <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ session('status') }}</span>
+                    </div>
+                @endif
+
+                @yield('content')
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

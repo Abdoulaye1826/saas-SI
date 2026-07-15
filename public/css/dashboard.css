@@ -295,6 +295,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     border-radius: 12px;
     padding: 1.25rem;
     border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(16, 24, 43, .04);
     transition: box-shadow .2s, transform .2s;
     height: 100%;
     overflow: hidden;
@@ -362,9 +363,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     padding: 1.75rem 2rem;
     background: linear-gradient(135deg, #1432ca 0%, #1432ca 100%);
     border: none;
+    box-shadow: 0 16px 32px rgba(10, 28, 115, .18);
 }
 
 .kpi-card--hero::before { display: none; }
+
+/* Motif circuit en écho à la sidebar, pour ancrer le KPI principal
+   dans la même identité visuelle plutôt qu'un simple aplat de couleur. */
+.kpi-card--hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .06;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1'%3E%3Cpath d='M0 50H35M35 0V35M35 35H70M70 35V0M70 65H100M35 35V100'/%3E%3C/g%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='35' cy='35' r='2'/%3E%3Ccircle cx='70' cy='35' r='2'/%3E%3Ccircle cx='70' cy='65' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 140px;
+}
 
 .kpi-card--hero .kpi-hero__icon {
     width: 84px;
@@ -425,6 +439,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     border-radius: 12px;
     background: var(--card);
     border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(16, 24, 43, .04);
     color: var(--text);
     font-weight: 600;
     font-size: .9rem;
@@ -517,6 +532,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     background: var(--card);
     border-radius: 12px;
     border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(16, 24, 43, .04);
     padding: 1.25rem;
     height: 100%;
 }
@@ -538,6 +554,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     background: var(--card);
     border-radius: 12px;
     border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(16, 24, 43, .04);
     overflow: hidden;
 }
 
@@ -926,151 +943,181 @@ th[data-sort][aria-sort="descending"]::after { content: "↓"; color: var(--copp
     }
 }
 
-/* ── Auth layout ─────────────────────────────────────────── */
-.auth-wrapper {
+/* ── Auth layout — panneau de marque + formulaire ────────────
+   Panneau de gauche dans la couleur de marque du client (dégradé +
+   motif circuit, cohérent avec la sidebar), formulaire sur fond clair
+   à droite. Se réduit à un simple bandeau de marque au-dessus du
+   formulaire sur mobile/tablette (le panneau de marque est purement
+   décoratif, pas besoin de le conserver sur petit écran). ── */
+.auth-shell {
     min-height: 100vh;
+    display: flex;
+}
+
+.auth-shell__brand {
+    display: none;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 44%;
+    min-width: 380px;
+    max-width: 560px;
+    padding: 3rem;
+    background: linear-gradient(160deg, var(--copper) 0%, var(--copper-dark) 100%);
+    color: #fff;
+    overflow: hidden;
+}
+
+.auth-shell__brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .08;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1'%3E%3Cpath d='M0 50H35M35 0V35M35 35H70M70 35V0M70 65H100M35 35V100'/%3E%3C/g%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='35' cy='35' r='2'/%3E%3Ccircle cx='70' cy='35' r='2'/%3E%3Ccircle cx='70' cy='65' r='2'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+@media (min-width: 992px) {
+    .auth-shell__brand { display: flex; }
+}
+
+.auth-brand__content {
+    position: relative;
+    z-index: 1;
+    margin: auto 0;
+}
+
+.auth-brand__logo {
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, .14);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("/images/pp.jpeg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 1rem;
-    position: relative;
+    margin-bottom: 2.25rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .25);
 }
 
-.auth-wrapper::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+.auth-brand__logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.auth-brand__name {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    margin-bottom: .6rem;
 }
 
-.auth-card {
+.auth-brand__tagline {
+    font-size: .95rem;
+    color: rgba(255, 255, 255, .7);
+    max-width: 300px;
+    line-height: 1.55;
+}
+
+.auth-brand__footer {
     position: relative;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 28px;
-    padding: 2.5rem;
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .5);
+}
+
+.auth-shell__form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    background: var(--surface);
+}
+
+.auth-form-panel {
     width: 100%;
-    max-width: 420px;
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    max-width: 380px;
 }
 
-.auth-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0.2) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-}
-
-.auth-card::after {
-    content: "";
-    position: absolute;
-    top: -30%;
-    left: -20%;
-    width: 60%;
-    height: 60%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    filter: blur(2px);
-}
-
-.auth-card .form-label,
-.auth-card h4 {
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-}
-
-.auth-card small.text-muted {
-    color: rgba(255, 255, 255, 0.75) !important;
-}
-
-.auth-card .input-group-text,
-.auth-card .form-control {
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #fff;
-}
-
-.auth-card .input-group-text {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.auth-card .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.auth-card .form-control:focus {
-    background: rgba(255, 255, 255, 0.4);
-    border-color: rgba(255, 255, 255, 0.55);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-.auth-card .form-check-label,
-.auth-card a.small {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.auth-card .btn-primary {
-    background: rgba(21, 59, 255, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #ffffff;
-    font-weight: 600;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(21, 59, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.auth-card .btn-primary:hover {
-    background: rgba(21, 59, 255, 0.7);
-}
-
-.auth-logo {
+.auth-form-panel--center {
     text-align: center;
+}
+
+/* Bandeau de marque compact affiché uniquement quand le panneau
+   décoratif est masqué (mobile/tablette). */
+.auth-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
     margin-bottom: 2rem;
 }
 
-.auth-logo .logo-icon {
-    width: 120px;
-    height: 120px;
-    background: transparent;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+@media (min-width: 992px) {
+    .auth-mobile-brand { display: none; }
+}
+
+.auth-mobile-brand__icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    background: var(--copper-soft);
+    flex-shrink: 0;
 }
 
-.auth-logo .logo-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+.auth-mobile-brand__icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.auth-mobile-brand__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text);
 }
 
+.auth-form-panel h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: .35rem;
+}
+
+.auth-form-panel .form-label { color: var(--text); font-weight: 500; }
+.auth-form-panel small.text-muted { color: var(--text-muted) !important; }
+
+.auth-form-panel .input-group-text,
+.auth-form-panel .form-control {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.auth-form-panel .form-control::placeholder { color: var(--text-faint); }
+
+.auth-form-panel .form-control:focus {
+    border-color: var(--copper);
+    box-shadow: 0 0 0 3px var(--copper-soft);
+}
+
+.auth-form-panel .btn-primary {
+    background: var(--copper);
+    border-color: var(--copper);
+    font-weight: 600;
+}
+
+.auth-form-panel .btn-primary:hover {
+    background: var(--copper-dark);
+    border-color: var(--copper-dark);
+}
+
+/* ── Marque de l'entreprise (icône logo) — squircle plutôt que
+   cercle : plus proche des standards d'apps modernes, et plus
+   indulgent avec des logos rectangulaires (moins de recadrage
+   agressif sur les bords qu'un cercle strict). ── */
 .sidebar-brand .brand-icon {
     width: 48px;
     height: 48px;
     background: transparent;
-    border-radius: 50%;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;

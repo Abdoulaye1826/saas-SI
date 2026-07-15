@@ -10,22 +10,37 @@
     @include('layouts.partials.brand-theme')
 </head>
 <body>
-    <div class="auth-wrapper">
-        <div class="auth-card text-center">
-            <div class="auth-logo">
-                <div class="logo-icon">
+    <div class="auth-shell">
+        <div class="auth-shell__brand">
+            <div class="auth-brand__content">
+                <div class="auth-brand__logo">
                     <img src="{{ $entreprise->logo_url ?? asset('images/logo.jpeg') }}" alt="{{ $entreprise->name }}">
                 </div>
-                <h4 class="fw-bold mb-0">{{ $entreprise->name }}</h4>
-                <small class="text-muted">Système d'information</small>
+                <div class="auth-brand__name">{{ $entreprise->name }}</div>
+                <p class="auth-brand__tagline">Gérez vos ventes, votre stock et votre facturation depuis un seul endroit.</p>
             </div>
-            <div class="alert alert-warning d-flex align-items-center gap-2 text-start" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>Votre session a expiré. Veuillez vous reconnecter.</span>
+            <div class="auth-brand__footer">&copy; {{ date('Y') }} {{ $entreprise->name }}</div>
+        </div>
+
+        <div class="auth-shell__form">
+            <div class="auth-form-panel auth-form-panel--center">
+                <div class="auth-mobile-brand" style="justify-content:center;">
+                    <div class="auth-mobile-brand__icon">
+                        <img src="{{ $entreprise->logo_url ?? asset('images/logo.jpeg') }}" alt="{{ $entreprise->name }}">
+                    </div>
+                    <div class="auth-mobile-brand__name">{{ $entreprise->name }}</div>
+                </div>
+
+                <h4 class="fw-bold mb-4">Session expirée</h4>
+
+                <div class="alert alert-warning d-flex align-items-center gap-2 text-start" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>Votre session a expiré. Veuillez vous reconnecter.</span>
+                </div>
+                <a href="{{ route('login') }}" class="btn btn-primary w-100 py-2 fw-medium">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Retour à la connexion
+                </a>
             </div>
-            <a href="{{ route('login') }}" class="btn btn-primary w-100 py-2 fw-medium">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Retour à la connexion
-            </a>
         </div>
     </div>
     <script>

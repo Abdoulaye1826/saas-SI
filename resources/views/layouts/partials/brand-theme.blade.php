@@ -28,17 +28,6 @@
 
     .sidebar { background: var(--copper); }
 
-    {{-- Bouton translucide de la page de connexion (.auth-card), qui utilise
-         des rgba() codés en dur plutôt que var(--copper) dans dashboard.css. --}}
-    .auth-card .btn-primary {
-        background: rgba({{ $entreprise->accent_color_rgb }}, 0.55);
-        box-shadow: 0 8px 24px rgba({{ $entreprise->accent_color_rgb }}, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    }
-
-    .auth-card .btn-primary:hover {
-        background: rgba({{ $entreprise->accent_color_rgb }}, 0.7);
-    }
-
     {{-- KPI principal (chiffre d'affaires) du tableau de bord : dégradé et
          icône codés en dur dans dashboard.css, indépendants de --copper.
          Dégradé primaire → secondaire pour donner sa place aux deux
