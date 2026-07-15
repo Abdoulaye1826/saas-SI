@@ -61,7 +61,7 @@
 
     .brand-icon {
       width: 70px; height: 70px;
-      border-radius: 50%;
+      border-radius: 18px;
       display: flex; align-items: center; justify-content: center;
       border: 2px solid var(--accent);
       overflow: hidden;

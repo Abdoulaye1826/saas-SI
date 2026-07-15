@@ -17,7 +17,7 @@
         <div class="col-md-12 mb-3">
           <label class="form-label">Logo actuel</label><br>
           @if($entreprise->logo_url)
-            <img src="{{ $entreprise->logo_url }}" alt="{{ $entreprise->name }}" style="height:80px;width:80px;object-fit:cover;border-radius:50%;border:1px solid #dee2e6;">
+            <img src="{{ $entreprise->logo_url }}" alt="{{ $entreprise->name }}" style="height:80px;width:80px;object-fit:cover;border-radius:20px;border:1px solid #dee2e6;">
           @else
             <p class="text-muted mb-0">Aucun logo</p>
           @endif
