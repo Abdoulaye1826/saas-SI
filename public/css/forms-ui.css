@@ -28,7 +28,7 @@
 .form-card__header {
     padding: 1.5rem 1.75rem 1.1rem;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, rgba(21, 59, 255, .06), transparent);
+    background: linear-gradient(180deg, var(--copper-soft), transparent);
 }
 
 .form-card__header h2 {
