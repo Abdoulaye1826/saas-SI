@@ -377,7 +377,7 @@
   }
   #exchangeProductDropdown .list-group-item:hover,
   #exchangeProductDropdown .list-group-item.active {
-    background-color: #153BFF;
+    background-color: var(--copper);
     color: #fff;
   }
   #exchangeProductDropdown .list-group-item.active .text-muted {

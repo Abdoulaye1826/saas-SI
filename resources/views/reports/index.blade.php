@@ -578,7 +578,7 @@
       labels: typeLabels,
       datasets: [{
         data: typeData.some(v => v > 0) ? typeData : [1, 0],
-        backgroundColor: ['#153BFF', '#fd7e14'],
+        backgroundColor: [@json($entreprise->accent_color ?: '#153BFF'), '#fd7e14'],
         borderWidth: 2,
         borderColor: '#fff',
         hoverOffset: 8,
@@ -597,7 +597,7 @@
   // ---------- Statut des factures ----------
   const invoiceLabels = @json($invoiceStatusSummary['labels']);
   const invoiceData = @json($invoiceStatusSummary['values']);
-  const invoiceColors = ['#153BFF','#198754','#ffc107','#dc3545'];
+  const invoiceColors = [@json($entreprise->accent_color ?: '#153BFF'), '#198754', '#ffc107', '#dc3545'];
 
   new Chart(document.getElementById('invoiceStatusChart'), {
     type: 'doughnut',

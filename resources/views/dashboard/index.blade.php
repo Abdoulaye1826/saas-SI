@@ -174,8 +174,8 @@
           datasets: [{
             label: 'CA (FCFA)',
             data: evoRevenue,
-            borderColor: '#0A1C73',
-            backgroundColor: 'rgba(10, 28, 115, 0.12)',
+            borderColor: @json($entreprise->accent_color ?: '#0A1C73'),
+            backgroundColor: @json($entreprise->accent_color_soft),
             fill: true,
             tension: 0.35,
             pointRadius: 2,
