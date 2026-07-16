@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
@@ -135,10 +136,27 @@ class SaleSeeder extends Seeder
             'updated_at' => $date,
         ]);
 
+        $paymentIds = DB::table('payments')->where('invoice_id', $invoice->id)->pluck('id');
+
         DB::table('payments')->where('invoice_id', $invoice->id)->update([
             'paid_at' => $date->toDateString(),
             'created_at' => $date,
             'updated_at' => $date,
         ]);
+
+        // L'écriture de trésorerie auto-générée par PaymentService::store()
+        // (voir recordTreasuryEntry()) est créée au moment du seed, pas à la
+        // date historique simulée : sans ce recalage, tout le grand livre
+        // se retrouverait daté d'aujourd'hui au lieu de suivre la vente.
+        if ($paymentIds->isNotEmpty()) {
+            DB::table('financial_transactions')
+                ->where('related_type', Payment::class)
+                ->whereIn('related_id', $paymentIds)
+                ->update([
+                    'date' => $date->toDateString(),
+                    'created_at' => $date,
+                    'updated_at' => $date,
+                ]);
+        }
     }
 }

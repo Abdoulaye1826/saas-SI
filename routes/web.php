@@ -4,6 +4,15 @@ use App\Http\Controllers\Admin\EntrepriseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Finance\CashJournalController;
+use App\Http\Controllers\Finance\ClientAdvanceController;
+use App\Http\Controllers\Finance\FinancialAccountController;
+use App\Http\Controllers\Finance\FinancialDashboardController;
+use App\Http\Controllers\Finance\FinancialTransactionController;
+use App\Http\Controllers\Finance\FinanceAuditController;
+use App\Http\Controllers\Finance\FinanceReportController;
+use App\Http\Controllers\Finance\InternalTransferController;
+use App\Http\Controllers\Finance\SupplierAdvanceController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\NotificationController;
@@ -124,6 +133,32 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ── Utilisateurs (Admin et Gestionnaire) ─────────────────
     Route::middleware('role:admin,manager')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+    });
+
+    // ── Trésorerie / Finance ──────────────────────────────────
+    Route::middleware('role:admin,manager,cashier')->prefix('finance')->name('finance.')->group(function () {
+        Route::get('/', [FinancialDashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('transactions', FinancialTransactionController::class)->except(['show']);
+
+        Route::get('journal', [CashJournalController::class, 'index'])->name('journal.index');
+        Route::get('journal/pdf', [CashJournalController::class, 'pdf'])->name('journal.pdf');
+
+        Route::resource('client-advances', ClientAdvanceController::class)->only(['index', 'create', 'store']);
+        Route::post('client-advances/{clientAdvance}/apply', [ClientAdvanceController::class, 'apply'])->name('client-advances.apply');
+
+        Route::resource('supplier-advances', SupplierAdvanceController::class)->only(['index', 'create', 'store']);
+
+        Route::get('reports', [FinanceReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/{type}/pdf', [FinanceReportController::class, 'pdf'])->name('reports.pdf');
+        Route::get('reports/{type}/export', [FinanceReportController::class, 'export'])->name('reports.export');
+
+        // ── Comptes, virements, audit (Admin, Gestionnaire uniquement) ──
+        Route::middleware('role:admin,manager')->group(function () {
+            Route::resource('accounts', FinancialAccountController::class)->except(['show']);
+            Route::resource('transfers', InternalTransferController::class)->only(['index', 'create', 'store']);
+            Route::get('audit', [FinanceAuditController::class, 'index'])->name('audit.index');
+        });
     });
 
     // ── Informations de l'entreprise (Admin uniquement) ──────

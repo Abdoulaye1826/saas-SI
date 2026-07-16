@@ -16,6 +16,7 @@ class Payment extends Model
 
     protected $fillable = [
         'invoice_id',
+        'client_advance_id',
         'amount',
         'method',
         'paid_at',
@@ -40,5 +41,10 @@ class Payment extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public function clientAdvance(): BelongsTo
+    {
+        return $this->belongsTo(ClientAdvance::class);
     }
 }

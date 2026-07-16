@@ -21,6 +21,21 @@ class MenuService
 
         return collect($this->items())
             ->filter(fn (array $item) => in_array($userSlug, $item['roles'], true))
+            ->map(function (array $item) use ($userSlug) {
+                if (! isset($item['children'])) {
+                    return $item;
+                }
+
+                $item['children'] = collect($item['children'])
+                    ->filter(fn (array $child) => in_array($userSlug, $child['roles'], true))
+                    ->values()
+                    ->all();
+
+                return $item;
+            })
+            // Un groupe dont tous les enfants ont été filtrés (rôle sans accès
+            // à aucun d'eux) ne doit pas apparaître comme une section vide.
+            ->filter(fn (array $item) => ! isset($item['children']) || count($item['children']) > 0)
             ->values()
             ->all();
     }
@@ -99,6 +114,23 @@ class MenuService
                 'route' => 'reports.index',
                 'icon' => 'bi-graph-up',
                 'roles' => ['admin', 'manager', 'cashier'],
+            ],
+            [
+                'label' => 'Finance',
+                'icon' => 'bi-cash-stack',
+                'roles' => ['admin', 'manager', 'cashier'],
+                'children' => [
+                    ['label' => 'Tableau de bord financier', 'route' => 'finance.dashboard', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => "Entrées d'argent", 'route' => 'finance.transactions.index', 'params' => ['type' => 'in'], 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => "Sorties d'argent", 'route' => 'finance.transactions.index', 'params' => ['type' => 'out'], 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Comptes financiers', 'route' => 'finance.accounts.index', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Virements internes', 'route' => 'finance.transfers.index', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Journal de caisse', 'route' => 'finance.journal.index', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Avances clients', 'route' => 'finance.client-advances.index', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Avances fournisseurs', 'route' => 'finance.supplier-advances.index', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Rapports financiers', 'route' => 'finance.reports.index', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Audit financier', 'route' => 'finance.audit.index', 'roles' => ['admin', 'manager']],
+                ],
             ],
             [
                 'label' => 'Utilisateurs',
