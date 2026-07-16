@@ -17,15 +17,8 @@ class ActivityLog extends Model
         'model_type',
         'model_id',
         'description',
-        'old_values',
-        'new_values',
         'ip_address',
         'user_agent',
-    ];
-
-    protected $casts = [
-        'old_values' => 'array',
-        'new_values' => 'array',
     ];
 
     // ─── Relations ───────────────────────────────────────────

@@ -196,36 +196,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     text-align: center;
 }
 
-/* ── Groupe de menu repliable (ex: "Finance") ──────────────── */
-.nav-link--group { cursor: pointer; }
-
-.nav-link__chevron {
-    margin-left: auto;
-    font-size: .75rem !important;
-    width: auto !important;
-    transition: transform .2s;
-}
-
-.nav-link--group[aria-expanded="true"] .nav-link__chevron {
-    transform: rotate(180deg);
-}
-
-.nav-subgroup {
-    padding-left: 1.9rem;
-}
-
-.sidebar-nav .nav-link--sub {
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-    font-size: .85rem;
-    color: #9a9a9a;
-}
-
-.sidebar-nav .nav-link--sub.active {
-    color: #fff;
-    font-weight: 500;
-}
-
 .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--ink-line);
