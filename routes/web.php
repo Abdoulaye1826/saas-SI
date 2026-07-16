@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -27,6 +28,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', fn () => redirect()->route('login'));
+
+// Manifeste web (favicon, icône "Ajouter à l'écran d'accueil") : accessible
+// sans authentification, un navigateur peut le récupérer depuis la page de
+// connexion elle-même.
+Route::get('/manifest.webmanifest', [ManifestController::class, 'index'])->name('manifest');
 
 // ── Documents partagés publiquement (liens signés, sans authentification) ──
 // Utilisés par le bouton WhatsApp pour que le client ouvre directement le

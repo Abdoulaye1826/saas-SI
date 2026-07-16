@@ -56,6 +56,19 @@ class Entreprise extends Model
     }
 
     /**
+     * Type MIME du logo uploadé, pour le manifeste web (favicon, icône
+     * "Ajouter à l'écran d'accueil") qui a besoin de le déclarer.
+     */
+    public function getLogoMimeAttribute(): ?string
+    {
+        if (! $this->logo_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->mimeType($this->logo_path) ?: null;
+    }
+
+    /**
      * DomPDF ne charge pas les images distantes par défaut
      * (dompdf.enable_remote = false) : les documents PDF ont besoin du
      * logo encodé en base64 plutôt que d'une URL.
