@@ -10,15 +10,23 @@ use Illuminate\Support\Facades\DB;
 /**
  * Traçabilité réelle des paiements de factures (Wave, Orange Money, Espèces).
  * Le statut de la facture est recalculé automatiquement à chaque
- * enregistrement ou suppression de paiement.
+ * enregistrement ou suppression de paiement. Chaque paiement génère aussi
+ * une entrée de trésorerie automatique (voir TreasuryService) — vente
+ * initiale ou paiement complémentaire ultérieur.
  */
 class PaymentService
 {
-    public function __construct(private readonly ActivityLogService $activityLog)
-    {
+    public function __construct(
+        private readonly ActivityLogService $activityLog,
+        private readonly TreasuryService $treasuryService
+    ) {
     }
 
-    public function store(Invoice $invoice, array $data, int $userId): Payment
+    /**
+     * @param string|null $category Catégorie de trésorerie explicite ('vente'/'echange'
+     *   passée par SaleService) ; si null, déduite (paiement_facture / paiement_complementaire).
+     */
+    public function store(Invoice $invoice, array $data, int $userId, ?string $category = null): Payment
     {
         if ($invoice->status === InvoiceStatus::Cancelled) {
             throw new \RuntimeException('Impossible d\'enregistrer un paiement sur une facture annulée.');
@@ -37,7 +45,9 @@ class PaymentService
             );
         }
 
-        return DB::transaction(function () use ($invoice, $data, $userId, $amount) {
+        return DB::transaction(function () use ($invoice, $data, $userId, $amount, $category) {
+            $isFirstPayment = $invoice->payments()->count() === 0;
+
             $payment = Payment::create([
                 'invoice_id' => $invoice->id,
                 'amount' => $amount,
@@ -56,6 +66,15 @@ class PaymentService
                 "Paiement enregistré : " . number_format($amount, 0, ',', ' ') . " FCFA ({$payment->method->label()}) sur facture {$invoice->invoice_number}"
             );
 
+            $this->treasuryService->createAutoEntry([
+                'category' => $category ?? ($isFirstPayment ? 'paiement_facture' : 'paiement_complementaire'),
+                'amount' => $amount,
+                'date' => $data['paid_at'],
+                'reference' => $invoice->invoice_number,
+                'description' => "Paiement facture {$invoice->invoice_number}",
+                'payment_id' => $payment->id,
+            ], $userId);
+
             return $payment;
         });
     }
@@ -67,6 +86,7 @@ class PaymentService
         $method = $payment->method->label();
 
         DB::transaction(function () use ($payment, $invoice) {
+            $this->treasuryService->reverseAutoEntry($payment);
             $payment->delete();
             $this->syncInvoiceStatus($invoice);
         });

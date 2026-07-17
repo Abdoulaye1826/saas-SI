@@ -21,6 +21,19 @@ class MenuService
 
         return collect($this->items())
             ->filter(fn (array $item) => in_array($userSlug, $item['roles'], true))
+            ->map(function (array $item) use ($userSlug) {
+                if (! isset($item['children'])) {
+                    return $item;
+                }
+
+                $item['children'] = collect($item['children'])
+                    ->filter(fn (array $child) => in_array($userSlug, $child['roles'], true))
+                    ->values()
+                    ->all();
+
+                return $item;
+            })
+            ->filter(fn (array $item) => ! isset($item['children']) || count($item['children']) > 0)
             ->values()
             ->all();
     }
@@ -99,6 +112,17 @@ class MenuService
                 'route' => 'reports.index',
                 'icon' => 'bi-graph-up',
                 'roles' => ['admin', 'manager', 'cashier'],
+            ],
+            [
+                'label' => 'Trésorerie',
+                'icon' => 'bi-cash-coin',
+                'roles' => ['admin', 'manager', 'cashier'],
+                'children' => [
+                    ['label' => 'Tableau de bord', 'route' => 'treasury.dashboard', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Dépenses', 'route' => 'treasury.expenses.create', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Historique', 'route' => 'treasury.history.index', 'roles' => ['admin', 'manager', 'cashier']],
+                    ['label' => 'Rapports', 'route' => 'treasury.reports.index', 'roles' => ['admin', 'manager', 'cashier']],
+                ],
             ],
             [
                 'label' => 'Utilisateurs',

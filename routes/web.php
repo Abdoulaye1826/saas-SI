@@ -17,6 +17,10 @@ use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TreasuryDashboardController;
+use App\Http\Controllers\TreasuryExpenseController;
+use App\Http\Controllers\TreasuryHistoryController;
+use App\Http\Controllers\TreasuryReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarrantyController;
 use Illuminate\Support\Facades\Route;
@@ -124,6 +128,16 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ── Utilisateurs (Admin et Gestionnaire) ─────────────────
     Route::middleware('role:admin,manager')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+    });
+
+    // ── Trésorerie (Admin, Gestionnaire, Caissier) ────────────
+    Route::middleware('role:admin,manager,cashier')->prefix('tresorerie')->name('treasury.')->group(function () {
+        Route::get('/', [TreasuryDashboardController::class, 'index'])->name('dashboard');
+        Route::get('depenses/nouvelle', [TreasuryExpenseController::class, 'create'])->name('expenses.create');
+        Route::post('depenses', [TreasuryExpenseController::class, 'store'])->name('expenses.store');
+        Route::get('historique', [TreasuryHistoryController::class, 'index'])->name('history.index');
+        Route::get('rapports', [TreasuryReportController::class, 'index'])->name('reports.index');
+        Route::get('rapports/pdf', [TreasuryReportController::class, 'pdf'])->name('reports.pdf');
     });
 
     // ── Informations de l'entreprise (Admin uniquement) ──────

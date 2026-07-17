@@ -27,12 +27,12 @@
   <div class="col-6">
     <div class="kpi-card">
       <div class="d-flex align-items-center gap-3">
-        <div class="kpi-icon bg-info text-info">
-          <i class="bi bi-cart-check"></i>
+        <div class="kpi-icon bg-danger text-danger">
+          <i class="bi bi-arrow-up-circle"></i>
         </div>
         <div>
-          <div class="kpi-label">Nombre de ventes</div>
-          <div class="kpi-value">{{ $p['sales_count'] }}</div>
+          <div class="kpi-label">Dépenses</div>
+          <div class="kpi-value">{{ number_format($p['depenses'], 0, ',', ' ') }} FCFA</div>
         </div>
       </div>
     </div>
@@ -44,8 +44,8 @@
           <i class="bi bi-cash-stack"></i>
         </div>
         <div>
-          <div class="kpi-label">Montant encaissé</div>
-          <div class="kpi-value">{{ number_format($p['amount_paid'], 0, ',', ' ') }} FCFA</div>
+          <div class="kpi-label">Solde net</div>
+          <div class="kpi-value">{{ number_format($p['solde_net'], 0, ',', ' ') }} FCFA</div>
         </div>
       </div>
     </div>

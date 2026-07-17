@@ -196,6 +196,44 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
     text-align: center;
 }
 
+.sidebar-nav .nav-link--group {
+    cursor: pointer;
+}
+
+.sidebar-nav .nav-link__chevron {
+    margin-left: auto;
+    font-size: 0.8rem !important;
+    width: auto !important;
+    transition: transform .2s;
+}
+
+.sidebar-nav .nav-link--group[aria-expanded="true"] .nav-link__chevron {
+    transform: rotate(180deg);
+}
+
+.sidebar-nav .nav-subgroup {
+    padding-left: 1.4rem;
+    margin-bottom: 2px;
+}
+
+.sidebar-nav .nav-link--sub {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: #a8a8a8;
+}
+
+.sidebar-nav .nav-link--sub::before {
+    content: '';
+    position: absolute;
+    left: -0.7rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+}
+
 .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--ink-line);
@@ -496,6 +534,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, .nav-link:focus-visi
 }
 .quick-action-btn--success i { color: var(--success); }
 .quick-action-btn--success:hover { border-color: var(--success); }
+
+.quick-action-btn--danger {
+    background: var(--danger-soft);
+    border-color: transparent;
+}
+.quick-action-btn--danger i { color: var(--danger); }
+.quick-action-btn--danger:hover { border-color: var(--danger); }
 
 .kpi-card .kpi-label {
     font-size: 0.75rem;

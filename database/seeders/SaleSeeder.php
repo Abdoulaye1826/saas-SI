@@ -140,5 +140,13 @@ class SaleSeeder extends Seeder
             'created_at' => $date,
             'updated_at' => $date,
         ]);
+
+        $paymentIds = DB::table('payments')->where('invoice_id', $invoice->id)->pluck('id');
+
+        DB::table('treasury_transactions')->whereIn('payment_id', $paymentIds)->update([
+            'date' => $date->toDateString(),
+            'created_at' => $date,
+            'updated_at' => $date,
+        ]);
     }
 }

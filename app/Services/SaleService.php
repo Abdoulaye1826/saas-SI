@@ -163,11 +163,16 @@ class SaleService
             return;
         }
 
+        // Catégorie de trésorerie explicite (vente/échange) : ce paiement
+        // accompagne la création même de la vente, pas un encaissement
+        // ultérieur sur une facture déjà émise (voir PaymentService::store()).
+        $category = $invoice->sale?->isEchange() ? 'echange' : 'vente';
+
         $this->paymentService->store($invoice, [
             'amount' => $amount,
             'method' => $paymentMethod,
             'paid_at' => now()->toDateString(),
-        ], $userId);
+        ], $userId, $category);
     }
 
     public function update(Sale $sale, array $data, int $userId): Sale

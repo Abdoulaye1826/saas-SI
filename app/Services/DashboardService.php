@@ -28,6 +28,10 @@ use Illuminate\Support\Facades\DB;
  */
 class DashboardService
 {
+    public function __construct(private readonly TreasuryService $treasuryService)
+    {
+    }
+
     public function getStats(?DashboardPeriod $period = null): array
     {
         $today = Carbon::today();
@@ -162,12 +166,16 @@ class DashboardService
         $warrantiesActive = $warrantySales->filter(fn ($sale) => $sale->warrantyStatus() === 'active')->count();
         $warrantiesExpired = $warrantySales->filter(fn ($sale) => $sale->warrantyStatus() === 'expired')->count();
 
+        $depenses = $this->treasuryService->getExpensesTotal($period);
+
         return [
             'revenue' => $revenue,
             'sales_count' => $salesCount,
             'products_sold_qty' => $productsSoldQty,
             'amount_paid' => $amountPaid,
             'remaining_amount' => $remainingAmount,
+            'depenses' => $depenses,
+            'solde_net' => $amountPaid - $depenses,
             'invoices_count' => $invoicesCount,
             'paid_invoices_count' => $paidInvoicesCount,
             'pending_invoices_count' => $pendingInvoicesCount,

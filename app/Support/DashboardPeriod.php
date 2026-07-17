@@ -49,7 +49,7 @@ final class DashboardPeriod
         return new self(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek(), 'week', 'Cette semaine');
     }
 
-    private static function month(): self
+    public static function month(): self
     {
         return new self(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth(), 'month', 'Ce mois');
     }

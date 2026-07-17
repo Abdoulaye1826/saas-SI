@@ -45,6 +45,10 @@
     <i class="bi bi-person-plus"></i>
     <span>Nouveau client</span>
   </a>
+  <a href="{{ route('treasury.expenses.create') }}" class="quick-action-btn quick-action-btn--danger">
+    <i class="bi bi-dash-circle"></i>
+    <span>Dépense directe</span>
+  </a>
 </div>
 
 {{-- Évolution du chiffre d'affaires — taille réduite, au-dessus des
