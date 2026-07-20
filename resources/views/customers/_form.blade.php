@@ -33,7 +33,16 @@
         </div>
       </div>
 
-      <div class="row mb-0">
+      <div class="row">
+        <div class="col-md-6 field-group">
+          <label for="type" class="form-label">Type de client <span class="req">*</span></label>
+          <select class="form-control @error('type') is-invalid @enderror" id="type" name="type" required>
+            @foreach(\App\Enums\CustomerType::cases() as $type)
+              <option value="{{ $type->value }}" @selected(old('type', $customer->type->value ?? 'client') === $type->value)>{{ $type->label() }}</option>
+            @endforeach
+          </select>
+          @error('type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+        </div>
         <div class="col-md-6 field-group">
           <label for="email" class="form-label">Email</label>
           <div class="field-input-wrap">
@@ -44,6 +53,9 @@
           </div>
           @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
         </div>
+      </div>
+
+      <div class="row mb-0">
         <div class="col-md-6 field-group mb-0">
           <label for="registered_at" class="form-label">Date d'inscription <span class="req">*</span></label>
           <input type="date" class="form-control @error('registered_at') is-invalid @enderror"

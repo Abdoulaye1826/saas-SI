@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\CustomerType;
 use App\Models\Customer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -16,6 +17,7 @@ class CustomerService
         return Customer::query()
             ->withCount('invoices')
             ->search($filters['search'] ?? null)
+            ->ofType($filters['type'] ?? null)
             ->orderBy('full_name')
             ->paginate($perPage)
             ->withQueryString();
@@ -30,6 +32,8 @@ class CustomerService
             'total' => $total,
             'with_invoices' => $withInvoices,
             'without_invoices' => $total - $withInvoices,
+            'clients' => Customer::where('type', CustomerType::Client)->count(),
+            'revendeurs' => Customer::where('type', CustomerType::Revendeur)->count(),
         ];
     }
 

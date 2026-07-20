@@ -18,7 +18,7 @@ class CustomerController extends Controller
 
     public function index(Request $request): View
     {
-        $filters = $request->only(['search']);
+        $filters = $request->only(['search', 'type']);
         $customers = $this->customerService->paginate($filters);
         $summary = $this->customerService->summary();
 

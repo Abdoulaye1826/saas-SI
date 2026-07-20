@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\CustomerType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -15,6 +17,7 @@ class StoreCustomerRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:150'],
+            'type' => ['nullable', Rule::in(array_column(CustomerType::cases(), 'value'))],
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:150', 'unique:customers,email'],
             'address' => ['nullable', 'string', 'max:500'],

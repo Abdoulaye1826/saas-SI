@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CustomerType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,7 @@ class Customer extends Model
 
     protected $fillable = [
         'full_name',
+        'type',
         'phone',
         'email',
         'address',
@@ -23,6 +25,7 @@ class Customer extends Model
     ];
 
     protected $casts = [
+        'type' => CustomerType::class,
         'registered_at' => 'date',
     ];
 
@@ -39,6 +42,15 @@ class Customer extends Model
     }
 
     // ─── Scopes ──────────────────────────────────────────────
+
+    public function scopeOfType($query, ?string $type)
+    {
+        if (empty($type)) {
+            return $query;
+        }
+
+        return $query->where('type', $type);
+    }
 
     public function scopeSearch($query, ?string $term)
     {

@@ -49,6 +49,15 @@
 
   <div class="dashboard-summary-card">
     <div class="summary-card-top">
+      <span class="badge bg-warning text-dark">Revendeurs</span>
+      <i class="bi bi-shop summary-icon text-warning"></i>
+    </div>
+    <div class="summary-card-value">{{ $summary['revendeurs'] }}</div>
+    <div class="summary-card-label">Revendeurs</div>
+  </div>
+
+  <div class="dashboard-summary-card">
+    <div class="summary-card-top">
       <span class="badge bg-info">Affichage</span>
       <i class="bi bi-eye summary-icon text-info"></i>
     </div>
@@ -60,12 +69,21 @@
 <div class="card border-0 shadow-sm mb-4 filter-card">
   <div class="card-body">
     <form method="GET" action="{{ route('customers.index') }}" class="row g-3 align-items-end">
-      <div class="col-md-7">
+      <div class="col-md-5">
         <label class="form-label small">Rechercher</label>
         <input type="text" name="search" class="form-control" placeholder="Nom, email, téléphone..."
                value="{{ $filters['search'] ?? '' }}">
       </div>
-      <div class="col-md-5 d-flex align-items-end gap-2">
+      <div class="col-md-3">
+        <label class="form-label small">Type</label>
+        <select name="type" class="form-control">
+          <option value="">Tous</option>
+          @foreach(\App\Enums\CustomerType::cases() as $type)
+            <option value="{{ $type->value }}" @selected(($filters['type'] ?? '') === $type->value)>{{ $type->label() }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
         <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Filtrer</button>
         <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary w-100">Réinitialiser</a>
       </div>
@@ -79,6 +97,7 @@
       <thead>
         <tr>
           <th>Nom</th>
+          <th>Type</th>
           <th>Téléphone</th>
           <th>Email</th>
           <th>Ville</th>
@@ -91,6 +110,13 @@
         @forelse($customers as $customer)
           <tr>
             <td>{{ $customer->full_name }}</td>
+            <td>
+              @if($customer->type->value === 'revendeur')
+                <span class="badge bg-warning text-dark">Revendeur</span>
+              @else
+                <span class="badge bg-secondary">Client</span>
+              @endif
+            </td>
             <td>{{ $customer->phone }}</td>
             <td>{{ $customer->email ?? '—' }}</td>
             <td>{{ $customer->city ?? '—' }}</td>
@@ -115,7 +141,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="6" class="text-center text-muted py-4">Aucun client trouvé.</td>
+            <td colspan="8" class="text-center text-muted py-4">Aucun client trouvé.</td>
           </tr>
         @endforelse
       </tbody>
