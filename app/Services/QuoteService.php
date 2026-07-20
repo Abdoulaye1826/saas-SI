@@ -201,7 +201,8 @@ class QuoteService
             // du gabarit de référence (Gap's Apple).
             ->setPaper([0, 0, 595.92, 842.88], 'portrait')
             ->setOption('defaultFont', 'DejaVu Sans')
-            ->setOption('isHtml5ParserEnabled', true);
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('defaultMediaType', 'print');
 
         return $pdf->output();
     }

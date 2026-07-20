@@ -157,6 +157,13 @@
       .page { min-height: 297mm; padding-bottom: 160px; }
       .bottom-section { position: absolute; left: 0; right: 0; bottom: 0; margin-top: 0; }
     </style>
+  @else
+    {{-- PDF réel : voir sale_document.blade.php pour le détail — position:fixed
+         évite la page blanche supplémentaire causée par position:absolute. --}}
+    <style>
+      .page { padding-bottom: 150px; }
+      .bottom-section { position: fixed; left: 0; right: 0; bottom: 0; margin-top: 0; background: #fff; }
+    </style>
   @endif
 </head>
 <body>

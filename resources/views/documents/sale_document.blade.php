@@ -192,14 +192,23 @@
     }
   </style>
   @if(empty($isPdf))
-    {{-- Réservé à l'aperçu navigateur — jamais envoyé à DomPDF, qui gère
-         mal min-height et position:absolute sur un pied de page (page
-         vide en trop constatée précédemment). Un vrai navigateur, lui,
-         n'a pas ce problème de pagination : le footer peut donc être
-         collé au bas de .page sans risque ici. --}}
+    {{-- Réservé à l'aperçu navigateur — jamais envoyé à DomPDF. Un vrai
+         navigateur n'a pas de problème de pagination : le footer peut donc
+         être collé au bas de .page avec position:absolute sans risque. --}}
     <style>
       .page { min-height: 297mm; padding-bottom: 160px; }
       .bottom-section { position: absolute; left: 0; right: 0; bottom: 0; margin-top: 0; }
+    </style>
+  @else
+    {{-- PDF réel : position:fixed (et non absolute) colle le pied de page
+         au bas de CHAQUE page sans compter dans le flux — position:absolute
+         avait provoqué une page blanche supplémentaire (DomPDF comptait sa
+         hauteur implicite dans le flux normal). padding-bottom réserve la
+         place sur .page pour qu'un contenu long (beaucoup d'articles) ne
+         passe pas sous le pied de page fixe. --}}
+    <style>
+      .page { padding-bottom: 150px; }
+      .bottom-section { position: fixed; left: 0; right: 0; bottom: 0; margin-top: 0; background: #fff; }
     </style>
   @endif
 </head>

@@ -135,7 +135,11 @@ class InvoiceService
             // (595.28 x 841.89) à moins d'1mm près.
             ->setPaper([0, 0, 595.92, 842.88], 'portrait')
             ->setOption('defaultFont', 'DejaVu Sans')
-            ->setOption('isHtml5ParserEnabled', true);
+            ->setOption('isHtml5ParserEnabled', true)
+            // DomPDF utilise "screen" par défaut : sans ceci, les règles
+            // @media screen du gabarit (réservées à l'aperçu navigateur)
+            // s'appliquaient aussi au PDF téléchargé (ombre, fond gris...).
+            ->setOption('defaultMediaType', 'print');
 
         return $pdf->output();
     }

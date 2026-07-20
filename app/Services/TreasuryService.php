@@ -114,7 +114,8 @@ class TreasuryService
         $pdf = PDF::loadView('documents.treasury_report', compact('report', 'period', 'entreprise'))
             ->setPaper('a4', 'portrait')
             ->setOption('defaultFont', 'DejaVu Sans')
-            ->setOption('isHtml5ParserEnabled', true);
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('defaultMediaType', 'print');
 
         return $pdf->output();
     }
