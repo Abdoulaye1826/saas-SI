@@ -7,6 +7,8 @@ enum InvoiceStatus: string
     case Issued = 'issued';
     case Partial = 'partial';
     case Paid = 'paid';
+    case PartiallyReturned = 'partially_returned';
+    case Returned = 'returned';
     case Cancelled = 'cancelled';
 
     public function label(): string
@@ -15,6 +17,8 @@ enum InvoiceStatus: string
             self::Issued => 'Non payé',
             self::Partial => 'Partiellement payée',
             self::Paid => 'Payée',
+            self::PartiallyReturned => 'Partiellement retourné',
+            self::Returned => 'Retourné',
             self::Cancelled => 'Annulée',
         };
     }
@@ -25,6 +29,8 @@ enum InvoiceStatus: string
             self::Issued => 'bg-secondary',
             self::Partial => 'bg-warning text-dark',
             self::Paid => 'bg-success',
+            self::PartiallyReturned => 'bg-info text-dark',
+            self::Returned => 'bg-dark',
             self::Cancelled => 'bg-danger',
         };
     }

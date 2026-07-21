@@ -51,7 +51,14 @@ class ProductImeiService
 
         return DB::transaction(function () use ($product, $imeis) {
             $created = [];
-            $quantityBefore = $product->stock_quantity;
+            // Le vrai nombre d'IMEI disponibles avant l'ajout — pas
+            // $product->stock_quantity, qui peut être périmée (ex : produit
+            // dont le suivi IMEI vient d'être activé sans encore avoir
+            // d'IMEI enregistré, stock_quantity conservant l'ancienne
+            // valeur saisie manuellement). Sans ça, le journal de
+            // mouvements affichait un before/after incohérent avec le
+            // stock réellement synchronisé par syncImeiStock() ensuite.
+            $quantityBefore = $product->imeis()->available()->count();
 
             foreach ($imeis as $imei) {
                 $created[] = ProductImei::create([
@@ -96,7 +103,10 @@ class ProductImeiService
         DB::transaction(function () use ($imei) {
             $product = $imei->product;
             $imeiValue = $imei->imei;
-            $quantityBefore = $product->stock_quantity;
+            // Voir le commentaire équivalent dans store() : le vrai nombre
+            // d'IMEI disponibles avant le retrait, pas stock_quantity qui
+            // peut être périmée.
+            $quantityBefore = $product->imeis()->available()->count();
 
             $imei->delete();
             $product->syncImeiStock();

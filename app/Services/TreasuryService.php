@@ -24,6 +24,8 @@ class TreasuryService
             'category' => $data['category'],
             'amount' => $data['amount'],
             'description' => $data['description'] ?? null,
+            'supplier_name' => $data['supplier_name'] ?? null,
+            'product_reference' => $data['product_reference'] ?? null,
             'date' => $data['date'],
             'user_id' => $userId,
         ]);

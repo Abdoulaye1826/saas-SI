@@ -19,6 +19,8 @@ class StoreTreasuryExpenseRequest extends FormRequest
             'date' => ['required', 'date'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'category' => ['required', Rule::in(array_column(TreasuryExpenseCategory::cases(), 'value'))],
+            'supplier_name' => ['nullable', 'string', 'max:150'],
+            'product_reference' => ['nullable', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
         ];
     }

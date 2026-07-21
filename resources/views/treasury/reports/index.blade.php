@@ -108,7 +108,15 @@
               @endif
             </td>
             <td>{{ $t->categoryLabel() }}</td>
-            <td>{{ $t->description ?? '—' }}</td>
+            <td>
+              {{ $t->description ?? '—' }}
+              @if($t->supplier_name || $t->product_reference)
+                <div class="small text-muted">
+                  @if($t->supplier_name) <i class="bi bi-truck me-1"></i>{{ $t->supplier_name }} @endif
+                  @if($t->product_reference) <i class="bi bi-upc-scan ms-2 me-1"></i>{{ $t->product_reference }} @endif
+                </div>
+              @endif
+            </td>
             <td class="text-end fw-semibold {{ $t->type->value === 'in' ? 'text-success' : 'text-danger' }}">
               {{ $t->type->value === 'in' ? '+' : '-' }}{{ number_format($t->amount, 0, ',', ' ') }} FCFA
             </td>

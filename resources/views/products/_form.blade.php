@@ -347,6 +347,20 @@
     updateMarginPreview();
   });
 
+  // Une douchette code-barres/QR envoie le code puis "Entrée" : sans ce
+  // garde-fou, ça soumettrait prématurément le formulaire produit dès le
+  // scan de la référence ou du code-barres (mêmes champs faits pour être
+  // scannés — voir les placeholders "Scanner ou saisir...").
+  document.addEventListener('DOMContentLoaded', function () {
+    ['reference', 'barcode'].forEach(function (id) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') e.preventDefault();
+      });
+    });
+  });
+
   /**
    * Création rapide d'une catégorie ou d'un fournisseur depuis le formulaire
    * produit, sans quitter la page (modale + AJAX).

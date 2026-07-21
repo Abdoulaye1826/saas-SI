@@ -77,6 +77,16 @@ class ProductService
 
         $product->update($data);
 
+        // Si le suivi IMEI vient d'être activé (ou l'était déjà), on
+        // resynchronise immédiatement le stock sur le nombre réel d'IMEI
+        // disponibles — sinon un produit qui passe en suivi IMEI garde
+        // affichée son ancienne quantité saisie manuellement jusqu'au
+        // premier ajout d'IMEI, ce qui est incohérent avec la règle "le
+        // stock d'un produit IMEI est toujours calculé, jamais saisi".
+        if ($product->tracks_imei) {
+            $product->syncImeiStock();
+        }
+
         $this->activityLog->log('update', $product, "Produit modifié : {$product->name}");
 
         return $product->fresh();
@@ -86,6 +96,14 @@ class ProductService
     {
         if ($product->saleItems()->exists()) {
             throw new \RuntimeException('Impossible de supprimer un produit lié à des ventes.');
+        }
+
+        // stock_movements.product_id est en restrictOnDelete() : sans ce
+        // garde-fou, supprimer un produit ayant un historique de stock (ou
+        // des IMEI enregistrés) faisait remonter une erreur SQL brute
+        // (contrainte de clé étrangère) au lieu d'un message compréhensible.
+        if ($product->stockMovements()->exists() || $product->imeis()->exists()) {
+            throw new \RuntimeException('Impossible de supprimer un produit ayant un historique de stock ou des IMEI enregistrés.');
         }
 
         $name = $product->name;

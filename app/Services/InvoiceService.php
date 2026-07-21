@@ -180,6 +180,15 @@ class InvoiceService
 
         $invoice->update($data);
 
+        // Si l'appelant ne fixe pas explicitement un statut (ex: SaleService
+        // qui ne resynchronise que les montants après modification d'une
+        // vente déjà validée), on recalcule le statut à partir du nouveau
+        // solde plutôt que de laisser un statut devenu incohérent (facture
+        // marquée "Payée" alors que son montant a changé depuis).
+        if (!array_key_exists('status', $data)) {
+            $this->paymentService->syncInvoiceStatus($invoice);
+        }
+
         $this->activityLog->log('update', $invoice, "Facture modifiée : {$invoice->invoice_number}");
 
         return $invoice->fresh();

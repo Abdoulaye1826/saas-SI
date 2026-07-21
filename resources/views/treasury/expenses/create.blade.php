@@ -49,6 +49,23 @@
           @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
+        <div class="row">
+          <div class="col-md-6 field-group">
+            <label for="supplier_name" class="form-label">Nom du fournisseur</label>
+            <input type="text" class="form-control @error('supplier_name') is-invalid @enderror"
+                   id="supplier_name" name="supplier_name" value="{{ old('supplier_name') }}"
+                   placeholder="Ex : Fournisseur Dakar Electronics">
+            @error('supplier_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+          <div class="col-md-6 field-group">
+            <label for="product_reference" class="form-label">Référence produit</label>
+            <input type="text" class="form-control @error('product_reference') is-invalid @enderror"
+                   id="product_reference" name="product_reference" value="{{ old('product_reference') }}"
+                   placeholder="Scanner ou saisir la référence" autocomplete="off">
+            @error('product_reference')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+        </div>
+
         <div class="field-group mb-0">
           <label for="description" class="form-label">Description</label>
           <textarea class="form-control @error('description') is-invalid @enderror"
@@ -65,3 +82,14 @@
   </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Une douchette code-barres/QR envoie le code puis "Entrée" : sans ce
+// garde-fou, ça soumettrait prématurément le formulaire dès le scan de la
+// référence produit.
+document.getElementById('product_reference')?.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') e.preventDefault();
+});
+</script>
+@endpush

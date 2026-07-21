@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TreasuryTransaction extends Model
 {
     protected $fillable = [
-        'type', 'category', 'amount', 'description', 'date', 'reference', 'payment_id', 'user_id',
+        'type', 'category', 'amount', 'description', 'date', 'reference',
+        'supplier_name', 'product_reference', 'payment_id', 'user_id',
     ];
 
     protected $casts = [

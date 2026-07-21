@@ -98,7 +98,25 @@ class PaymentService
         );
     }
 
-    private function syncInvoiceStatus(Invoice $invoice): void
+    /**
+     * Recalcule et persiste le statut de la facture (Non payé / Partiel /
+     * Payée / Partiellement retourné / Retourné) à partir du solde réel
+     * (total_ttc vs paiements enregistrés) et de la présence d'un retour.
+     * Appelé après chaque paiement, mais aussi par InvoiceService::update()
+     * quand une vente modifiée (ou un retour) resynchronise le montant
+     * total de la facture — sans ce recalcul, une facture déjà payée dont
+     * le montant change ensuite (ex : ajout d'un article à la vente, ou
+     * retour d'un produit) garderait à tort son ancien statut "Payée".
+     *
+     * Un retour prime sur le calcul habituel Payée/Partiel/Non payé :
+     * - tous les articles de la vente retournés → "Retourné" (facture
+     *   entièrement annulée par les retours) ;
+     * - au moins un article retourné mais pas tous → "Partiellement
+     *   retourné" (distinct de "Retourné" pour ne pas laisser croire que
+     *   toute la facture est annulée alors que d'autres articles restent
+     *   normalement vendus et facturés).
+     */
+    public function syncInvoiceStatus(Invoice $invoice): void
     {
         $invoice = $invoice->fresh('payments');
 
@@ -106,7 +124,14 @@ class PaymentService
             return;
         }
 
-        if ($invoice->isFullyPaid()) {
+        $itemsCount = $invoice->sale?->items()->count() ?? 0;
+        $returnedCount = $invoice->sale?->items()->returned()->count() ?? 0;
+
+        if ($itemsCount > 0 && $returnedCount === $itemsCount) {
+            $invoice->update(['status' => InvoiceStatus::Returned]);
+        } elseif ($returnedCount > 0) {
+            $invoice->update(['status' => InvoiceStatus::PartiallyReturned]);
+        } elseif ($invoice->isFullyPaid()) {
             $invoice->update(['status' => InvoiceStatus::Paid]);
         } elseif ($invoice->amount_paid > 0) {
             $invoice->update(['status' => InvoiceStatus::Partial]);

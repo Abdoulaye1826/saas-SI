@@ -131,6 +131,8 @@
           <option value="issued" @selected(($filters['status'] ?? '') === 'issued')>Non payé</option>
           <option value="partial" @selected(($filters['status'] ?? '') === 'partial')>Partiellement payée</option>
           <option value="paid" @selected(($filters['status'] ?? '') === 'paid')>Payée</option>
+          <option value="partially_returned" @selected(($filters['status'] ?? '') === 'partially_returned')>Partiellement retourné</option>
+          <option value="returned" @selected(($filters['status'] ?? '') === 'returned')>Retourné</option>
           <option value="cancelled" @selected(($filters['status'] ?? '') === 'cancelled')>Annulée</option>
         </select>
       </div>

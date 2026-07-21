@@ -56,6 +56,7 @@
     .items-table tbody td.amount.in { color: #1b8a5a; }
     .items-table tbody td.amount.out { color: #c0392b; }
     .type-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #fff; }
+    .item-detail { font-size: 9.5px; color: var(--text-muted); margin-top: 2px; }
     .type-pill.in { background: #1b8a5a; }
     .type-pill.out { background: #c0392b; }
 
@@ -119,7 +120,16 @@
               <span class="type-pill {{ $t->type->value }}">{{ $t->type->value === 'in' ? 'Entrée' : 'Sortie' }}</span>
             </td>
             <td>{{ $t->categoryLabel() }}</td>
-            <td>{{ $t->description ?? '—' }}</td>
+            <td>
+              {{ $t->description ?? '—' }}
+              @if($t->supplier_name || $t->product_reference)
+                <div class="item-detail">
+                  @if($t->supplier_name) {{ $t->supplier_name }} @endif
+                  @if($t->supplier_name && $t->product_reference) — @endif
+                  @if($t->product_reference) Réf. {{ $t->product_reference }} @endif
+                </div>
+              @endif
+            </td>
             <td class="amount {{ $t->type->value }}">
               {{ $t->type->value === 'in' ? '+' : '-' }}{{ number_format($t->amount, 0, ',', ' ') }} FCFA
             </td>

@@ -290,10 +290,11 @@
 
 @php
   $existingPaymentsCount = $sale?->invoice?->payments?->count() ?? 0;
-  // Espèces par défaut à la création (mode de paiement le plus courant en
-  // boutique) ; en modification, on reflète toujours le paiement réellement
-  // enregistré (ou aucun s'il n'y en a pas).
-  $currentPaymentMethod = old('payment_method', $sale?->invoice?->payments?->first()?->method?->value ?? ($sale ? '' : 'cash'));
+  // Espèces par défaut (mode de paiement le plus courant en boutique), à la
+  // création comme en modification ; si un paiement a déjà été enregistré,
+  // on reflète son mode réel plutôt que d'écraser silencieusement le choix
+  // fait au moment du paiement.
+  $currentPaymentMethod = old('payment_method', $sale?->invoice?->payments?->first()?->method?->value ?? 'cash');
   $currentAmountGiven = old('amount_given', $existingPaymentsCount > 0 ? $sale?->invoice?->amount_paid : null);
 @endphp
 <div class="row" id="totalColumn" style="display: {{ old('sale_type', $sale?->sale_type->value ?? 'vente') === 'echange' ? 'none' : 'flex' }};">
@@ -389,6 +390,14 @@
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // Une douchette code-barres/QR envoie le code puis "Entrée" : sans ce
+    // garde-fou, ça soumettrait prématurément toute la vente dès le scan de
+    // l'IMEI du produit apporté en échange (même logique que les IMEI des
+    // lignes de produit, voir bindSaleItemEvents plus bas).
+    document.getElementById('exchange_imei')?.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') e.preventDefault();
+    });
+
     const saleTypeField = document.getElementById('sale_type');
     const exchangeFields = document.getElementById('exchangeFields');
     const addSaleItemButton = document.getElementById('addSaleItemButton');

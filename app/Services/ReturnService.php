@@ -17,8 +17,10 @@ use Illuminate\Support\Facades\DB;
  */
 class ReturnService
 {
-    public function __construct(private readonly ActivityLogService $activityLog)
-    {
+    public function __construct(
+        private readonly ActivityLogService $activityLog,
+        private readonly InvoiceService $invoiceService,
+    ) {
     }
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -113,15 +115,24 @@ class ReturnService
             $newSaleTotal = max(0, (float) $sale->total_ttc - (float) $item->line_total);
             $sale->update(['total_ttc' => $newSaleTotal]);
 
-            $invoice = $sale->invoice;
-            if ($invoice !== null) {
-                $invoice->update(['total_ttc' => $newSaleTotal]);
-            }
-
+            // Marqué retourné AVANT la resynchronisation de la facture : le
+            // recalcul de statut (voir InvoiceService::update() /
+            // PaymentService::syncInvoiceStatus()) doit voir ce retour pour
+            // basculer la facture sur "Retourné" plutôt que Payée/Partiel.
             $item->update([
                 'returned_at' => now(),
                 'returned_by' => $userId,
             ]);
+
+            $invoice = $sale->invoice;
+            if ($invoice !== null) {
+                // Passe par InvoiceService::update() (et non $invoice->update()
+                // directement) pour que le statut (Payée / Partiel / Retourné)
+                // soit recalculé sur le nouveau total — sinon une facture déjà
+                // marquée "Payée" restait bloquée sur cet ancien statut après un
+                // retour, même quand le nouveau solde ne le justifiait plus.
+                $invoice = $this->invoiceService->update($invoice, ['total_ttc' => $newSaleTotal]);
+            }
 
             $this->activityLog->log(
                 'return',

@@ -363,6 +363,16 @@
       setFieldError(imeiAddError, '');
     });
 
+    // Une douchette code-barres/QR envoie le code puis "Entrée" : on en
+    // profite pour déclencher directement l'ajout, sans clic supplémentaire
+    // (scan → ajouté), plutôt que de laisser l'Entrée sans effet.
+    imeiAddInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        imeiAddSubmit.click();
+      }
+    });
+
     imeiAddSubmit.addEventListener('click', async function () {
       const imei = imeiAddInput.value.trim();
       setFieldError(imeiAddError, '');
