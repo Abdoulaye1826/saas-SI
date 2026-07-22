@@ -29,15 +29,16 @@
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .row.g-3 > div { animation: fadeSlideUp .5s ease both; }
-  .row.g-3 > div:nth-child(1) { animation-delay: .02s; }
-  .row.g-3 > div:nth-child(2) { animation-delay: .06s; }
-  .row.g-3 > div:nth-child(3) { animation-delay: .10s; }
-  .row.g-3 > div:nth-child(4) { animation-delay: .14s; }
-  .row.g-3 > div:nth-child(5) { animation-delay: .18s; }
-  .row.g-3 > div:nth-child(6) { animation-delay: .22s; }
-  .row.g-3 > div:nth-child(7) { animation-delay: .26s; }
-  .row.g-3 > div:nth-child(8) { animation-delay: .30s; }
+  .row.g-3 > div,
+  .dashboard-summary-grid > div { animation: fadeSlideUp .5s ease both; }
+  .row.g-3 > div:nth-child(1), .dashboard-summary-grid > div:nth-child(1) { animation-delay: .02s; }
+  .row.g-3 > div:nth-child(2), .dashboard-summary-grid > div:nth-child(2) { animation-delay: .06s; }
+  .row.g-3 > div:nth-child(3), .dashboard-summary-grid > div:nth-child(3) { animation-delay: .10s; }
+  .row.g-3 > div:nth-child(4), .dashboard-summary-grid > div:nth-child(4) { animation-delay: .14s; }
+  .row.g-3 > div:nth-child(5), .dashboard-summary-grid > div:nth-child(5) { animation-delay: .18s; }
+  .row.g-3 > div:nth-child(6), .dashboard-summary-grid > div:nth-child(6) { animation-delay: .22s; }
+  .row.g-3 > div:nth-child(7), .dashboard-summary-grid > div:nth-child(7) { animation-delay: .26s; }
+  .row.g-3 > div:nth-child(8), .dashboard-summary-grid > div:nth-child(8) { animation-delay: .30s; }
 
   /* KPI cards */
   .kpi-card {
@@ -142,68 +143,214 @@
   </div>
 </div>
 
-<div class="row g-3 mb-4">
+{{-- ── Filtre de période — s'applique à tous les indicateurs/graphiques
+     "de la période" ci-dessous ; les repères fixes (CA du jour, CA du mois,
+     stock actuel) restent toujours affichés indépendamment du filtre. ── --}}
+<div class="card border-0 shadow-sm mb-4 filter-card">
+  <div class="card-body">
+    <form method="GET" action="{{ route('reports.index') }}" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small">Période</label>
+        <select name="period" id="periodSelect" class="form-control">
+          <option value="all" @selected($period->key === 'all')>Toutes les périodes</option>
+          <option value="today" @selected($period->key === 'today')>Aujourd'hui</option>
+          <option value="yesterday" @selected($period->key === 'yesterday')>Hier</option>
+          <option value="week" @selected($period->key === 'week')>Cette semaine</option>
+          <option value="month" @selected($period->key === 'month')>Ce mois</option>
+          <option value="year" @selected($period->key === 'year')>Cette année</option>
+          <option value="custom" @selected($period->key === 'custom')>Période personnalisée</option>
+        </select>
+      </div>
+      <div class="col-md-3 custom-period-field {{ $period->key !== 'custom' ? 'd-none' : '' }}">
+        <label class="form-label small">Date de début</label>
+        <input type="date" name="start" class="form-control" value="{{ $period->key === 'custom' ? $period->start->toDateString() : '' }}">
+      </div>
+      <div class="col-md-3 custom-period-field {{ $period->key !== 'custom' ? 'd-none' : '' }}">
+        <label class="form-label small">Date de fin</label>
+        <input type="date" name="end" class="form-control" value="{{ $period->key === 'custom' ? $period->end->toDateString() : '' }}">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i>Filtrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@php $p = $stats['period']; @endphp
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-currency-exchange me-1"></i>Ventes & chiffre d'affaires — {{ $period->label }}</h6>
+<div class="mb-4">
   @php
-    $reportKpis = [
-      ['label' => 'CA du jour', 'value' => number_format($stats['revenue_today'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['revenue_today'], 'suffix' => 'FCFA', 'icon' => 'bi-currency-exchange', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'CA du mois', 'value' => number_format($stats['revenue_month'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['revenue_month'], 'suffix' => 'FCFA', 'icon' => 'bi-graph-up-arrow', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Ventes validées', 'value' => $stats['sales_count'], 'raw' => $stats['sales_count'], 'suffix' => '', 'icon' => 'bi-cart-check', 'color' => 'bg-info bg-opacity-10 text-info'],
-      ['label' => 'Factures émises', 'value' => $stats['invoices_count'], 'raw' => $stats['invoices_count'], 'suffix' => '', 'icon' => 'bi-file-earmark-text', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
-      ['label' => 'Factures payées', 'value' => $stats['paid_invoices_count'], 'raw' => $stats['paid_invoices_count'], 'suffix' => '', 'icon' => 'bi-wallet2', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Impayés', 'value' => $stats['pending_invoices_count'], 'raw' => $stats['pending_invoices_count'], 'suffix' => '', 'icon' => 'bi-hourglass-split', 'color' => 'bg-warning bg-opacity-10 text-warning'],
-      ['label' => 'Nouveaux clients (mois)', 'value' => $stats['new_customers_month'], 'raw' => $stats['new_customers_month'], 'suffix' => '', 'icon' => 'bi-person-plus', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'Clients totaux', 'value' => $stats['customers_count'], 'raw' => $stats['customers_count'], 'suffix' => '', 'icon' => 'bi-people', 'color' => 'bg-info bg-opacity-10 text-info'],
+    $salesKpis = [
+      ['label' => "CA du jour", 'value' => number_format($stats['revenue_today'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['revenue_today'], 'suffix' => 'FCFA', 'icon' => 'bi-currency-exchange', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => "CA du mois", 'value' => number_format($stats['revenue_month'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['revenue_month'], 'suffix' => 'FCFA', 'icon' => 'bi-graph-up-arrow', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => "CA — {$period->label}", 'value' => number_format($p['revenue'], 0, ',', ' ') . ' FCFA', 'raw' => $p['revenue'], 'suffix' => 'FCFA', 'icon' => 'bi-cash-stack', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Ventes validées', 'value' => $p['sales_count'], 'raw' => $p['sales_count'], 'suffix' => '', 'icon' => 'bi-cart-check', 'color' => 'bg-info bg-opacity-10 text-info'],
+      ['label' => 'Panier moyen', 'value' => number_format($p['average_sale'], 0, ',', ' ') . ' FCFA', 'raw' => $p['average_sale'], 'suffix' => 'FCFA', 'icon' => 'bi-basket3', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Produits vendus', 'value' => $p['products_sold_qty'], 'raw' => $p['products_sold_qty'], 'suffix' => '', 'icon' => 'bi-box-seam', 'color' => 'bg-info bg-opacity-10 text-info'],
     ];
   @endphp
-
-  @foreach($reportKpis as $kpi)
-    <div class="col-6 col-md-4 col-xl-3">
+  <div class="dashboard-summary-grid">
+    @foreach($salesKpis as $kpi)
       <div class="kpi-card">
         <div class="d-flex align-items-center gap-3">
-          <div class="kpi-icon {{ $kpi['color'] }}">
-            <i class="bi {{ $kpi['icon'] }}"></i>
-          </div>
+          <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
           <div>
             <div class="kpi-label">{{ $kpi['label'] }}</div>
             <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
           </div>
         </div>
       </div>
+    @endforeach
+  </div>
+</div>
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-graph-up-arrow me-1"></i>Rentabilité — {{ $period->label }}</h6>
+<div class="dashboard-summary-grid mb-4">
+  <div class="kpi-card border-start border-4 border-success">
+    <div class="d-flex align-items-center gap-3">
+      <div class="kpi-icon bg-success bg-opacity-10 text-success"><i class="bi bi-graph-up"></i></div>
+      <div>
+        <div class="kpi-label">Marge bénéficiaire</div>
+        <div class="kpi-value" data-value="{{ $p['margin'] }}" data-suffix="FCFA">{{ number_format($p['margin'], 0, ',', ' ') }} FCFA</div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="d-flex align-items-center gap-3">
+      <div class="kpi-icon bg-success bg-opacity-10 text-success"><i class="bi bi-percent"></i></div>
+      <div>
+        <div class="kpi-label">Taux de marge</div>
+        <div class="kpi-value" data-value="{{ $p['margin_rate'] }}" data-suffix="%">{{ number_format($p['margin_rate'], 1, ',', ' ') }} %</div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="d-flex align-items-center gap-3">
+      <div class="kpi-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-arrow-up-circle"></i></div>
+      <div>
+        <div class="kpi-label">Dépenses</div>
+        <div class="kpi-value" data-value="{{ $p['depenses'] }}" data-suffix="FCFA">{{ number_format($p['depenses'], 0, ',', ' ') }} FCFA</div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="d-flex align-items-center gap-3">
+      <div class="kpi-icon bg-info bg-opacity-10 text-info"><i class="bi bi-wallet2"></i></div>
+      <div>
+        <div class="kpi-label">Solde net</div>
+        <div class="kpi-value" data-value="{{ $p['solde_net'] }}" data-suffix="FCFA">{{ number_format($p['solde_net'], 0, ',', ' ') }} FCFA</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-file-earmark-text me-1"></i>Factures — {{ $period->label }}</h6>
+<div class="dashboard-summary-grid mb-4">
+  @php
+    $invoiceKpis = [
+      ['label' => 'Factures émises', 'value' => $p['invoices_count'], 'raw' => $p['invoices_count'], 'suffix' => '', 'icon' => 'bi-file-earmark-text', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Factures payées', 'value' => $p['paid_invoices_count'], 'raw' => $p['paid_invoices_count'], 'suffix' => '', 'icon' => 'bi-wallet2', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Impayés', 'value' => $p['pending_invoices_count'], 'raw' => $p['pending_invoices_count'], 'suffix' => '', 'icon' => 'bi-hourglass-split', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Montant payé', 'value' => number_format($p['amount_paid'], 0, ',', ' ') . ' FCFA', 'raw' => $p['amount_paid'], 'suffix' => 'FCFA', 'icon' => 'bi-cash-coin', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Reste à payer', 'value' => number_format($p['remaining_amount'], 0, ',', ' ') . ' FCFA', 'raw' => $p['remaining_amount'], 'suffix' => 'FCFA', 'icon' => 'bi-exclamation-circle', 'color' => 'bg-danger bg-opacity-10 text-danger'],
+    ];
+  @endphp
+  @foreach($invoiceKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+        </div>
+      </div>
     </div>
   @endforeach
 </div>
 
-<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-clipboard-data me-1"></i>Produits, échanges, garanties &amp; devis (toutes périodes)</h6>
-<div class="row g-3 mb-4">
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-boxes me-1"></i>Stock (actuel)</h6>
+<div class="dashboard-summary-grid mb-4">
   @php
-    $p = $stats['period'];
-    $extraKpis = [
-      ['label' => 'Produits vendus', 'value' => $p['products_sold_qty'], 'raw' => $p['products_sold_qty'], 'suffix' => '', 'icon' => 'bi-box-seam', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+    $stockKpis = [
       ['label' => 'Produits en rupture', 'value' => $stats['out_of_stock_count'], 'raw' => $stats['out_of_stock_count'], 'suffix' => '', 'icon' => 'bi-x-octagon', 'color' => 'bg-danger bg-opacity-10 text-danger'],
       ['label' => 'Produits à faible stock', 'value' => $stats['low_stock_count'], 'raw' => $stats['low_stock_count'], 'suffix' => '', 'icon' => 'bi-exclamation-triangle', 'color' => 'bg-warning bg-opacity-10 text-warning'],
       ['label' => 'Valeur du stock', 'value' => number_format($stats['stock_value'], 0, ',', ' ') . ' FCFA', 'raw' => $stats['stock_value'], 'suffix' => 'FCFA', 'icon' => 'bi-boxes', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
-      ['label' => 'Panier moyen', 'value' => number_format($p['average_sale'], 0, ',', ' ') . ' FCFA', 'raw' => $p['average_sale'], 'suffix' => 'FCFA', 'icon' => 'bi-basket3', 'color' => 'bg-primary bg-opacity-10 text-primary'],
-      ['label' => 'Marge brute', 'value' => number_format($p['margin'], 0, ',', ' ') . ' FCFA', 'raw' => $p['margin'], 'suffix' => 'FCFA', 'icon' => 'bi-graph-up', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Nombre d\'échanges', 'value' => $p['exchanges_count'], 'raw' => $p['exchanges_count'], 'suffix' => '', 'icon' => 'bi-arrow-left-right', 'color' => 'bg-warning bg-opacity-10 text-warning'],
-      ['label' => 'Montant ajouté par les clients', 'value' => number_format($p['exchanges_added_amount'], 0, ',', ' ') . ' FCFA', 'raw' => $p['exchanges_added_amount'], 'suffix' => 'FCFA', 'icon' => 'bi-plus-circle', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
-      ['label' => 'Garanties actives', 'value' => $p['warranties_active_count'], 'raw' => $p['warranties_active_count'], 'suffix' => '', 'icon' => 'bi-shield-check', 'color' => 'bg-success bg-opacity-10 text-success'],
-      ['label' => 'Garanties expirées', 'value' => $p['warranties_expired_count'], 'raw' => $p['warranties_expired_count'], 'suffix' => '', 'icon' => 'bi-shield-x', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+    ];
+  @endphp
+  @foreach($stockKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-people me-1"></i>Clients — {{ $period->label }}</h6>
+<div class="dashboard-summary-grid mb-4">
+  @php
+    $customerKpis = [
+      ['label' => 'Nouveaux clients', 'value' => $p['new_customers'], 'raw' => $p['new_customers'], 'suffix' => '', 'icon' => 'bi-person-plus', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Clients totaux', 'value' => $stats['customers_count'], 'raw' => $stats['customers_count'], 'suffix' => '', 'icon' => 'bi-people', 'color' => 'bg-info bg-opacity-10 text-info'],
+    ];
+  @endphp
+  @foreach($customerKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-file-earmark-ruled me-1"></i>Devis (toutes périodes)</h6>
+<div class="dashboard-summary-grid mb-4">
+  @php
+    $quoteKpis = [
       ['label' => 'Devis en attente', 'value' => $stats['quotes_pending_count'], 'raw' => $stats['quotes_pending_count'], 'suffix' => '', 'icon' => 'bi-file-earmark-ruled', 'color' => 'bg-info bg-opacity-10 text-info'],
       ['label' => 'Devis acceptés', 'value' => $stats['quotes_accepted_count'], 'raw' => $stats['quotes_accepted_count'], 'suffix' => '', 'icon' => 'bi-check-circle', 'color' => 'bg-success bg-opacity-10 text-success'],
       ['label' => 'Taux de conversion devis', 'value' => $stats['quotes_conversion_rate'] . ' %', 'raw' => $stats['quotes_conversion_rate'], 'suffix' => '%', 'icon' => 'bi-arrow-right-circle', 'color' => 'bg-dark bg-opacity-10 text-dark'],
     ];
   @endphp
-  @foreach($extraKpis as $kpi)
-    <div class="col-6 col-md-4 col-xl-3">
-      <div class="kpi-card">
-        <div class="d-flex align-items-center gap-3">
-          <div class="kpi-icon {{ $kpi['color'] }}">
-            <i class="bi {{ $kpi['icon'] }}"></i>
-          </div>
-          <div>
-            <div class="kpi-label">{{ $kpi['label'] }}</div>
-            <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
-          </div>
+  @foreach($quoteKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-arrow-left-right me-1"></i>Échanges & garanties — {{ $period->label }}</h6>
+<div class="dashboard-summary-grid mb-4">
+  @php
+    $exchangeKpis = [
+      ['label' => "Nombre d'échanges", 'value' => $p['exchanges_count'], 'raw' => $p['exchanges_count'], 'suffix' => '', 'icon' => 'bi-arrow-left-right', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Montant ajouté par les clients', 'value' => number_format($p['exchanges_added_amount'], 0, ',', ' ') . ' FCFA', 'raw' => $p['exchanges_added_amount'], 'suffix' => 'FCFA', 'icon' => 'bi-plus-circle', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Garanties actives', 'value' => $p['warranties_active_count'], 'raw' => $p['warranties_active_count'], 'suffix' => '', 'icon' => 'bi-shield-check', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Garanties expirées', 'value' => $p['warranties_expired_count'], 'raw' => $p['warranties_expired_count'], 'suffix' => '', 'icon' => 'bi-shield-x', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+    ];
+  @endphp
+  @foreach($exchangeKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
         </div>
       </div>
     </div>
@@ -684,6 +831,13 @@
       ind.className = `bi ${asc ? 'bi-caret-up-fill' : 'bi-caret-down-fill'} sort-ind ms-1 small`;
       th.appendChild(ind);
     });
+  });
+
+  // ---------- Filtre de période : bascule les champs de dates personnalisées ----------
+  document.getElementById('periodSelect')?.addEventListener('change', function () {
+    document.querySelectorAll('.custom-period-field').forEach(function (el) {
+      el.classList.toggle('d-none', this.value !== 'custom');
+    }, this);
   });
 </script>
 @endpush

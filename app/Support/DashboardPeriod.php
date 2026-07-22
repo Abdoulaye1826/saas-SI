@@ -28,6 +28,7 @@ final class DashboardPeriod
             'week' => self::week(),
             'year' => self::year(),
             'custom' => self::custom($request->string('start')->toString(), $request->string('end')->toString()),
+            'all' => self::allTime(),
             default => self::month(),
         };
     }

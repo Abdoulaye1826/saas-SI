@@ -187,6 +187,7 @@ class DashboardService
             'warranties_expired_count' => $warrantiesExpired,
             'average_sale' => $salesCount > 0 ? round($revenue / $salesCount, 2) : 0.0,
             'margin' => $margin,
+            'margin_rate' => $revenue > 0 ? round(($margin / $revenue) * 100, 1) : 0.0,
         ];
     }
 
