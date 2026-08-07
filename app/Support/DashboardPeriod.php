@@ -26,6 +26,7 @@ final class DashboardPeriod
             'today' => self::today(),
             'yesterday' => self::yesterday(),
             'week' => self::week(),
+            'last_month' => self::lastMonth(),
             'year' => self::year(),
             'custom' => self::custom($request->string('start')->toString(), $request->string('end')->toString()),
             'all' => self::allTime(),
@@ -53,6 +54,13 @@ final class DashboardPeriod
     public static function month(): self
     {
         return new self(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth(), 'month', 'Ce mois');
+    }
+
+    private static function lastMonth(): self
+    {
+        $month = Carbon::now()->subMonthNoOverflow();
+
+        return new self($month->copy()->startOfMonth(), $month->copy()->endOfMonth(), 'last_month', 'Mois passé');
     }
 
     private static function year(): self

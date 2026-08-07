@@ -13,6 +13,7 @@
     <option value="yesterday" @selected($period->key === 'yesterday')>Hier</option>
     <option value="week" @selected($period->key === 'week')>Cette semaine</option>
     <option value="month" @selected($period->key === 'month')>Ce mois</option>
+    <option value="last_month" @selected($period->key === 'last_month')>Mois passé</option>
     <option value="year" @selected($period->key === 'year')>Cette année</option>
     <option value="custom" @selected($period->key === 'custom')>Période personnalisée</option>
   </select>
