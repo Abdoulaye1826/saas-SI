@@ -50,7 +50,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => redirect()->route('login'));
+// La racine du site mène à la boutique publique (ce que voit un client qui
+// tape le nom de domaine) — le staff continue d'accéder à l'administration
+// via /login directement, inchangé.
+Route::get('/', fn () => redirect()->route('store.home'));
 
 // Manifeste web (favicon, icône "Ajouter à l'écran d'accueil") : accessible
 // sans authentification, un navigateur peut le récupérer depuis la page de
