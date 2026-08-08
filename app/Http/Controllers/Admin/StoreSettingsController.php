@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateStoreAppearanceRequest;
+use App\Http\Requests\Admin\UpdateStoreDeliveryRequest;
 use App\Http\Requests\Admin\UpdateStoreGeneralRequest;
 use App\Models\OnlineStoreSettings;
 use App\Services\OnlineStoreSettingsService;
@@ -55,5 +56,20 @@ class StoreSettingsController extends Controller
         ]);
 
         return back()->with('success', 'Apparence de la boutique mise à jour.');
+    }
+
+    public function editDelivery(): View
+    {
+        $settings = OnlineStoreSettings::current();
+
+        return view('admin.store.delivery', compact('settings'));
+    }
+
+    public function updateDelivery(UpdateStoreDeliveryRequest $request): RedirectResponse
+    {
+        $settings = OnlineStoreSettings::current();
+        $settings->update($request->validated());
+
+        return back()->with('success', 'Réglages de livraison mis à jour.');
     }
 }

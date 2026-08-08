@@ -52,17 +52,28 @@
                 <div class="text-sm leading-relaxed text-slate-600 max-w-none mb-8 whitespace-pre-line">{{ $product->description }}</div>
             @endif
 
-            {{-- Phase 1 : catalogue en lecture seule, pas encore de panier
-                 (voir plan Phase 2). Le bouton reste visible pour montrer
-                 l'intention au commerçant, désactivé avec une explication. --}}
             <div class="space-y-3">
-                <button type="button" disabled
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white opacity-50 cursor-not-allowed"
-                        style="background: var(--store-button);"
-                        title="Commande en ligne disponible prochainement">
-                    <i class="bi bi-cart-plus"></i> Ajouter au panier
-                </button>
-                <p class="text-xs text-slate-400">La commande en ligne arrive bientôt — contactez-nous directement en attendant.</p>
+                @if($product->allow_order && $product->stock_quantity > 0)
+                    <form method="POST" action="{{ route('store.cart.add') }}" class="flex items-center gap-3">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        @unless($product->tracks_imei)
+                            <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}"
+                                   class="w-20 rounded-lg border-slate-200 text-sm text-center">
+                        @endunless
+                        <button type="submit"
+                                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition hover:opacity-90"
+                                style="background: var(--store-button);">
+                            <i class="bi bi-cart-plus"></i> Ajouter au panier
+                        </button>
+                    </form>
+                @else
+                    <button type="button" disabled
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white opacity-50 cursor-not-allowed"
+                            style="background: var(--store-button);">
+                        <i class="bi bi-cart-x"></i> {{ $product->stock_quantity > 0 ? 'Commande indisponible' : 'Rupture de stock' }}
+                    </button>
+                @endif
 
                 @if($settings->whatsapp_number && $product->allow_order)
                     <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings->whatsapp_number) }}?text={{ rawurlencode('Bonjour, je suis intéressé(e) par : '.$product->name) }}"

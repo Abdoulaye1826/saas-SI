@@ -12,6 +12,11 @@
       <i class="bi bi-palette me-1"></i>Apparence
     </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('admin.store.delivery.*') ? 'active' : '' }}" href="{{ route('admin.store.delivery.edit') }}">
+      <i class="bi bi-truck me-1"></i>Livraison
+    </a>
+  </li>
   <li class="nav-item ms-auto">
     <a class="nav-link" href="{{ route('store.home') }}" target="_blank" rel="noopener">
       <i class="bi bi-box-arrow-up-right me-1"></i>Voir la boutique

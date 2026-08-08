@@ -38,6 +38,11 @@
                 <div class="rounded-lg bg-green-50 text-green-800 text-sm px-4 py-3">{{ session('success') }}</div>
             </div>
         @endif
+        @if(session('error'))
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div class="rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3">{{ session('error') }}</div>
+            </div>
+        @endif
 
         @yield('content')
     </main>

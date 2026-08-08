@@ -23,13 +23,22 @@
                 @endforeach
             </nav>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
                 @if($settings->whatsapp_number)
                     <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings->whatsapp_number) }}" target="_blank" rel="noopener"
                        class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-white/90 hover:text-white">
                         <i class="bi bi-whatsapp"></i> Nous contacter
                     </a>
                 @endif
+                <a href="{{ route('store.cart.show') }}" class="relative text-white/90 hover:text-white">
+                    <i class="bi bi-cart3 text-xl"></i>
+                    @php($cartCount = app(\App\Services\CartService::class)->count())
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center rounded-full bg-white text-[10px] font-bold" style="color: var(--store-navbar);">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
                 <button type="button" class="md:hidden text-white" @click="mobileOpen = !mobileOpen" aria-label="Menu">
                     <i class="bi bi-list text-2xl"></i>
                 </button>

@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\EntrepriseController;
+use App\Http\Controllers\Admin\OnlineOrderController;
 use App\Http\Controllers\Admin\StoreSettingsController;
+use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
 use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
+use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
 use App\Http\Controllers\Storefront\HomeController as StorefrontHomeController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\CategoryController;
@@ -156,6 +159,17 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::put('general', [StoreSettingsController::class, 'updateGeneral'])->name('general.update');
         Route::get('apparence', [StoreSettingsController::class, 'editAppearance'])->name('appearance.edit');
         Route::put('apparence', [StoreSettingsController::class, 'updateAppearance'])->name('appearance.update');
+        Route::get('livraison', [StoreSettingsController::class, 'editDelivery'])->name('delivery.edit');
+        Route::put('livraison', [StoreSettingsController::class, 'updateDelivery'])->name('delivery.update');
+    });
+
+    // ── Commandes en ligne (Admin, Gestionnaire, Caissier) ──────
+    Route::middleware('role:admin,manager,cashier')->prefix('commandes-en-ligne')->name('online-orders.')->group(function () {
+        Route::get('/', [OnlineOrderController::class, 'index'])->name('index');
+        Route::get('{onlineOrder}', [OnlineOrderController::class, 'show'])->name('show');
+        Route::post('{onlineOrder}/confirmer', [OnlineOrderController::class, 'confirm'])->name('confirm');
+        Route::post('{onlineOrder}/statut', [OnlineOrderController::class, 'updateStatus'])->name('update-status');
+        Route::post('{onlineOrder}/annuler', [OnlineOrderController::class, 'cancel'])->name('cancel');
     });
 });
 
@@ -168,6 +182,21 @@ Route::middleware('store.open')->prefix('boutique')->name('store.')->group(funct
     Route::get('produits', [StorefrontProductController::class, 'index'])->name('products.index');
     Route::get('produits/{product:slug}', [StorefrontProductController::class, 'show'])->name('products.show');
     Route::get('categorie/{category:slug}', [StorefrontCategoryController::class, 'show'])->name('categories.show');
+
+    // ── Panier (session, achat invité) ────────────────────────
+    Route::get('panier', [StorefrontCartController::class, 'show'])->name('cart.show');
+    Route::post('panier/ajouter', [StorefrontCartController::class, 'add'])->name('cart.add');
+    Route::patch('panier/{product}', [StorefrontCartController::class, 'update'])->name('cart.update');
+    Route::delete('panier/{product}', [StorefrontCartController::class, 'remove'])->name('cart.remove');
+
+    // ── Checkout invité ────────────────────────────────────────
+    Route::get('commande', [StorefrontCheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('commande', [StorefrontCheckoutController::class, 'store'])->name('checkout.store');
 });
+
+// Confirmation de commande : lien signé (numéro de commande prévisible,
+// jamais suffisant seul pour ouvrir la confirmation d'un autre client).
+Route::get('boutique/commande/{order}/confirmation', [StorefrontCheckoutController::class, 'confirmation'])
+    ->middleware(['store.open', 'signed'])->name('store.checkout.confirmation');
 
 require __DIR__.'/auth.php';

@@ -25,11 +25,17 @@ class OnlineStoreSettings extends Model
         'link_color', 'footer_color',
         'hero_image_path', 'hero_title', 'hero_subtitle', 'hero_button_label', 'hero_button_url',
         'meta_title', 'meta_description', 'og_image_path',
+        'delivery_enabled', 'pickup_enabled', 'delivery_fee_dakar', 'delivery_fee_other', 'free_delivery_threshold',
     ];
 
     protected $casts = [
         'status' => StoreStatus::class,
         'opening_hours' => 'array',
+        'delivery_enabled' => 'boolean',
+        'pickup_enabled' => 'boolean',
+        'delivery_fee_dakar' => 'decimal:2',
+        'delivery_fee_other' => 'decimal:2',
+        'free_delivery_threshold' => 'decimal:2',
     ];
 
     public const CACHE_KEY = 'online_store.settings';
@@ -69,6 +75,26 @@ class OnlineStoreSettings extends Model
     public function isOpen(): bool
     {
         return $this->status instanceof StoreStatus && $this->status->isOpen();
+    }
+
+    /**
+     * Frais de livraison applicables pour une zone et un sous-total donnés
+     * (retrait en boutique et seuil de livraison gratuite compris).
+     * Réutilisé à la fois pour l'affichage du récapitulatif panier/checkout
+     * et pour le calcul serveur définitif à la commande (jamais de calcul
+     * fait uniquement côté client).
+     */
+    public function deliveryFeeFor(string $zone, float $subtotal): float
+    {
+        if ($zone === 'pickup') {
+            return 0.0;
+        }
+
+        if ($this->free_delivery_threshold !== null && $subtotal >= (float) $this->free_delivery_threshold) {
+            return 0.0;
+        }
+
+        return $zone === 'dakar' ? (float) $this->delivery_fee_dakar : (float) $this->delivery_fee_other;
     }
 
     public function getLogoUrlAttribute(): ?string
