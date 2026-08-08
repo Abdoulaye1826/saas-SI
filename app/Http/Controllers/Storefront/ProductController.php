@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\StoreEvent;
+use App\Services\StoreAnalyticsService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,8 +19,14 @@ use Illuminate\View\View;
  */
 class ProductController extends Controller
 {
+    public function __construct(private readonly StoreAnalyticsService $analytics)
+    {
+    }
+
     public function index(Request $request): View
     {
+        $this->analytics->track(StoreEvent::TYPE_PAGE_VIEW);
+
         $filters = $request->only(['search', 'category_id', 'availability', 'is_new', 'is_promo', 'min_price', 'max_price']);
 
         $products = Product::query()
@@ -38,6 +46,9 @@ class ProductController extends Controller
     public function show(Product $product): View
     {
         abort_unless($product->show_on_store && $product->is_active, 404);
+
+        $this->analytics->track(StoreEvent::TYPE_PAGE_VIEW);
+        $this->analytics->track(StoreEvent::TYPE_PRODUCT_VIEW, $product->id);
 
         $product->load('category');
 

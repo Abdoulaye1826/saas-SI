@@ -33,6 +33,7 @@ class ReportController extends Controller
             'topCustomers' => $this->dashboardService->getTopCustomers(5, $period),
             'salesByUser' => $this->dashboardService->getSalesByUser(5, $period),
             'salesTypeBreakdown' => $this->dashboardService->getSalesTypeBreakdown($period),
+            'ecommerce' => $this->dashboardService->getEcommerceStats($period),
             'recentInvoices' => $this->dashboardService->getRecentInvoices(),
             'recentQuotes' => $this->dashboardService->getRecentQuotes(),
             'recentStockMovements' => $this->dashboardService->getRecentStockMovements(),

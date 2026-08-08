@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\OnlineStoreSettings;
 use App\Models\Product;
+use App\Models\StoreEvent;
+use App\Services\StoreAnalyticsService;
 use Illuminate\View\View;
 
 /**
@@ -16,8 +18,14 @@ use Illuminate\View\View;
  */
 class HomeController extends Controller
 {
+    public function __construct(private readonly StoreAnalyticsService $analytics)
+    {
+    }
+
     public function index(): View
     {
+        $this->analytics->track(StoreEvent::TYPE_PAGE_VIEW);
+
         $settings = OnlineStoreSettings::current();
 
         $featuredProducts = Product::onStore()->featured()->latest()->limit(8)->get();

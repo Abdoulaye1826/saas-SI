@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\StoreEvent;
 use App\Services\CartService;
+use App\Services\StoreAnalyticsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function __construct(private readonly CartService $cart)
-    {
+    public function __construct(
+        private readonly CartService $cart,
+        private readonly StoreAnalyticsService $analytics,
+    ) {
     }
 
     public function show(): View
@@ -41,6 +45,7 @@ class CartController extends Controller
         $quantity = $product->tracks_imei ? 1 : ($data['quantity'] ?? 1);
 
         $this->cart->add($product->id, $quantity);
+        $this->analytics->track(StoreEvent::TYPE_CART_ADD, $product->id);
 
         return back()->with('success', "« {$product->name} » ajouté au panier.");
     }

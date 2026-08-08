@@ -357,6 +357,74 @@
   @endforeach
 </div>
 
+<h6 class="text-muted small text-uppercase mb-3"><i class="bi bi-shop me-1"></i>Boutique en ligne — {{ $period->label }}</h6>
+<div class="dashboard-summary-grid mb-4">
+  @php
+    $ecommerceKpis = [
+      ['label' => 'Visites', 'value' => $ecommerce['visits'], 'raw' => $ecommerce['visits'], 'suffix' => '', 'icon' => 'bi-eye', 'color' => 'bg-secondary bg-opacity-10 text-secondary'],
+      ['label' => 'Produits consultés', 'value' => $ecommerce['product_views'], 'raw' => $ecommerce['product_views'], 'suffix' => '', 'icon' => 'bi-box-seam', 'color' => 'bg-info bg-opacity-10 text-info'],
+      ['label' => 'Ajouts au panier', 'value' => $ecommerce['cart_adds'], 'raw' => $ecommerce['cart_adds'], 'suffix' => '', 'icon' => 'bi-cart-plus', 'color' => 'bg-warning bg-opacity-10 text-warning'],
+      ['label' => 'Commandes en ligne', 'value' => $ecommerce['online_orders_count'], 'raw' => $ecommerce['online_orders_count'], 'suffix' => '', 'icon' => 'bi-bag-check', 'color' => 'bg-primary bg-opacity-10 text-primary'],
+      ['label' => 'Taux de conversion', 'value' => number_format($ecommerce['conversion_rate'], 1, ',', ' ') . ' %', 'raw' => $ecommerce['conversion_rate'], 'suffix' => '%', 'icon' => 'bi-arrow-right-circle', 'color' => 'bg-dark bg-opacity-10 text-dark'],
+      ['label' => 'CA en ligne', 'value' => number_format($ecommerce['revenue_online'], 0, ',', ' ') . ' FCFA', 'raw' => $ecommerce['revenue_online'], 'suffix' => 'FCFA', 'icon' => 'bi-globe', 'color' => 'bg-success bg-opacity-10 text-success'],
+      ['label' => 'Panier moyen en ligne', 'value' => number_format($ecommerce['average_online_basket'], 0, ',', ' ') . ' FCFA', 'raw' => $ecommerce['average_online_basket'], 'suffix' => 'FCFA', 'icon' => 'bi-cash-coin', 'color' => 'bg-success bg-opacity-10 text-success'],
+    ];
+  @endphp
+  @foreach($ecommerceKpis as $kpi)
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon {{ $kpi['color'] }}"><i class="bi {{ $kpi['icon'] }}"></i></div>
+        <div>
+          <div class="kpi-label">{{ $kpi['label'] }}</div>
+          <div class="kpi-value" data-value="{{ $kpi['raw'] }}" data-suffix="{{ $kpi['suffix'] }}">{{ $kpi['value'] }}</div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="chart-card h-100">
+      <div class="card-title"><i class="bi bi-pie-chart me-2"></i>Ventes physiques vs en ligne</div>
+      <canvas id="onlineVsPhysicalChart" height="240"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="table-card h-100">
+      <div class="p-3 border-bottom">
+        <h6 class="mb-0 fw-semibold"><i class="bi bi-trophy me-2"></i>Produits les plus vendus en ligne</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Produit</th>
+              <th class="text-center">Qté</th>
+              <th class="text-end">Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($ecommerce['top_online_products'] as $index => $product)
+              <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $product->name }}</td>
+                <td class="text-center"><span class="badge bg-primary">{{ $product->total_qty }}</span></td>
+                <td class="text-end">{{ number_format($product->total_amount, 0, ',', ' ') }} FCFA</td>
+              </tr>
+            @empty
+              <tr class="empty-row">
+                <td colspan="4" class="text-center text-muted py-4">Aucune vente en ligne sur cette période</td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row g-3 mb-4">
   <div class="col-lg-4">
     <div class="chart-card h-100">
@@ -737,6 +805,31 @@
       plugins: {
         legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
         centerText: { enabled: true, label: 'Ventes' }
+      }
+    }
+  });
+
+  // ---------- Ventes physiques vs en ligne ----------
+  const onlineVsPhysicalData = [{{ (float) $ecommerce['revenue_physical'] }}, {{ (float) $ecommerce['revenue_online'] }}];
+
+  new Chart(document.getElementById('onlineVsPhysicalChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Physique', 'En ligne'],
+      datasets: [{
+        data: onlineVsPhysicalData.some(v => v > 0) ? onlineVsPhysicalData : [1, 0],
+        backgroundColor: [@json($entreprise->secondary_color ?: '#52504a'), @json($entreprise->accent_color ?: '#153BFF')],
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      cutout: '68%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+        centerText: { enabled: true, label: 'CA' }
       }
     }
   });

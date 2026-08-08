@@ -3,17 +3,20 @@
 namespace App\Services;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\OnlineOrderStatus;
 use App\Enums\QuoteStatus;
 use App\Enums\SaleStatus;
 use App\Enums\SaleType;
 use App\Enums\WarrantyDuration;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\OnlineOrder;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\StockMovement;
+use App\Models\StoreEvent;
 use App\Support\DashboardPeriod;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -543,6 +546,70 @@ class DashboardService
             ->limit($limit)
             ->get()
             ->all();
+    }
+
+    /**
+     * Statistiques e-commerce (boutique en ligne) bornées à la période
+     * sélectionnée — alimente la section "Boutique en ligne" de la page
+     * Rapports. Réutilise Sale::revenueEligible() (même définition du CA
+     * que partout ailleurs dans l'application) et SaleItem (source de
+     * vérité vendue/facturée) plutôt que d'introduire une deuxième
+     * définition du chiffre d'affaires ou des produits vendus.
+     */
+    public function getEcommerceStats(DashboardPeriod $period): array
+    {
+        $start = $period->start;
+        $end = $period->end;
+
+        $visits = StoreEvent::ofType(StoreEvent::TYPE_PAGE_VIEW)->between($start, $end)->count();
+        $productViews = StoreEvent::ofType(StoreEvent::TYPE_PRODUCT_VIEW)->between($start, $end)->count();
+        $cartAdds = StoreEvent::ofType(StoreEvent::TYPE_CART_ADD)->between($start, $end)->count();
+
+        $onlineOrdersCount = OnlineOrder::whereBetween('created_at', [$start, $end])->count();
+        $onlineOrdersConfirmedCount = OnlineOrder::whereBetween('created_at', [$start, $end])
+            ->whereNotIn('status', [OnlineOrderStatus::New->value, OnlineOrderStatus::Cancelled->value])
+            ->count();
+
+        $onlineSales = Sale::revenueEligible()->whereHas('onlineOrder')->whereBetween('sale_date', [$start, $end]);
+        $physicalSales = Sale::revenueEligible()->whereDoesntHave('onlineOrder')->whereBetween('sale_date', [$start, $end]);
+
+        $revenueOnline = (float) (clone $onlineSales)->sum('total_ttc');
+        $revenuePhysical = (float) (clone $physicalSales)->sum('total_ttc');
+        $onlineSalesCount = (clone $onlineSales)->count();
+
+        $topOnlineProducts = SaleItem::query()
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->leftJoin('invoices', 'invoices.sale_id', '=', 'sales.id')
+            ->whereExists(fn ($q) => $q->select(DB::raw(1))
+                ->from('online_orders')
+                ->whereColumn('online_orders.sale_id', 'sales.id'))
+            ->where('sales.status', SaleStatus::Validated->value)
+            ->whereBetween('sales.sale_date', [$start, $end])
+            ->where(fn ($q) => $q->whereNull('invoices.status')->orWhere('invoices.status', '!=', InvoiceStatus::Cancelled->value))
+            ->select(
+                'products.name',
+                DB::raw('SUM(sale_items.quantity) as total_qty'),
+                DB::raw('SUM(sale_items.line_total) as total_amount')
+            )
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('total_qty')
+            ->limit(5)
+            ->get();
+
+        return [
+            'visits' => $visits,
+            'product_views' => $productViews,
+            'cart_adds' => $cartAdds,
+            'online_orders_count' => $onlineOrdersCount,
+            'online_orders_confirmed_count' => $onlineOrdersConfirmedCount,
+            'conversion_rate' => $visits > 0 ? round(($onlineOrdersConfirmedCount / $visits) * 100, 1) : 0.0,
+            'revenue_online' => $revenueOnline,
+            'revenue_physical' => $revenuePhysical,
+            'revenue_total' => $revenueOnline + $revenuePhysical,
+            'average_online_basket' => $onlineSalesCount > 0 ? round($revenueOnline / $onlineSalesCount, 2) : 0.0,
+            'top_online_products' => $topOnlineProducts,
+        ];
     }
 
     /**

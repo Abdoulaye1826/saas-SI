@@ -72,6 +72,16 @@ class Sale extends Model
         return $this->hasOne(Invoice::class);
     }
 
+    /**
+     * Commande en ligne dont la confirmation a créé cette vente (voir
+     * OnlineOrderService::confirm()) — null pour une vente créée
+     * directement au comptoir.
+     */
+    public function onlineOrder(): HasOne
+    {
+        return $this->hasOne(OnlineOrder::class);
+    }
+
     /** IMEI vendus via cette vente. */
     public function soldImeis(): HasMany
     {
