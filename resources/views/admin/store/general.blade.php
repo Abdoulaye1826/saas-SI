@@ -171,6 +171,24 @@
             </div>
           </div>
 
+          {{-- ── Section : Fonctionnalités ────────────────────────── --}}
+          <div class="form-section">
+            <button type="button" class="form-section__header" data-toggle-section aria-expanded="true" aria-controls="section-fonctionnalites">
+              <span class="form-section__title"><i class="bi bi-toggles"></i>Fonctionnalités</span>
+              <i class="bi bi-chevron-down chevron"></i>
+            </button>
+            <div class="form-section__body" id="section-fonctionnalites">
+              <div class="field-group mb-0">
+                <div class="form-check form-switch fs-6 ps-1">
+                  <input class="form-check-input" type="checkbox" id="reviews_enabled" name="reviews_enabled" value="1" role="switch"
+                         {{ old('reviews_enabled', $settings->reviews_enabled) ? 'checked' : '' }}>
+                  <label class="form-check-label" for="reviews_enabled">Avis clients activés</label>
+                </div>
+                <div class="form-text">Permet aux clients connectés de noter et commenter les produits. Les avis déjà validés restent affichés même si vous désactivez cette option.</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div class="form-card__footer">

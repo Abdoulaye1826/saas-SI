@@ -29,6 +29,7 @@ class UpdateStoreGeneralRequest extends FormRequest
             'remove_logo' => ['boolean'],
             'favicon' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,ico', 'max:1024'],
             'remove_favicon' => ['boolean'],
+            'reviews_enabled' => ['boolean'],
         ];
     }
 
@@ -37,6 +38,7 @@ class UpdateStoreGeneralRequest extends FormRequest
         $this->merge([
             'remove_logo' => $this->boolean('remove_logo'),
             'remove_favicon' => $this->boolean('remove_favicon'),
+            'reviews_enabled' => $this->boolean('reviews_enabled'),
         ]);
     }
 

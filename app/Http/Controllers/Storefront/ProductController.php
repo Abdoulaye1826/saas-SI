@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\OnlineStoreSettings;
 use App\Models\Product;
 use App\Models\StoreEvent;
 use App\Services\StoreAnalyticsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -50,7 +52,7 @@ class ProductController extends Controller
         $this->analytics->track(StoreEvent::TYPE_PAGE_VIEW);
         $this->analytics->track(StoreEvent::TYPE_PRODUCT_VIEW, $product->id);
 
-        $product->load('category');
+        $product->load(['category', 'approvedReviews' => fn ($q) => $q->with('customer')->latest()]);
 
         $related = Product::onStore()
             ->where('category_id', $product->category_id)
@@ -58,6 +60,10 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
 
-        return view('storefront.products.show', compact('product', 'related'));
+        $reviewsEnabled = OnlineStoreSettings::current()->reviews_enabled;
+        $customerId = Auth::guard('customer')->id();
+        $hasReviewed = $customerId !== null && $product->reviews()->where('customer_id', $customerId)->exists();
+
+        return view('storefront.products.show', compact('product', 'related', 'reviewsEnabled', 'hasReviewed'));
     }
 }

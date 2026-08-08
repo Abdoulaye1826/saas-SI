@@ -137,6 +137,12 @@ class MenuService
                 'roles' => ['admin', 'manager', 'cashier'],
             ],
             [
+                'label' => 'Avis clients',
+                'route' => 'product-reviews.index',
+                'icon' => 'bi-star',
+                'roles' => ['admin', 'manager'],
+            ],
+            [
                 'label' => 'Boutique en ligne',
                 'icon' => 'bi-shop',
                 'roles' => ['admin', 'manager'],

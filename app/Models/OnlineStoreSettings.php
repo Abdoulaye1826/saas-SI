@@ -26,6 +26,7 @@ class OnlineStoreSettings extends Model
         'hero_image_path', 'hero_title', 'hero_subtitle', 'hero_button_label', 'hero_button_url',
         'meta_title', 'meta_description', 'og_image_path',
         'delivery_enabled', 'pickup_enabled', 'delivery_fee_dakar', 'delivery_fee_other', 'free_delivery_threshold',
+        'reviews_enabled',
     ];
 
     protected $casts = [
@@ -36,6 +37,7 @@ class OnlineStoreSettings extends Model
         'delivery_fee_dakar' => 'decimal:2',
         'delivery_fee_other' => 'decimal:2',
         'free_delivery_threshold' => 'decimal:2',
+        'reviews_enabled' => 'boolean',
     ];
 
     public const CACHE_KEY = 'online_store.settings';

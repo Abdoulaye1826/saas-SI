@@ -87,6 +87,16 @@ class Product extends Model
         return $this->hasMany(ProductImei::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->reviews()->approved();
+    }
+
     // ─── Accesseurs ──────────────────────────────────────────
 
     protected function margin(): Attribute
@@ -147,6 +157,23 @@ class Product extends Model
             get: fn () => ($this->is_promo && $this->promo_price !== null && (float) $this->promo_price > 0)
                 ? (float) $this->promo_price
                 : (float) $this->sale_price,
+        );
+    }
+
+    /**
+     * Moyenne des avis approuvés (null si aucun) — arrondie à 1 décimale
+     * pour l'affichage (ex: "4.3 ★").
+     */
+    protected function averageRating(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $avg = $this->relationLoaded('approvedReviews')
+                    ? $this->approvedReviews->avg('rating')
+                    : $this->approvedReviews()->avg('rating');
+
+                return $avg !== null ? round((float) $avg, 1) : null;
+            },
         );
     }
 

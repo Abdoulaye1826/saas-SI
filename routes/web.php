@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\EntrepriseController;
 use App\Http\Controllers\Admin\OnlineOrderController;
+use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\StoreSettingsController;
 use App\Http\Controllers\Storefront\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Storefront\Account\ProfileController as AccountProfileController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryCont
 use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
 use App\Http\Controllers\Storefront\HomeController as StorefrontHomeController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
+use App\Http\Controllers\Storefront\ReviewController as StorefrontReviewController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -177,6 +179,14 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('{onlineOrder}/statut', [OnlineOrderController::class, 'updateStatus'])->name('update-status');
         Route::post('{onlineOrder}/annuler', [OnlineOrderController::class, 'cancel'])->name('cancel');
     });
+
+    // ── Avis clients (Admin, Gestionnaire) ──────────────────────
+    Route::middleware('role:admin,manager')->prefix('avis-clients')->name('product-reviews.')->group(function () {
+        Route::get('/', [ProductReviewController::class, 'index'])->name('index');
+        Route::post('{productReview}/valider', [ProductReviewController::class, 'approve'])->name('approve');
+        Route::post('{productReview}/refuser', [ProductReviewController::class, 'reject'])->name('reject');
+        Route::post('{productReview}/masquer', [ProductReviewController::class, 'hide'])->name('hide');
+    });
 });
 
 // ── Boutique en ligne (publique, sans authentification) ──────────
@@ -188,6 +198,10 @@ Route::middleware('store.open')->prefix('boutique')->name('store.')->group(funct
     Route::get('produits', [StorefrontProductController::class, 'index'])->name('products.index');
     Route::get('produits/{product:slug}', [StorefrontProductController::class, 'show'])->name('products.show');
     Route::get('categorie/{category:slug}', [StorefrontCategoryController::class, 'show'])->name('categories.show');
+
+    // ── Avis clients (réservé aux clients connectés) ────────────
+    Route::post('produits/{product}/avis', [StorefrontReviewController::class, 'store'])
+        ->middleware('auth.customer')->name('reviews.store');
 
     // ── Panier (session, achat invité) ────────────────────────
     Route::get('panier', [StorefrontCartController::class, 'show'])->name('cart.show');

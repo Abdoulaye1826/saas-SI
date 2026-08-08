@@ -30,7 +30,18 @@
             @if($product->category)
                 <div class="text-xs uppercase tracking-wide text-slate-400 mb-2">{{ $product->category->name }}</div>
             @endif
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">{{ $product->name }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{{ $product->name }}</h1>
+
+            @if($product->average_rating !== null)
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="flex text-amber-400">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill' : 'bi-star' }}"></i>
+                        @endfor
+                    </div>
+                    <span class="text-sm text-slate-500">{{ $product->average_rating }}/5 ({{ $product->approvedReviews->count() }} avis)</span>
+                </div>
+            @endif
 
             <div class="flex items-baseline gap-3 mb-4">
                 @if($product->is_promo && $product->promo_price)
@@ -84,6 +95,78 @@
                 @endif
             </div>
         </div>
+    </div>
+
+    {{-- ── Avis clients ─────────────────────────────────────────── --}}
+    <div class="mt-16 max-w-3xl">
+        <h2 class="text-xl font-bold text-slate-900 mb-6">Avis clients</h2>
+
+        @if(session('success'))
+            <div class="mb-6 rounded-lg bg-green-50 text-green-800 text-sm px-4 py-3">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3">{{ session('error') }}</div>
+        @endif
+
+        @if($product->approvedReviews->isEmpty())
+            <p class="text-sm text-slate-400 mb-6">Aucun avis pour ce produit pour le moment.</p>
+        @else
+            <div class="space-y-4 mb-8">
+                @foreach($product->approvedReviews as $review)
+                    <div class="border border-slate-100 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-medium text-slate-800 text-sm">{{ $review->customer?->full_name ?? 'Client' }}</span>
+                            <span class="text-xs text-slate-400">{{ $review->created_at->format('d/m/Y') }}</span>
+                        </div>
+                        <div class="flex text-amber-400 text-sm mb-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
+                            @endfor
+                        </div>
+                        @if($review->comment)
+                            <p class="text-sm text-slate-600">{{ $review->comment }}</p>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if($reviewsEnabled)
+            @auth('customer')
+                @if($hasReviewed)
+                    <p class="text-sm text-slate-400">Vous avez déjà donné votre avis sur ce produit.</p>
+                @else
+                    <form method="POST" action="{{ route('store.reviews.store', $product) }}" class="border border-slate-100 rounded-xl p-5" x-data="{ rating: 0 }">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-slate-600 mb-2">Votre note</label>
+                            <div class="flex gap-1 text-2xl">
+                                <template x-for="star in [1,2,3,4,5]" :key="star">
+                                    <button type="button" @click="rating = star" :class="star <= rating ? 'text-amber-400' : 'text-slate-300'">
+                                        <i class="bi bi-star-fill"></i>
+                                    </button>
+                                </template>
+                            </div>
+                            <input type="hidden" name="rating" :value="rating">
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Commentaire (optionnel)</label>
+                            <textarea name="comment" rows="3" class="w-full rounded-lg border-slate-200 text-sm"></textarea>
+                        </div>
+                        <button type="submit" :disabled="rating === 0"
+                                class="rounded-lg px-5 py-2.5 font-semibold text-white disabled:opacity-40"
+                                style="background: var(--store-button);">
+                            Envoyer mon avis
+                        </button>
+                    </form>
+                @endif
+            @else
+                <p class="text-sm text-slate-400">
+                    <a href="{{ route('store.account.login') }}" class="store-link font-medium">Connectez-vous</a>
+                    pour laisser un avis sur ce produit.
+                </p>
+            @endauth
+        @endif
     </div>
 
     @if($related->isNotEmpty())
