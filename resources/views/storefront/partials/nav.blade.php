@@ -1,5 +1,6 @@
 @php
     $navCategories = \App\Models\Category::onStore()->limit(6)->get();
+    $navMenus = \App\Models\StoreMenu::active()->get();
 @endphp
 <header class="sticky top-0 z-40 shadow-sm" style="background: var(--store-navbar);" x-data="{ mobileOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,6 +21,9 @@
                 <a href="{{ route('store.products.index') }}" class="text-white/90 hover:text-white">Boutique</a>
                 @foreach($navCategories as $navCategory)
                     <a href="{{ route('store.categories.show', $navCategory) }}" class="text-white/90 hover:text-white">{{ $navCategory->name }}</a>
+                @endforeach
+                @foreach($navMenus as $navMenu)
+                    <a href="{{ $navMenu->url }}" @if($navMenu->opens_new_tab) target="_blank" rel="noopener" @endif class="text-white/90 hover:text-white">{{ $navMenu->label }}</a>
                 @endforeach
             </nav>
 
@@ -59,6 +63,9 @@
             <a href="{{ route('store.products.index') }}" class="text-white/90 hover:text-white">Boutique</a>
             @foreach($navCategories as $navCategory)
                 <a href="{{ route('store.categories.show', $navCategory) }}" class="text-white/90 hover:text-white">{{ $navCategory->name }}</a>
+            @endforeach
+            @foreach($navMenus as $navMenu)
+                <a href="{{ $navMenu->url }}" @if($navMenu->opens_new_tab) target="_blank" rel="noopener" @endif class="text-white/90 hover:text-white">{{ $navMenu->label }}</a>
             @endforeach
             @auth('customer')
                 <a href="{{ route('store.account.orders.index') }}" class="text-white/90 hover:text-white">Mon compte</a>

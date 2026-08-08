@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\EntrepriseController;
 use App\Http\Controllers\Admin\OnlineOrderController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Admin\StoreMenuController;
+use App\Http\Controllers\Admin\StorePageController;
 use App\Http\Controllers\Admin\StoreSettingsController;
 use App\Http\Controllers\Storefront\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Storefront\Account\ProfileController as AccountProfileController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
 use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
 use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
 use App\Http\Controllers\Storefront\HomeController as StorefrontHomeController;
+use App\Http\Controllers\Storefront\PageController as StorefrontPageController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\Storefront\ReviewController as StorefrontReviewController;
 use App\Http\Controllers\CategoryController;
@@ -187,6 +190,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('{productReview}/refuser', [ProductReviewController::class, 'reject'])->name('reject');
         Route::post('{productReview}/masquer', [ProductReviewController::class, 'hide'])->name('hide');
     });
+
+    // ── Pages & menus personnalisables (Admin, Gestionnaire) ────
+    Route::middleware('role:admin,manager')->group(function () {
+        Route::resource('store-pages', StorePageController::class)->except(['show']);
+        Route::resource('store-menus', StoreMenuController::class)->except(['show']);
+        Route::post('store-menus-reorder', [StoreMenuController::class, 'reorder'])->name('store-menus.reorder');
+    });
 });
 
 // ── Boutique en ligne (publique, sans authentification) ──────────
@@ -195,6 +205,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 // tant que le statut n'est pas "active" (voir Admin > Boutique > Général).
 Route::middleware('store.open')->prefix('boutique')->name('store.')->group(function () {
     Route::get('/', [StorefrontHomeController::class, 'index'])->name('home');
+    Route::get('page/{page:slug}', [StorefrontPageController::class, 'show'])->name('pages.show');
     Route::get('produits', [StorefrontProductController::class, 'index'])->name('products.index');
     Route::get('produits/{product:slug}', [StorefrontProductController::class, 'show'])->name('products.show');
     Route::get('categorie/{category:slug}', [StorefrontCategoryController::class, 'show'])->name('categories.show');

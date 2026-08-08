@@ -150,6 +150,8 @@ class MenuService
                     ['label' => 'Général', 'route' => 'admin.store.general.edit', 'roles' => ['admin', 'manager']],
                     ['label' => 'Apparence', 'route' => 'admin.store.appearance.edit', 'roles' => ['admin', 'manager']],
                     ['label' => 'Livraison', 'route' => 'admin.store.delivery.edit', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Pages', 'route' => 'store-pages.index', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Menus', 'route' => 'store-menus.index', 'roles' => ['admin', 'manager']],
                     ['label' => 'Voir la boutique', 'route' => 'store.home', 'roles' => ['admin', 'manager'], 'target' => '_blank'],
                 ],
             ],

@@ -1,5 +1,6 @@
 <footer class="mt-16 text-white text-sm" style="background: var(--store-footer);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
+    @php($footerPages = \App\Models\StorePage::published()->where('show_in_footer', true)->orderBy('title')->get())
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
             <div class="font-bold text-base mb-2">{{ $settings->name ?: $entreprise->name }}</div>
             @if($settings->slogan)
@@ -30,6 +31,16 @@
                 </ul>
             @endif
         </div>
+        @if($footerPages->isNotEmpty())
+            <div>
+                <div class="font-semibold mb-2">Informations</div>
+                <ul class="space-y-1 text-white/70">
+                    @foreach($footerPages as $footerPage)
+                        <li><a href="{{ route('store.pages.show', $footerPage) }}" class="hover:text-white">{{ $footerPage->title }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
     <div class="border-t border-white/10 py-4 text-center text-white/50 text-xs">
         &copy; {{ date('Y') }} {{ $settings->name ?: $entreprise->name }} — Tous droits réservés
