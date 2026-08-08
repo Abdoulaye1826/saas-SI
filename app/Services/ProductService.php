@@ -54,6 +54,8 @@ class ProductService
             $data['image'] = $this->storeImage($image);
         }
 
+        $data['slug'] = Product::generateUniqueSlug($data['name']);
+
         $product = Product::create($data);
 
         $this->activityLog->log('create', $product, "Produit créé : {$product->name} ({$product->reference})");
@@ -73,6 +75,14 @@ class ProductService
                 $this->deleteImage($product->image);
             }
             $data['image'] = $this->storeImage($image);
+        }
+
+        // Régénère le slug uniquement si le nom a changé ou si le produit
+        // n'en avait pas encore (ex: créé avant l'introduction du champ) —
+        // évite de casser une URL boutique déjà partagée/indexée à chaque
+        // modification du produit qui ne touche pas son nom.
+        if (empty($product->slug) || (isset($data['name']) && $data['name'] !== $product->name)) {
+            $data['slug'] = Product::generateUniqueSlug($data['name'] ?? $product->name, $product->id);
         }
 
         $product->update($data);

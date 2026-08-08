@@ -21,26 +21,43 @@ class Product extends Model
         'reference',
         'barcode',
         'name',
+        'slug',
         'description',
         'brand',
         'purchase_price',
         'sale_price',
+        'promo_price',
         'supplier_sale_price',
         'stock_quantity',
         'minimum_stock',
         'image',
         'is_active',
         'tracks_imei',
+        'show_on_store',
+        'is_featured',
+        'is_new',
+        'is_promo',
+        'allow_order',
+        'show_stock',
+        'meta_title',
+        'meta_description',
     ];
 
     protected $casts = [
         'purchase_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'promo_price' => 'decimal:2',
         'supplier_sale_price' => 'decimal:2',
         'stock_quantity' => 'integer',
         'minimum_stock' => 'integer',
         'is_active' => 'boolean',
         'tracks_imei' => 'boolean',
+        'show_on_store' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_new' => 'boolean',
+        'is_promo' => 'boolean',
+        'allow_order' => 'boolean',
+        'show_stock' => 'boolean',
     ];
 
     // ─── Relations ───────────────────────────────────────────
@@ -120,6 +137,19 @@ class Product extends Model
         );
     }
 
+    /**
+     * Prix effectivement affiché sur la boutique : le prix promo s'il est
+     * actif et renseigné, sinon le prix de vente normal.
+     */
+    protected function effectivePrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ($this->is_promo && $this->promo_price !== null && (float) $this->promo_price > 0)
+                ? (float) $this->promo_price
+                : (float) $this->sale_price,
+        );
+    }
+
     // ─── Scopes ──────────────────────────────────────────────
 
     public function scopeActive($query)
@@ -162,6 +192,43 @@ class Product extends Model
             ->when(($filters['stock_status'] ?? null) === 'out', fn ($q) => $q->outOfStock());
     }
 
+    /**
+     * Produits publiés sur la boutique en ligne : visibles ET vendables.
+     * Un produit désactivé côté back-office (is_active=false) disparaît
+     * automatiquement de la boutique, même si show_on_store est resté coché.
+     */
+    public function scopeOnStore($query)
+    {
+        return $query->where('show_on_store', true)->where('is_active', true);
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function scopeNew($query)
+    {
+        return $query->where('is_new', true);
+    }
+
+    public function scopePromo($query)
+    {
+        return $query->where('is_promo', true)->whereNotNull('promo_price');
+    }
+
+    public function scopeStoreFilter($query, array $filters)
+    {
+        return $query
+            ->when($filters['category_id'] ?? null, fn ($q, $id) => $q->where('category_id', $id))
+            ->when(($filters['availability'] ?? null) === 'in_stock', fn ($q) => $q->where('stock_quantity', '>', 0))
+            ->when(($filters['availability'] ?? null) === 'out_of_stock', fn ($q) => $q->where('stock_quantity', '<=', 0))
+            ->when($filters['is_new'] ?? null, fn ($q) => $q->new())
+            ->when($filters['is_promo'] ?? null, fn ($q) => $q->promo())
+            ->when($filters['min_price'] ?? null, fn ($q, $min) => $q->where('sale_price', '>=', $min))
+            ->when($filters['max_price'] ?? null, fn ($q, $max) => $q->where('sale_price', '<=', $max));
+    }
+
     // ─── Méthodes métier ─────────────────────────────────────
 
     public function isLowStock(): bool
@@ -183,5 +250,31 @@ class Product extends Model
     {
         $count = $this->imeis()->available()->count();
         $this->update(['stock_quantity' => $count]);
+    }
+
+    /**
+     * Génère un slug unique pour l'URL boutique (/boutique/produits/{slug}),
+     * à partir du nom. Ajoute un suffixe numérique en cas de collision —
+     * contrairement à Category::setNameAttribute() qui suppose l'unicité du
+     * nom, la référence produit peut se répéter partiellement d'un nom à
+     * l'autre (ex: "Manette PS5" vendue en plusieurs coloris).
+     */
+    public static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = \Illuminate\Support\Str::slug($name) ?: 'produit';
+        $slug = $base;
+        $suffix = 1;
+
+        while (
+            static::query()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $suffix++;
+            $slug = "{$base}-{$suffix}";
+        }
+
+        return $slug;
     }
 }

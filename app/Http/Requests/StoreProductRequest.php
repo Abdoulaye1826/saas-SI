@@ -30,6 +30,17 @@ class StoreProductRequest extends FormRequest
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'is_active' => ['boolean'],
             'tracks_imei' => ['boolean'],
+
+            // ── Boutique en ligne ──────────────────────────────
+            'show_on_store' => ['boolean'],
+            'is_featured' => ['boolean'],
+            'is_new' => ['boolean'],
+            'is_promo' => ['boolean'],
+            'promo_price' => ['nullable', 'numeric', 'min:0', 'lt:sale_price'],
+            'allow_order' => ['boolean'],
+            'show_stock' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:191'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -52,6 +63,12 @@ class StoreProductRequest extends FormRequest
             // Le stock d'un produit suivi par IMEI est toujours recalculé à
             // partir des IMEI enregistrés, jamais saisi manuellement.
             'stock_quantity' => $this->boolean('tracks_imei') ? 0 : $this->input('stock_quantity'),
+            'show_on_store' => $this->boolean('show_on_store'),
+            'is_featured' => $this->boolean('is_featured'),
+            'is_new' => $this->boolean('is_new'),
+            'is_promo' => $this->boolean('is_promo'),
+            'allow_order' => $this->boolean('allow_order'),
+            'show_stock' => $this->boolean('show_stock'),
         ]);
     }
 }

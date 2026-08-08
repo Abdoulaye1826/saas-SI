@@ -39,6 +39,17 @@ class UpdateProductRequest extends FormRequest
             'remove_image' => ['boolean'],
             'is_active' => ['boolean'],
             'tracks_imei' => ['boolean'],
+
+            // ── Boutique en ligne ──────────────────────────────
+            'show_on_store' => ['boolean'],
+            'is_featured' => ['boolean'],
+            'is_new' => ['boolean'],
+            'is_promo' => ['boolean'],
+            'promo_price' => ['nullable', 'numeric', 'min:0', 'lt:sale_price'],
+            'allow_order' => ['boolean'],
+            'show_stock' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:191'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -55,6 +66,12 @@ class UpdateProductRequest extends FormRequest
             // manuellement : on conserve la valeur déjà synchronisée avec
             // les IMEI enregistrés plutôt que d'accepter une saisie libre.
             'stock_quantity' => $tracksImei ? $product?->stock_quantity ?? 0 : $this->input('stock_quantity'),
+            'show_on_store' => $this->boolean('show_on_store'),
+            'is_featured' => $this->boolean('is_featured'),
+            'is_new' => $this->boolean('is_new'),
+            'is_promo' => $this->boolean('is_promo'),
+            'allow_order' => $this->boolean('allow_order'),
+            'show_stock' => $this->boolean('show_stock'),
         ]);
     }
 }

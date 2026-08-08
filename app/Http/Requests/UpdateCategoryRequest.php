@@ -21,6 +21,10 @@ class UpdateCategoryRequest extends FormRequest
             ],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_active' => ['boolean'],
+            'show_on_store' => ['boolean'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'remove_image' => ['boolean'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -36,6 +40,8 @@ class UpdateCategoryRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
+            'show_on_store' => $this->boolean('show_on_store'),
+            'remove_image' => $this->boolean('remove_image'),
         ]);
     }
 }

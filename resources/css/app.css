@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Boutique en ligne (Alpine.js) : masque les éléments x-cloak jusqu'à ce
+   qu'Alpine ait fini de s'initialiser, pour éviter un flash du menu mobile
+   ouvert avant que la directive x-show ne prenne effet. */
+[x-cloak] { display: none !important; }

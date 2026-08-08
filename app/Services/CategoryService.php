@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Category;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -42,9 +44,13 @@ class CategoryService
         ];
     }
 
-    public function create(array $data): Category
+    public function create(array $data, ?UploadedFile $image = null): Category
     {
         $data['slug'] = Str::slug($data['name']);
+
+        if ($image) {
+            $data['image_path'] = $this->storeImage($image);
+        }
 
         $category = Category::create($data);
 
@@ -53,14 +59,37 @@ class CategoryService
         return $category;
     }
 
-    public function update(Category $category, array $data): Category
+    public function update(Category $category, array $data, ?UploadedFile $image = null, bool $removeImage = false): Category
     {
         $data['slug'] = Str::slug($data['name']);
+
+        if ($removeImage && $category->image_path) {
+            $this->deleteImage($category->image_path);
+            $data['image_path'] = null;
+        }
+
+        if ($image) {
+            if ($category->image_path) {
+                $this->deleteImage($category->image_path);
+            }
+            $data['image_path'] = $this->storeImage($image);
+        }
+
         $category->update($data);
 
         $this->activityLog->log('update', $category, "Catégorie modifiée : {$category->name}");
 
         return $category->fresh();
+    }
+
+    private function storeImage(UploadedFile $image): string
+    {
+        return $image->store('categories', 'public');
+    }
+
+    private function deleteImage(string $path): void
+    {
+        Storage::disk('public')->delete($path);
     }
 
     public function delete(Category $category): void

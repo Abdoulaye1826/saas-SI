@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\EntrepriseController;
+use App\Http\Controllers\Admin\StoreSettingsController;
+use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
+use App\Http\Controllers\Storefront\HomeController as StorefrontHomeController;
+use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -145,6 +149,25 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('entreprise', [EntrepriseController::class, 'edit'])->name('entreprise.edit');
         Route::put('entreprise', [EntrepriseController::class, 'update'])->name('entreprise.update');
     });
+
+    // ── Réglages de la boutique en ligne (Admin, Gestionnaire) ──
+    Route::middleware('role:admin,manager')->prefix('boutique-admin/reglages')->name('admin.store.')->group(function () {
+        Route::get('general', [StoreSettingsController::class, 'editGeneral'])->name('general.edit');
+        Route::put('general', [StoreSettingsController::class, 'updateGeneral'])->name('general.update');
+        Route::get('apparence', [StoreSettingsController::class, 'editAppearance'])->name('appearance.edit');
+        Route::put('apparence', [StoreSettingsController::class, 'updateAppearance'])->name('appearance.update');
+    });
+});
+
+// ── Boutique en ligne (publique, sans authentification) ──────────
+// Phase 1 : catalogue en lecture seule (recherche/filtres/détail),
+// pas encore de panier ni de commande. Bloquée par EnsureStoreIsOpen
+// tant que le statut n'est pas "active" (voir Admin > Boutique > Général).
+Route::middleware('store.open')->prefix('boutique')->name('store.')->group(function () {
+    Route::get('/', [StorefrontHomeController::class, 'index'])->name('home');
+    Route::get('produits', [StorefrontProductController::class, 'index'])->name('products.index');
+    Route::get('produits/{product:slug}', [StorefrontProductController::class, 'show'])->name('products.show');
+    Route::get('categorie/{category:slug}', [StorefrontCategoryController::class, 'show'])->name('categories.show');
 });
 
 require __DIR__.'/auth.php';

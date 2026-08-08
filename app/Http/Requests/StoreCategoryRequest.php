@@ -18,6 +18,9 @@ class StoreCategoryRequest extends FormRequest
             'name' => ['required', 'string', 'max:100', 'unique:categories,name'],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_active' => ['boolean'],
+            'show_on_store' => ['boolean'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -33,6 +36,7 @@ class StoreCategoryRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
+            'show_on_store' => $this->boolean('show_on_store'),
         ]);
     }
 }

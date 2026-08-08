@@ -35,7 +35,7 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse|JsonResponse
     {
-        $category = $this->categoryService->create($request->validated());
+        $category = $this->categoryService->create($request->safe()->except(['image']), $request->file('image'));
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -55,7 +55,12 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        $this->categoryService->update($category, $request->validated());
+        $this->categoryService->update(
+            $category,
+            $request->safe()->except(['image', 'remove_image']),
+            $request->file('image'),
+            $request->boolean('remove_image')
+        );
 
         return redirect()->route('categories.index')
             ->with('success', 'Catégorie mise à jour avec succès.');

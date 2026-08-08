@@ -28,6 +28,7 @@
           <div class="nav-subgroup">
             @foreach($item['children'] as $child)
               <a href="{{ route($child['route'], $child['params'] ?? []) }}"
+                 @if(isset($child['target'])) target="{{ $child['target'] }}" rel="noopener" @endif
                  class="nav-link nav-link--sub {{ request()->routeIs($child['route']) || request()->routeIs(str_replace('.index', '.*', $child['route'])) ? 'active' : '' }}">
                 <span>{{ $child['label'] }}</span>
               </a>

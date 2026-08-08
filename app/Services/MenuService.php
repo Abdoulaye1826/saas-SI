@@ -131,6 +131,16 @@ class MenuService
                 'roles' => ['admin', 'manager'],
             ],
             [
+                'label' => 'Boutique en ligne',
+                'icon' => 'bi-shop',
+                'roles' => ['admin', 'manager'],
+                'children' => [
+                    ['label' => 'Général', 'route' => 'admin.store.general.edit', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Apparence', 'route' => 'admin.store.appearance.edit', 'roles' => ['admin', 'manager']],
+                    ['label' => 'Voir la boutique', 'route' => 'store.home', 'roles' => ['admin', 'manager'], 'target' => '_blank'],
+                ],
+            ],
+            [
                 'label' => 'Entreprise',
                 'route' => 'admin.entreprise.edit',
                 'icon' => 'bi-building',

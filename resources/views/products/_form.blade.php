@@ -243,6 +243,77 @@
     </div>
   </div>
 
+  {{-- ── Section : Boutique en ligne ─────────────────────────── --}}
+  <div class="form-section">
+    <button type="button" class="form-section__header" data-toggle-section aria-expanded="true" aria-controls="section-boutique">
+      <span class="form-section__title"><i class="bi bi-shop"></i>Boutique en ligne</span>
+      <i class="bi bi-chevron-down chevron"></i>
+    </button>
+    <div class="form-section__body" id="section-boutique">
+      <div class="row">
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="show_on_store" name="show_on_store" value="1" role="switch"
+                   {{ old('show_on_store', $product->show_on_store ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="show_on_store">Afficher sur la boutique</label>
+          </div>
+          <div class="form-text">Visible côté client si le produit est aussi actif.</div>
+        </div>
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="1" role="switch"
+                   {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_featured">Produit vedette</label>
+          </div>
+          <div class="form-text">Mis en avant sur la page d'accueil.</div>
+        </div>
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="is_new" name="is_new" value="1" role="switch"
+                   {{ old('is_new', $product->is_new ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_new">Nouveauté</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="allow_order" name="allow_order" value="1" role="switch"
+                   {{ old('allow_order', $product->allow_order ?? true) ? 'checked' : '' }}>
+            <label class="form-check-label" for="allow_order">Autoriser la commande</label>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="show_stock" name="show_stock" value="1" role="switch"
+                   {{ old('show_stock', $product->show_stock ?? true) ? 'checked' : '' }}>
+            <label class="form-check-label" for="show_stock">Afficher le stock</label>
+          </div>
+          <div class="form-text">Jamais le détail IMEI, uniquement la quantité.</div>
+        </div>
+        <div class="col-sm-6 col-lg-4 field-group">
+          <div class="form-check form-switch fs-6 ps-1">
+            <input class="form-check-input" type="checkbox" id="is_promo" name="is_promo" value="1" role="switch"
+                   {{ old('is_promo', $product->is_promo ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_promo">En promotion</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" id="promoPriceRow" style="{{ old('is_promo', $product->is_promo ?? false) ? '' : 'display:none;' }}">
+        <div class="col-sm-6 field-group mb-0">
+          <label for="promo_price" class="form-label">Prix promotionnel</label>
+          <input type="number" step="0.01" min="0" class="form-control @error('promo_price') is-invalid @enderror"
+                 id="promo_price" name="promo_price" value="{{ old('promo_price', $product->promo_price ?? '') }}"
+                 placeholder="0">
+          @error('promo_price')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+          <div class="form-text">FCFA, doit être inférieur au prix de vente client. Affiché avec le prix normal barré.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {{-- ── Section : IMEI (téléphones) ─────────────────────────── --}}
   <div class="form-section" id="imeiSection" style="display:none;">
     <button type="button" class="form-section__header" data-toggle-section aria-expanded="true" aria-controls="section-imei">
@@ -345,6 +416,17 @@
     purchaseInput.addEventListener('input', updateMarginPreview);
     saleInput.addEventListener('input', updateMarginPreview);
     updateMarginPreview();
+  });
+
+  // Affiche le champ "Prix promotionnel" uniquement quand "En promotion"
+  // est coché — évite d'exposer un champ sans effet le reste du temps.
+  document.addEventListener('DOMContentLoaded', function () {
+    const isPromoCheckbox = document.getElementById('is_promo');
+    const promoPriceRow = document.getElementById('promoPriceRow');
+
+    isPromoCheckbox?.addEventListener('change', function () {
+      if (promoPriceRow) promoPriceRow.style.display = isPromoCheckbox.checked ? '' : 'none';
+    });
   });
 
   // Une douchette code-barres/QR envoie le code puis "Entrée" : sans ce

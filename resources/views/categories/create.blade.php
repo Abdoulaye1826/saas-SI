@@ -15,7 +15,7 @@
 </div>
 
 <div class="form-shell u-animate" style="max-width:560px;">
-  <form method="POST" action="{{ route('categories.store') }}" data-ui-form novalidate>
+  <form method="POST" action="{{ route('categories.store') }}" enctype="multipart/form-data" data-ui-form novalidate>
     @csrf
     <div class="form-card">
       <div class="form-card__header">
