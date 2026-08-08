@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', $settings->name ?: $entreprise->name)</title>
     <meta name="description" content="@yield('meta_description', $settings->meta_description ?: $settings->description)">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    {{-- Open Graph / Twitter Card. Chaque vue peut définir ses propres
+         sections og_title/og_description/og_image/og_type (voir
+         storefront/products/show.blade.php pour un exemple) ; à défaut,
+         retombe sur le nom et la description de la boutique. --}}
+    <meta property="og:site_name" content="{{ $settings->name ?: $entreprise->name }}">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="@yield('canonical', url()->current())">
+    <meta property="og:title" content="@yield('og_title', $settings->name ?: $entreprise->name)">
+    <meta property="og:description" content="@yield('og_description', $settings->meta_description ?: $settings->description)">
+    @hasSection('og_image')
+        <meta property="og:image" content="@yield('og_image')">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="@yield('og_image')">
+    @elseif($settings->og_image_url ?: ($settings->logo_url ?? $entreprise->logo_url ?? null))
+        <meta property="og:image" content="{{ $settings->og_image_url ?: ($settings->logo_url ?? $entreprise->logo_url) }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="{{ $settings->og_image_url ?: ($settings->logo_url ?? $entreprise->logo_url) }}">
+    @else
+        <meta name="twitter:card" content="summary">
+    @endif
+    <meta name="twitter:title" content="@yield('og_title', $settings->name ?: $entreprise->name)">
+    <meta name="twitter:description" content="@yield('og_description', $settings->meta_description ?: $settings->description)">
 
     <link rel="icon" href="{{ $settings->favicon_url ?? $entreprise->logo_url ?? asset('images/logo.jpeg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">

@@ -2,6 +2,9 @@
 
 @section('title', ($page->meta_title ?: $page->title).' — '.($settings->name ?: $entreprise->name))
 @section('meta_description', $page->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($page->content), 155))
+@section('canonical', route('store.pages.show', $page))
+@section('og_title', $page->meta_title ?: $page->title)
+@section('og_description', $page->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($page->content), 155))
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -2,6 +2,12 @@
 
 @section('title', $category->name.' — '.($settings->name ?: $entreprise->name))
 @section('meta_description', \Illuminate\Support\Str::limit(strip_tags($category->description), 155))
+@section('canonical', route('store.categories.show', $category))
+@section('og_title', $category->name)
+@section('og_description', \Illuminate\Support\Str::limit(strip_tags($category->description), 155))
+@if($category->image_url)
+    @section('og_image', $category->image_url)
+@endif
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

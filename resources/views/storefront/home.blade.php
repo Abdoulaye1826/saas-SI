@@ -1,6 +1,10 @@
 @extends('layouts.storefront')
 
 @section('title', ($settings->meta_title ?: $settings->name ?: $entreprise->name))
+@section('canonical', route('store.home'))
+@if($settings->hero_image_url)
+    @section('og_image', $settings->hero_image_url)
+@endif
 
 @section('content')
 

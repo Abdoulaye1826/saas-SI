@@ -2,6 +2,13 @@
 
 @section('title', ($product->meta_title ?: $product->name).' — '.($settings->name ?: $entreprise->name))
 @section('meta_description', $product->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($product->description), 155))
+@section('canonical', route('store.products.show', $product))
+@section('og_type', 'product')
+@section('og_title', $product->meta_title ?: $product->name)
+@section('og_description', $product->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($product->description), 155))
+@if($product->image)
+    @section('og_image', asset('storage/'.$product->image))
+@endif
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

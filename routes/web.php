@@ -19,6 +19,7 @@ use App\Http\Controllers\Storefront\HomeController as StorefrontHomeController;
 use App\Http\Controllers\Storefront\PageController as StorefrontPageController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\Storefront\ReviewController as StorefrontReviewController;
+use App\Http\Controllers\Storefront\SeoController as StorefrontSeoController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -253,5 +254,11 @@ Route::middleware('store.open')->prefix('boutique')->name('store.')->group(funct
 // jamais suffisant seul pour ouvrir la confirmation d'un autre client).
 Route::get('boutique/commande/{order}/confirmation', [StorefrontCheckoutController::class, 'confirmation'])
     ->middleware(['store.open', 'signed'])->name('store.checkout.confirmation');
+
+// Plan de site XML (SEO) — à la racine par convention, pas sous /boutique.
+// Bloqué comme le reste de la boutique tant que le statut n'est pas actif :
+// rien à indexer si la boutique n'est pas ouverte.
+Route::get('sitemap.xml', [StorefrontSeoController::class, 'sitemap'])
+    ->middleware('store.open')->name('sitemap');
 
 require __DIR__.'/auth.php';
