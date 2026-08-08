@@ -4,29 +4,43 @@ namespace App\Models;
 
 use App\Enums\CustomerType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Client de la boutique.
+ *
+ * Authentifiable depuis la Phase 3 (comptes clients, guard `customer` —
+ * voir config/auth.php) : un Customer peut être créé par le staff ou via un
+ * checkout invité (sans mot de passe), puis "réclamé" plus tard par son
+ * propriétaire via l'inscription (voir RegisteredCustomerController) sans
+ * jamais dupliquer la fiche.
  */
-class Customer extends Model
+class Customer extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'full_name',
         'type',
         'phone',
         'email',
+        'password',
         'address',
         'city',
         'registered_at',
     ];
 
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     protected $casts = [
         'type' => CustomerType::class,
         'registered_at' => 'date',
+        'password' => 'hashed',
     ];
 
     // ─── Relations ───────────────────────────────────────────
@@ -39,6 +53,11 @@ class Customer extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function onlineOrders(): HasMany
+    {
+        return $this->hasMany(OnlineOrder::class);
     }
 
     // ─── Scopes ──────────────────────────────────────────────
@@ -63,5 +82,12 @@ class Customer extends Model
                 ->orWhere('phone', 'like', "%{$term}%")
                 ->orWhere('email', 'like', "%{$term}%");
         });
+    }
+
+    // ─── Méthodes métier ─────────────────────────────────────
+
+    public function hasAccount(): bool
+    {
+        return $this->password !== null;
     }
 }

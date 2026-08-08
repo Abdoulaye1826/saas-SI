@@ -3,6 +3,12 @@
 use App\Http\Controllers\Admin\EntrepriseController;
 use App\Http\Controllers\Admin\OnlineOrderController;
 use App\Http\Controllers\Admin\StoreSettingsController;
+use App\Http\Controllers\Storefront\Account\OrderController as AccountOrderController;
+use App\Http\Controllers\Storefront\Account\ProfileController as AccountProfileController;
+use App\Http\Controllers\Storefront\Auth\AuthenticatedCustomerSessionController;
+use App\Http\Controllers\Storefront\Auth\CustomerPasswordResetLinkController;
+use App\Http\Controllers\Storefront\Auth\NewCustomerPasswordController;
+use App\Http\Controllers\Storefront\Auth\RegisteredCustomerController;
 use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
 use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
 use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
@@ -189,9 +195,33 @@ Route::middleware('store.open')->prefix('boutique')->name('store.')->group(funct
     Route::patch('panier/{product}', [StorefrontCartController::class, 'update'])->name('cart.update');
     Route::delete('panier/{product}', [StorefrontCartController::class, 'remove'])->name('cart.remove');
 
-    // ── Checkout invité ────────────────────────────────────────
+    // ── Checkout invité ou connecté ─────────────────────────────
     Route::get('commande', [StorefrontCheckoutController::class, 'show'])->name('checkout.show');
     Route::post('commande', [StorefrontCheckoutController::class, 'store'])->name('checkout.store');
+
+    // ── Compte client (Phase 3) ─────────────────────────────────
+    Route::prefix('compte')->name('account.')->group(function () {
+        Route::middleware('guest.customer')->group(function () {
+            Route::get('inscription', [RegisteredCustomerController::class, 'create'])->name('register');
+            Route::post('inscription', [RegisteredCustomerController::class, 'store']);
+            Route::get('connexion', [AuthenticatedCustomerSessionController::class, 'create'])->name('login');
+            Route::post('connexion', [AuthenticatedCustomerSessionController::class, 'store']);
+            Route::get('mot-de-passe-oublie', [CustomerPasswordResetLinkController::class, 'create'])->name('password.request');
+            Route::post('mot-de-passe-oublie', [CustomerPasswordResetLinkController::class, 'store'])->name('password.email');
+            Route::get('reinitialiser-mot-de-passe/{token}', [NewCustomerPasswordController::class, 'create'])->name('password.reset');
+            Route::post('reinitialiser-mot-de-passe', [NewCustomerPasswordController::class, 'store'])->name('password.store');
+        });
+
+        Route::middleware('auth.customer')->group(function () {
+            Route::post('deconnexion', [AuthenticatedCustomerSessionController::class, 'destroy'])->name('logout');
+            Route::get('profil', [AccountProfileController::class, 'edit'])->name('profile.edit');
+            Route::put('profil', [AccountProfileController::class, 'update'])->name('profile.update');
+            Route::put('mot-de-passe', [AccountProfileController::class, 'updatePassword'])->name('password.update');
+            Route::get('commandes', [AccountOrderController::class, 'index'])->name('orders.index');
+            Route::get('commandes/{onlineOrder}', [AccountOrderController::class, 'show'])->name('orders.show');
+            Route::get('commandes/{onlineOrder}/facture', [AccountOrderController::class, 'downloadInvoice'])->name('orders.invoice');
+        });
+    });
 });
 
 // Confirmation de commande : lien signé (numéro de commande prévisible,

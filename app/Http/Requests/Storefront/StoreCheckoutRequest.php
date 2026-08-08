@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Storefront;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreCheckoutRequest extends FormRequest
 {
@@ -13,9 +14,14 @@ class StoreCheckoutRequest extends FormRequest
 
     public function rules(): array
     {
+        // Client connecté (Phase 3) : ses coordonnées sont déjà connues
+        // (Auth::guard('customer')->user()), le formulaire ne les demande
+        // plus — voir CheckoutController::store().
+        $guestRules = Auth::guard('customer')->check() ? ['nullable'] : ['required'];
+
         return [
-            'guest_name' => ['required', 'string', 'max:150'],
-            'guest_phone' => ['required', 'string', 'max:50'],
+            'guest_name' => [...$guestRules, 'string', 'max:150'],
+            'guest_phone' => [...$guestRules, 'string', 'max:50'],
             'guest_email' => ['nullable', 'email', 'max:150'],
             'delivery_method' => ['required', 'in:home,pickup'],
             'delivery_address' => ['required_if:delivery_method,home', 'nullable', 'string', 'max:255'],

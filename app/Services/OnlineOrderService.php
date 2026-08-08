@@ -45,12 +45,15 @@ class OnlineOrderService
     /**
      * Crée la commande à partir des lignes du panier (déjà résolues et
      * plafonnées au stock par CartService::items()) et des informations du
-     * formulaire de checkout invité. Revalide le stock une dernière fois
-     * côté serveur avant toute création.
+     * formulaire de checkout. Revalide le stock une dernière fois côté
+     * serveur avant toute création.
      *
      * @param  Collection<int, array{product: Product, quantity: int, line_total: float}>  $cartItems
+     * @param  Customer|null  $customer  Client déjà authentifié (Phase 3) —
+     *   si fourni, utilisé directement au lieu de chercher/créer un
+     *   Customer par téléphone (voir findOrCreateGuestCustomer()).
      */
-    public function createFromCart(Collection $cartItems, array $data): OnlineOrder
+    public function createFromCart(Collection $cartItems, array $data, ?Customer $customer = null): OnlineOrder
     {
         if ($cartItems->isEmpty()) {
             throw new \RuntimeException('Le panier est vide.');
@@ -75,22 +78,22 @@ class OnlineOrderService
             }
         }
 
-        return DB::transaction(function () use ($cartItems, $data) {
+        return DB::transaction(function () use ($cartItems, $data, $customer) {
             $settings = OnlineStoreSettings::current();
             $subtotal = round((float) $cartItems->sum('line_total'), 2);
 
             $zone = $data['delivery_method'] === 'pickup' ? 'pickup' : ($data['delivery_zone'] ?? 'other');
             $deliveryFee = $settings->deliveryFeeFor($zone, $subtotal);
 
-            $customer = $this->findOrCreateGuestCustomer($data);
+            $customer ??= $this->findOrCreateGuestCustomer($data);
 
             $order = OnlineOrder::create([
                 'order_number' => $this->generateOrderNumber(),
                 'customer_id' => $customer->id,
                 'status' => OnlineOrderStatus::New,
-                'guest_name' => $data['guest_name'],
-                'guest_phone' => $data['guest_phone'],
-                'guest_email' => $data['guest_email'] ?? null,
+                'guest_name' => $data['guest_name'] ?? $customer->full_name,
+                'guest_phone' => $data['guest_phone'] ?? $customer->phone,
+                'guest_email' => $data['guest_email'] ?? $customer->email,
                 'delivery_method' => $data['delivery_method'],
                 'delivery_address' => $data['delivery_address'] ?? null,
                 'delivery_city' => $data['delivery_city'] ?? null,

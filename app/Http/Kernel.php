@@ -68,5 +68,7 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\CheckRole::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         'store.open' => \App\Http\Middleware\EnsureStoreIsOpen::class,
+        'auth.customer' => \App\Http\Middleware\AuthenticateCustomer::class,
+        'guest.customer' => \App\Http\Middleware\RedirectIfCustomerAuthenticated::class,
     ];
 }

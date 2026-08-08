@@ -9,6 +9,7 @@ use App\Models\OnlineStoreSettings;
 use App\Services\CartService;
 use App\Services\OnlineOrderService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
@@ -30,6 +31,7 @@ class CheckoutController extends Controller
             'items' => $this->cart->items(),
             'subtotal' => $this->cart->subtotal(),
             'settings' => OnlineStoreSettings::current(),
+            'customer' => Auth::guard('customer')->user(),
         ]);
     }
 
@@ -40,7 +42,11 @@ class CheckoutController extends Controller
         }
 
         try {
-            $order = $this->onlineOrderService->createFromCart($this->cart->items(), $request->validated());
+            $order = $this->onlineOrderService->createFromCart(
+                $this->cart->items(),
+                $request->validated(),
+                Auth::guard('customer')->user()
+            );
         } catch (\RuntimeException $e) {
             return redirect()->route('store.cart.show')->with('error', $e->getMessage());
         }

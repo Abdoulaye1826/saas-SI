@@ -30,6 +30,15 @@
                         <i class="bi bi-whatsapp"></i> Nous contacter
                     </a>
                 @endif
+                @auth('customer')
+                    <a href="{{ route('store.account.orders.index') }}" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-white/90 hover:text-white">
+                        <i class="bi bi-person-circle"></i> {{ Auth::guard('customer')->user()->full_name }}
+                    </a>
+                @else
+                    <a href="{{ route('store.account.login') }}" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-white/90 hover:text-white">
+                        <i class="bi bi-person"></i> Connexion
+                    </a>
+                @endauth
                 <a href="{{ route('store.cart.show') }}" class="relative text-white/90 hover:text-white">
                     <i class="bi bi-cart3 text-xl"></i>
                     @php($cartCount = app(\App\Services\CartService::class)->count())
@@ -51,6 +60,11 @@
             @foreach($navCategories as $navCategory)
                 <a href="{{ route('store.categories.show', $navCategory) }}" class="text-white/90 hover:text-white">{{ $navCategory->name }}</a>
             @endforeach
+            @auth('customer')
+                <a href="{{ route('store.account.orders.index') }}" class="text-white/90 hover:text-white">Mon compte</a>
+            @else
+                <a href="{{ route('store.account.login') }}" class="text-white/90 hover:text-white">Connexion</a>
+            @endauth
         </div>
     </div>
 </header>

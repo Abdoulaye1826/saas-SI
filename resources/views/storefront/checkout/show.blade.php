@@ -22,20 +22,31 @@
         <div class="lg:col-span-2 space-y-6">
             <div class="border border-slate-100 rounded-xl p-5">
                 <h2 class="font-semibold text-slate-800 mb-4">Vos coordonnées</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Nom complet</label>
-                        <input type="text" name="guest_name" value="{{ old('guest_name') }}" required class="w-full rounded-lg border-slate-200 text-sm">
+                @if($customer)
+                    <div class="rounded-lg bg-slate-50 text-sm text-slate-600 px-4 py-3 mb-2">
+                        Connecté en tant que <strong>{{ $customer->full_name }}</strong> ({{ $customer->phone }}).
+                        <a href="{{ route('store.account.profile.edit') }}" class="store-link">Modifier mes informations</a>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Téléphone</label>
-                        <input type="text" name="guest_phone" value="{{ old('guest_phone') }}" required placeholder="+221 XX XXX XX XX" class="w-full rounded-lg border-slate-200 text-sm">
+                @else
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Nom complet</label>
+                            <input type="text" name="guest_name" value="{{ old('guest_name') }}" required class="w-full rounded-lg border-slate-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Téléphone</label>
+                            <input type="text" name="guest_phone" value="{{ old('guest_phone') }}" required placeholder="+221 XX XXX XX XX" class="w-full rounded-lg border-slate-200 text-sm">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Email (optionnel)</label>
+                            <input type="email" name="guest_email" value="{{ old('guest_email') }}" class="w-full rounded-lg border-slate-200 text-sm">
+                        </div>
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Email (optionnel)</label>
-                        <input type="email" name="guest_email" value="{{ old('guest_email') }}" class="w-full rounded-lg border-slate-200 text-sm">
-                    </div>
-                </div>
+                    <p class="text-xs text-slate-400 mt-3">
+                        <a href="{{ route('store.account.login') }}" class="store-link font-medium">Déjà un compte ? Connectez-vous</a>
+                        pour retrouver vos commandes.
+                    </p>
+                @endif
             </div>
 
             <div class="border border-slate-100 rounded-xl p-5">
