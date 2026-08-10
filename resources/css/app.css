@@ -6,3 +6,43 @@
    qu'Alpine ait fini de s'initialiser, pour éviter un flash du menu mobile
    ouvert avant que la directive x-show ne prenne effet. */
 [x-cloak] { display: none !important; }
+
+/* ── Boutique en ligne — système de motion ────────────────────────────
+   Révélation au scroll : les éléments marqués [data-reveal] démarrent
+   invisibles/décalés, un petit script (voir resources/js/app.js) ajoute
+   .is-visible via IntersectionObserver dès qu'ils entrent dans le
+   viewport. Respecte prefers-reduced-motion (pas de mouvement, juste un
+   fondu instantané) — voir la media query en bas de fichier. */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+}
+[data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Numéraires (prix) : chiffres alignés en largeur fixe, jamais de
+   "gigue" visuelle quand un montant change (panier, filtres). */
+.store-figures {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+}
+
+/* Halo de couleur de marque derrière un bloc (bannière, image produit au
+   survol) — dérivé de --store-primary, jamais une couleur codée en dur,
+   pour rester cohérent quel que soit le réglage Apparence du commerçant. */
+.store-glow {
+    box-shadow: 0 20px 60px -15px color-mix(in srgb, var(--store-primary) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+        transition: opacity .3s ease;
+        transform: none;
+    }
+    .animate-drift, .animate-fade-up, .animate-pop {
+        animation: none !important;
+    }
+}

@@ -32,12 +32,18 @@
 
     <link rel="icon" href="{{ $settings->favicon_url ?? $entreprise->logo_url ?? asset('images/logo.jpeg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- Couleurs choisies par le commerçant (Admin > Boutique en ligne >
          Apparence), injectées en variables CSS consommées par les classes
-         Tailwind arbitraires ci-dessous (bg-[--store-primary], etc.). --}}
+         Tailwind arbitraires ci-dessous (bg-[--store-primary], etc.).
+         Les variantes -soft/-glow sont dérivées via color-mix() : jamais de
+         teinte codée en dur, elles suivent automatiquement la couleur
+         choisie par le commerçant quelle qu'elle soit. --}}
     <style>
         :root {
             --store-primary: {{ $settings->primary_color ?: \App\Models\OnlineStoreSettings::DEFAULT_PRIMARY_COLOR }};
@@ -46,25 +52,45 @@
             --store-button: {{ $settings->button_color ?: \App\Models\OnlineStoreSettings::DEFAULT_BUTTON_COLOR }};
             --store-link: {{ $settings->link_color ?: \App\Models\OnlineStoreSettings::DEFAULT_LINK_COLOR }};
             --store-footer: {{ $settings->footer_color ?: \App\Models\OnlineStoreSettings::DEFAULT_FOOTER_COLOR }};
+            --store-primary-soft: color-mix(in srgb, var(--store-primary) 10%, white);
+            --store-primary-tint: color-mix(in srgb, var(--store-primary) 20%, white);
         }
         a.store-link { color: var(--store-link); }
+        .font-display { font-family: '"Space Grotesk"', 'Figtree', ui-sans-serif, system-ui, sans-serif; }
+        body { font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif; }
+        /* Repère clavier visible partout sur la boutique (accessibilité) —
+           utilise la couleur de marque plutôt que le bleu navigateur par
+           défaut, sans jamais le supprimer. */
+        a:focus-visible, button:focus-visible, input:focus-visible,
+        textarea:focus-visible, select:focus-visible {
+            outline: 2px solid var(--store-primary);
+            outline-offset: 2px;
+        }
+        html { scroll-behavior: smooth; }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+        }
     </style>
 
     @stack('styles')
 </head>
-<body class="min-h-screen flex flex-col bg-white text-slate-900 antialiased">
+<body class="min-h-screen flex flex-col bg-neutral-50 text-slate-900 antialiased">
 
     @include('storefront.partials.nav')
 
     <main class="flex-1">
         @if(session('success'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="rounded-lg bg-green-50 text-green-800 text-sm px-4 py-3">{{ session('success') }}</div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 animate-fade-up">
+                <div class="flex items-center gap-2 rounded-xl bg-green-50 text-green-800 text-sm px-4 py-3 border border-green-100">
+                    <i class="bi bi-check-circle-fill"></i>{{ session('success') }}
+                </div>
             </div>
         @endif
         @if(session('error'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3">{{ session('error') }}</div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 animate-fade-up">
+                <div class="flex items-center gap-2 rounded-xl bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-100">
+                    <i class="bi bi-exclamation-circle-fill"></i>{{ session('error') }}
+                </div>
             </div>
         @endif
 

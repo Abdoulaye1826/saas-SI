@@ -11,25 +11,28 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <nav class="text-xs text-slate-400 mb-6 flex items-center gap-1">
-        <a href="{{ route('store.home') }}" class="hover:text-slate-600">Accueil</a>
-        <span>/</span>
+    <nav class="text-xs text-slate-400 mb-6 flex items-center gap-1.5">
+        <a href="{{ route('store.home') }}" class="hover:text-slate-700 transition-colors">Accueil</a>
+        <i class="bi bi-chevron-right text-[9px]"></i>
         <span>{{ $category->name }}</span>
     </nav>
 
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900">{{ $category->name }}</h1>
-            @if($category->description)
-                <p class="text-sm text-slate-500 mt-1">{{ $category->description }}</p>
-            @endif
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div class="flex items-center gap-2">
+            <span class="h-6 w-1 rounded-full" style="background: var(--store-primary);"></span>
+            <div>
+                <h1 class="font-display text-2xl font-bold text-slate-950">{{ $category->name }}</h1>
+                @if($category->description)
+                    <p class="text-sm text-slate-500 mt-1">{{ $category->description }}</p>
+                @endif
+            </div>
         </div>
 
         <div class="flex flex-wrap gap-2">
-            <a href="{{ route('store.products.index') }}" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50">Toutes les catégories</a>
+            <a href="{{ route('store.products.index') }}" class="text-xs font-medium px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:bg-neutral-50 hover:border-slate-300 transition-colors">Toutes les catégories</a>
             @foreach($categories as $navCategory)
                 <a href="{{ route('store.categories.show', $navCategory) }}"
-                   class="text-xs px-3 py-1.5 rounded-full {{ $navCategory->id === $category->id ? 'text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50' }}"
+                   class="text-xs font-medium px-3.5 py-1.5 rounded-full transition-colors {{ $navCategory->id === $category->id ? 'text-white' : 'border border-slate-200 text-slate-600 hover:bg-neutral-50 hover:border-slate-300' }}"
                    style="{{ $navCategory->id === $category->id ? 'background: var(--store-primary);' : '' }}">
                     {{ $navCategory->name }}
                 </a>
@@ -43,7 +46,7 @@
             Aucun produit dans cette catégorie pour le moment.
         </div>
     @else
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" data-reveal>
             @foreach($products as $product)
                 @include('storefront.partials.product-card', ['product' => $product])
             @endforeach
