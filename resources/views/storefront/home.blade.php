@@ -9,13 +9,25 @@
 @section('content')
 
 {{-- ── Hero immersif ─────────────────────────────────────────────────
-     Grille technique + halos de marque + particules flottantes + la
-     photo produit (manette) fournie par le commerçant, détourée à la
-     volée par fusion (mix-blend-mode: multiply — fond blanc de la photo
-     studio qui se fond dans le fond sombre, sans retouche d'image).
+     Grille technique + photo d'ambiance + halos de marque + particules
+     flottantes + la manette (PNG détouré, vraie transparence alpha —
+     plus de bidouille mix-blend-mode) fournie par le commerçant.
+     La photo d'arrière-plan par défaut (images/photo/background.jpg,
+     recompressée 1.5 Mo → 143 Ko côté serveur) cède la place dès que le
+     commerçant renseigne sa propre bannière (Admin > Boutique en ligne >
+     Apparence) — une seule source de vérité, jamais les deux en même temps.
      Parallax très léger au scroll (voir data-parallax, resources/js/app.js),
      désactivé sous 640px et si prefers-reduced-motion. --}}
+@php
+    $heroBgImage = $settings->hero_image_url ?: asset('images/photo/background.jpg');
+@endphp
 <section class="relative overflow-hidden gaming-arena gaming-scanline">
+    {{-- Photo d'ambiance en fond, assombrie par un dégradé pour garantir
+         la lisibilité du texte par-dessus (priorité du brief : lisibilité
+         avant esthétique). --}}
+    <img src="{{ $heroBgImage }}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" fetchpriority="high" aria-hidden="true">
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(10,10,18,.55) 0%, rgba(10,10,18,.85) 62%, #0a0a12 100%);" aria-hidden="true"></div>
+
     {{-- Halos de marque (dérivés de --store-primary/--store-secondary) --}}
     <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true" data-parallax="0.08">
         <div class="absolute -top-24 -left-16 h-80 w-80 rounded-full blur-3xl animate-drift" style="background: color-mix(in srgb, var(--store-primary) 45%, transparent);"></div>
@@ -41,10 +53,6 @@
             "></span>
         @endfor
     </div>
-
-    @if($settings->hero_image_url)
-        <img src="{{ $settings->hero_image_url }}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-15">
-    @endif
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
@@ -75,36 +83,13 @@
                 </div>
             </div>
 
-            {{-- Illustration manette (SVG, formes génériques) — en attente
-                 d'une photo produit détourée sans filigrane côté commerçant
-                 (voir manette.jpg actuel : aperçu banque d'images non
-                 acheté, filigrane visible, retiré volontairement). --}}
+            {{-- Manette produit (PNG détouré, vraie transparence alpha
+                 vérifiée côté serveur — aucun bidouillage mix-blend-mode
+                 nécessaire). Flottement lent + glow dérivé de la couleur
+                 de marque, jamais de rotation rapide (brief §3). --}}
             <div class="lg:col-span-2 hidden lg:flex justify-center items-center" data-parallax="0.16" aria-hidden="true">
-                <div class="relative animate-float-slow" style="filter: drop-shadow(0 30px 50px color-mix(in srgb, var(--store-primary) 45%, transparent));">
-                    <svg viewBox="0 0 400 260" class="w-full max-w-md">
-                        <defs>
-                            <linearGradient id="padGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color: var(--store-primary);" />
-                                <stop offset="100%" style="stop-color: var(--store-secondary);" />
-                            </linearGradient>
-                        </defs>
-                        <ellipse cx="70" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
-                        <ellipse cx="330" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
-                        <rect x="40" y="40" width="320" height="160" rx="60" fill="url(#padGradient)" />
-                        <rect x="120" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
-                        <rect x="220" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
-                        {{-- D-pad --}}
-                        <rect x="94" y="132" width="16" height="46" rx="4" fill="white" opacity="0.92" />
-                        <rect x="79" y="147" width="46" height="16" rx="4" fill="white" opacity="0.92" />
-                        {{-- Boutons face --}}
-                        <circle cx="300" cy="130" r="10" fill="white" opacity="0.5" />
-                        <circle cx="322" cy="152" r="10" fill="white" opacity="0.75" />
-                        <circle cx="300" cy="174" r="10" fill="white" opacity="0.5" />
-                        <circle cx="278" cy="152" r="10" fill="white" opacity="0.5" />
-                        {{-- Stick central --}}
-                        <circle cx="200" cy="120" r="20" fill="#0a0a12" opacity="0.35" />
-                        <circle cx="200" cy="120" r="13" fill="white" opacity="0.9" />
-                    </svg>
+                <div class="relative animate-float-slow" style="filter: drop-shadow(0 30px 55px color-mix(in srgb, var(--store-primary) 50%, transparent));">
+                    <img src="{{ asset('images/photo/menette.png') }}" alt="" class="w-full max-w-md">
                     <div class="absolute inset-0 rounded-full blur-3xl -z-10 animate-glow-pulse" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
                 </div>
             </div>
