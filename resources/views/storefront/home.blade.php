@@ -9,10 +9,11 @@
 @section('content')
 
 {{-- ── Hero immersif ─────────────────────────────────────────────────
-     Grille technique + halos de marque + particules flottantes + une
-     illustration abstraite de manette (silhouette générique, jamais un
-     logo/modèle de marque précis — aucun risque de droits). Parallax
-     très léger au scroll (voir data-parallax, resources/js/app.js),
+     Grille technique + halos de marque + particules flottantes + la
+     photo produit (manette) fournie par le commerçant, détourée à la
+     volée par fusion (mix-blend-mode: multiply — fond blanc de la photo
+     studio qui se fond dans le fond sombre, sans retouche d'image).
+     Parallax très léger au scroll (voir data-parallax, resources/js/app.js),
      désactivé sous 640px et si prefers-reduced-motion. --}}
 <section class="relative overflow-hidden gaming-arena gaming-scanline">
     {{-- Halos de marque (dérivés de --store-primary/--store-secondary) --}}
@@ -74,37 +75,58 @@
                 </div>
             </div>
 
-            {{-- Illustration manette abstraite (SVG, formes génériques) --}}
+            {{-- Photo manette (fond studio blanc fusionné dans l'arène sombre) --}}
             <div class="lg:col-span-2 hidden lg:flex justify-center items-center" data-parallax="0.16" aria-hidden="true">
-                <div class="relative animate-float-slow" style="filter: drop-shadow(0 30px 50px color-mix(in srgb, var(--store-primary) 45%, transparent));">
-                    <svg viewBox="0 0 400 260" class="w-full max-w-md" style="perspective: 800px;">
-                        <defs>
-                            <linearGradient id="padGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color: var(--store-primary);" />
-                                <stop offset="100%" style="stop-color: var(--store-secondary);" />
-                            </linearGradient>
-                        </defs>
-                        <ellipse cx="70" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
-                        <ellipse cx="330" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
-                        <rect x="40" y="40" width="320" height="160" rx="60" fill="url(#padGradient)" />
-                        <rect x="120" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
-                        <rect x="220" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
-                        {{-- D-pad --}}
-                        <rect x="94" y="132" width="16" height="46" rx="4" fill="white" opacity="0.92" />
-                        <rect x="79" y="147" width="46" height="16" rx="4" fill="white" opacity="0.92" />
-                        {{-- Boutons face --}}
-                        <circle cx="300" cy="130" r="10" fill="white" opacity="0.5" />
-                        <circle cx="322" cy="152" r="10" fill="white" opacity="0.75" />
-                        <circle cx="300" cy="174" r="10" fill="white" opacity="0.5" />
-                        <circle cx="278" cy="152" r="10" fill="white" opacity="0.5" />
-                        {{-- Stick central --}}
-                        <circle cx="200" cy="120" r="20" fill="#0a0a12" opacity="0.35" />
-                        <circle cx="200" cy="120" r="13" fill="white" opacity="0.9" />
-                    </svg>
-                    <div class="absolute inset-0 rounded-full blur-3xl -z-10 animate-glow-pulse" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
+                <div class="relative animate-float-slow">
+                    <div class="absolute inset-0 rounded-full blur-3xl animate-glow-pulse" style="background: color-mix(in srgb, var(--store-primary) 35%, transparent);"></div>
+                    <img src="{{ asset('images/photo/'.rawurlencode('manette.jpeg')) }}" alt=""
+                         class="relative w-full max-w-md mix-blend-multiply"
+                         style="filter: drop-shadow(0 35px 45px color-mix(in srgb, var(--store-primary) 40%, transparent));">
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+{{-- ── Consoles en vitrine ──────────────────────────────────────────
+     Brief §3 : "consoles animées" — photos produit du commerçant,
+     flottement lent (jamais de rotation rapide), légère inclinaison 3D
+     au survol, glow et ombre dynamique dérivés de la couleur de marque. --}}
+@php
+    $consoleShowcase = [
+        ['file' => 'playstation 5.jpeg', 'label' => 'PlayStation 5', 'search' => 'PlayStation 5'],
+        ['file' => 'playsatation 4.jpeg', 'label' => 'PlayStation 4', 'search' => 'PlayStation 4'],
+        ['file' => 'xbox serie X.jpeg', 'label' => 'Xbox Series', 'search' => 'Xbox'],
+    ];
+@endphp
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14" data-reveal>
+    <div class="flex items-center gap-2 mb-6">
+        <span class="h-5 w-1 rounded-full" style="background: var(--store-primary);"></span>
+        <h2 class="font-display text-xl font-bold text-slate-900">Consoles</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        @foreach($consoleShowcase as $i => $console)
+            <a href="{{ route('store.products.index', ['search' => $console['search']]) }}"
+               class="group block" style="perspective: 900px;">
+                <div class="relative rounded-3xl gaming-arena overflow-hidden p-8 pb-6 text-center transition-transform duration-500 ease-out"
+                     style="transform-style: preserve-3d;"
+                     onmouseover="if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){this.style.transform='rotateY(6deg) rotateX(-4deg) scale(1.02)'}"
+                     onmouseout="this.style.transform=''">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" aria-hidden="true">
+                        <div class="absolute inset-x-0 top-0 h-1/2 blur-2xl" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
+                    </div>
+                    <img src="{{ asset('images/photo/'.rawurlencode($console['file'])) }}" alt="{{ $console['label'] }}" loading="lazy"
+                         class="relative mx-auto h-40 sm:h-48 w-auto object-contain mix-blend-multiply animate-float-slow"
+                         style="animation-delay:-{{ $i * 1.8 }}s; filter: drop-shadow(0 20px 20px color-mix(in srgb, var(--store-primary) 35%, transparent));">
+                    <div class="relative mx-auto mt-2 h-2.5 w-24 rounded-full blur-md bg-black/40"></div>
+                    <div class="relative mt-4 font-display font-semibold text-white text-sm tracking-wide">{{ $console['label'] }}</div>
+                    <span class="hud-corner hud-corner--tl"></span>
+                    <span class="hud-corner hud-corner--tr"></span>
+                    <span class="hud-corner hud-corner--bl"></span>
+                    <span class="hud-corner hud-corner--br"></span>
+                </div>
+            </a>
+        @endforeach
     </div>
 </section>
 
