@@ -75,13 +75,37 @@
                 </div>
             </div>
 
-            {{-- Photo manette (fond studio blanc fusionné dans l'arène sombre) --}}
+            {{-- Illustration manette (SVG, formes génériques) — en attente
+                 d'une photo produit détourée sans filigrane côté commerçant
+                 (voir manette.jpg actuel : aperçu banque d'images non
+                 acheté, filigrane visible, retiré volontairement). --}}
             <div class="lg:col-span-2 hidden lg:flex justify-center items-center" data-parallax="0.16" aria-hidden="true">
-                <div class="relative animate-float-slow">
-                    <div class="absolute inset-0 rounded-full blur-3xl animate-glow-pulse" style="background: color-mix(in srgb, var(--store-primary) 35%, transparent);"></div>
-                    <img src="{{ asset('images/photo/'.rawurlencode('manette.jpeg')) }}" alt=""
-                         class="relative w-full max-w-md mix-blend-multiply"
-                         style="filter: drop-shadow(0 35px 45px color-mix(in srgb, var(--store-primary) 40%, transparent));">
+                <div class="relative animate-float-slow" style="filter: drop-shadow(0 30px 50px color-mix(in srgb, var(--store-primary) 45%, transparent));">
+                    <svg viewBox="0 0 400 260" class="w-full max-w-md">
+                        <defs>
+                            <linearGradient id="padGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color: var(--store-primary);" />
+                                <stop offset="100%" style="stop-color: var(--store-secondary);" />
+                            </linearGradient>
+                        </defs>
+                        <ellipse cx="70" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
+                        <ellipse cx="330" cy="180" rx="70" ry="70" fill="url(#padGradient)" opacity="0.95" />
+                        <rect x="40" y="40" width="320" height="160" rx="60" fill="url(#padGradient)" />
+                        <rect x="120" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
+                        <rect x="220" y="10" width="60" height="40" rx="14" fill="url(#padGradient)" opacity="0.85" />
+                        {{-- D-pad --}}
+                        <rect x="94" y="132" width="16" height="46" rx="4" fill="white" opacity="0.92" />
+                        <rect x="79" y="147" width="46" height="16" rx="4" fill="white" opacity="0.92" />
+                        {{-- Boutons face --}}
+                        <circle cx="300" cy="130" r="10" fill="white" opacity="0.5" />
+                        <circle cx="322" cy="152" r="10" fill="white" opacity="0.75" />
+                        <circle cx="300" cy="174" r="10" fill="white" opacity="0.5" />
+                        <circle cx="278" cy="152" r="10" fill="white" opacity="0.5" />
+                        {{-- Stick central --}}
+                        <circle cx="200" cy="120" r="20" fill="#0a0a12" opacity="0.35" />
+                        <circle cx="200" cy="120" r="13" fill="white" opacity="0.9" />
+                    </svg>
+                    <div class="absolute inset-0 rounded-full blur-3xl -z-10 animate-glow-pulse" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
                 </div>
             </div>
         </div>
@@ -115,10 +139,16 @@
                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" aria-hidden="true">
                         <div class="absolute inset-x-0 top-0 h-1/2 blur-2xl" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
                     </div>
-                    <img src="{{ asset('images/photo/'.rawurlencode($console['file'])) }}" alt="{{ $console['label'] }}" loading="lazy"
-                         class="relative mx-auto h-40 sm:h-48 w-auto object-contain mix-blend-multiply animate-float-slow"
-                         style="animation-delay:-{{ $i * 1.8 }}s; filter: drop-shadow(0 20px 20px color-mix(in srgb, var(--store-primary) 35%, transparent));">
-                    <div class="relative mx-auto mt-2 h-2.5 w-24 rounded-full blur-md bg-black/40"></div>
+                    {{-- Socle clair ("spotlight") plutôt qu'un détourage par
+                         fusion : fonctionne quelle que soit la photo (fond
+                         blanc, gris, transparent...), sans jamais assombrir
+                         les zones sombres du produit lui-même. --}}
+                    <div class="relative mx-auto w-fit rounded-2xl p-3 animate-float-slow" style="background: radial-gradient(circle, white 55%, color-mix(in srgb, white 85%, transparent) 100%); animation-delay:-{{ $i * 1.8 }}s;">
+                        <img src="{{ asset('images/photo/'.rawurlencode($console['file'])) }}" alt="{{ $console['label'] }}" loading="lazy"
+                             class="h-32 sm:h-40 w-auto object-contain"
+                             style="filter: drop-shadow(0 12px 14px rgba(0,0,0,.25));">
+                    </div>
+                    <div class="relative mx-auto mt-3 h-2.5 w-24 rounded-full blur-md bg-black/50"></div>
                     <div class="relative mt-4 font-display font-semibold text-white text-sm tracking-wide">{{ $console['label'] }}</div>
                     <span class="hud-corner hud-corner--tl"></span>
                     <span class="hud-corner hud-corner--tr"></span>
