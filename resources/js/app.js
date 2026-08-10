@@ -46,3 +46,52 @@ Alpine.start();
         observer.disconnect();
     }, 2500);
 })();
+
+/**
+ * Effet de profondeur (parallax) très léger sur le hero de la boutique
+ * (brief §4) : le fond, l'illustration et les particules se déplacent à
+ * des vitesses légèrement différentes au scroll. Purement décoratif,
+ * jamais sur mobile (où le hero occupe tout l'écran, l'effet ne se verrait
+ * quasiment pas) et jamais si l'utilisateur préfère moins de mouvement.
+ */
+(function heroParallax() {
+    const layers = document.querySelectorAll('[data-parallax]');
+    if (!layers.length) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || window.innerWidth < 640) return;
+
+    let ticking = false;
+
+    function update() {
+        const scrollY = window.scrollY;
+        layers.forEach((el) => {
+            const speed = parseFloat(el.dataset.parallax) || 0.15;
+            // La section hero peut avoir défilé hors écran : au-delà, on
+            // fige le décalage plutôt que de continuer à le calculer.
+            const offset = Math.min(scrollY, 900) * speed;
+            el.style.transform = `translate3d(0, ${offset}px, 0)`;
+        });
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(update);
+            ticking = true;
+        }
+    }, { passive: true });
+})();
+
+/**
+ * Barre de chargement fine en haut de page (brief §13) : rejouée à chaque
+ * navigation classique (elle est injectée côté serveur dans le layout,
+ * voir layouts/storefront.blade.php) et retirée du DOM une fois son
+ * animation CSS terminée, pour ne jamais laisser un élément mort derrière.
+ */
+(function removeLoadingBarWhenDone() {
+    const bar = document.getElementById('storeLoadingBar');
+    if (!bar) return;
+    bar.addEventListener('animationend', () => bar.remove());
+    setTimeout(() => bar.remove(), 1500);
+})();

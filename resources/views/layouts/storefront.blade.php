@@ -76,6 +76,8 @@
 </head>
 <body class="min-h-screen flex flex-col bg-neutral-50 text-slate-900 antialiased">
 
+    <div id="storeLoadingBar" aria-hidden="true"></div>
+
     @include('storefront.partials.nav')
 
     <main class="flex-1">

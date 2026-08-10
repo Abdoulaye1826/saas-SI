@@ -1,6 +1,10 @@
-<footer class="mt-16 text-white text-sm" style="background: var(--store-footer);">
+<footer class="relative mt-16 text-white text-sm overflow-hidden" style="background: var(--store-footer);">
     @php($footerPages = \App\Models\StorePage::published()->where('show_in_footer', true)->orderBy('title')->get())
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    {{-- Ligne lumineuse discrète en tête de footer + grille technique très
+         estompée : identité gaming sans jamais nuire à la lecture (brief §15). --}}
+    <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, var(--store-primary), transparent);" aria-hidden="true"></div>
+    <div class="absolute inset-0 gaming-arena opacity-[0.06] pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
             <div class="font-display font-bold text-base mb-2 tracking-tight">{{ $settings->name ?: $entreprise->name }}</div>
             @if($settings->slogan)

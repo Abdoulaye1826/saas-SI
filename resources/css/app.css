@@ -17,6 +17,7 @@
     opacity: 0;
     transform: translateY(18px);
     transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+    transition-delay: var(--reveal-delay, 0ms);
 }
 [data-reveal].is-visible {
     opacity: 1;
@@ -48,12 +49,115 @@
     box-shadow: 0 20px 60px -15px color-mix(in srgb, var(--store-primary) 45%, transparent);
 }
 
+/* ── Identité "gaming premium" ──────────────────────────────────────────
+   Système de fond réutilisé sur le hero, le bandeau catégories et le
+   bandeau promo uniquement (jamais sur le catalogue/panier/formulaires :
+   la priorité reste la lisibilité — voir le brief). Toujours dérivé des
+   couleurs de marque du commerçant, jamais de teinte figée. */
+.gaming-arena {
+    background-color: #0a0a12;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    background-position: center;
+}
+
+/* Balayage scanline très discret : une bande large et très transparente qui
+   traverse lentement la section, jamais un clignotement (brief §6/§10). */
+.gaming-scanline::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--store-primary) 14%, transparent) 50%, transparent 100%);
+    height: 40%;
+    animation: scan 7s linear infinite;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+/* Particule flottante individuelle — positionnement/délai/durée fixés au
+   cas par cas via `style` inline dans la vue (voir home.blade.php). */
+.gaming-particle {
+    position: absolute;
+    border-radius: 9999px;
+    background: white;
+    animation: particle-float linear infinite;
+    pointer-events: none;
+}
+
+/* Coins HUD ("cible verrouillée") sur les cartes catégorie/produit au
+   survol — encode une vraie idée de jeu vidéo (élément sélectionnable),
+   pas une décoration gratuite. Quatre petits éléments positionnés dans
+   chaque coin, invisibles au repos. */
+.hud-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--store-primary);
+    opacity: 0;
+    transition: opacity .3s ease, transform .3s ease;
+    pointer-events: none;
+}
+.group:hover .hud-corner { opacity: 1; }
+.hud-corner--tl { top: 8px; left: 8px; border-top: 2px solid; border-left: 2px solid; transform: translate(4px, 4px); }
+.hud-corner--tr { top: 8px; right: 8px; border-top: 2px solid; border-right: 2px solid; transform: translate(-4px, 4px); }
+.hud-corner--bl { bottom: 8px; left: 8px; border-bottom: 2px solid; border-left: 2px solid; transform: translate(4px, -4px); }
+.hud-corner--br { bottom: 8px; right: 8px; border-bottom: 2px solid; border-right: 2px solid; transform: translate(-4px, -4px); }
+.group:hover .hud-corner--tl { transform: translate(0, 0); }
+.group:hover .hud-corner--tr { transform: translate(0, 0); }
+.group:hover .hud-corner--bl { transform: translate(0, 0); }
+.group:hover .hud-corner--br { transform: translate(0, 0); }
+
+/* Anneau lumineux doux, dérivé de la couleur de marque — remplace un
+   `ring` uni pour les cartes catégorie/produit en vedette. */
+.gaming-ring {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--store-primary) 35%, transparent),
+                0 0 24px -4px color-mix(in srgb, var(--store-primary) 55%, transparent);
+}
+
+/* Barre de progression fine en haut de page au premier chargement — le
+   "loader gaming" du brief (§13), volontairement bref et non bloquant :
+   la page est déjà là, c'est une sensation de vitesse, pas une attente. */
+#storeLoadingBar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    z-index: 100;
+    background: linear-gradient(90deg, var(--store-primary), var(--store-secondary), var(--store-primary));
+    background-size: 200% 100%;
+    transform-origin: left;
+    animation: store-loading-bar .7s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes store-loading-bar {
+    0% { transform: scaleX(0); opacity: 1; }
+    70% { transform: scaleX(.92); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Transitions natives entre pages (Chrome/Edge — no-op ailleurs, aucun
+   risque) : cross-fade léger au lieu d'un rechargement sec. Brief §14. */
+@view-transition {
+    navigation: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
     [data-reveal] {
         transition: opacity .3s ease;
         transform: none;
     }
-    .animate-drift, .animate-fade-up, .animate-pop {
+    .animate-drift, .animate-fade-up, .animate-pop,
+    .animate-float-slow, .animate-particle-float, .animate-glow-pulse, .animate-scan {
         animation: none !important;
     }
+    .gaming-scanline::after { display: none; }
+    .gaming-particle { display: none; }
+    #storeLoadingBar { animation: none !important; opacity: 0; }
+}
+
+/* Mobile : on garde l'ambiance (grille, glow) mais on retire les couches
+   les plus coûteuses (particules, balayage) — brief §16. */
+@media (max-width: 639px) {
+    .gaming-scanline::after { display: none; }
+    .gaming-particle { display: none; }
 }

@@ -2,7 +2,9 @@
      navigation, réutilisée pour "Produits populaires", "Nouveautés",
      "Promotions" (accueil) et "Produits similaires" (fiche produit) — pas
      de wrap à la ligne suivante au-delà de 4 produits.
-     Attend : $products (Collection de Product). --}}
+     Attend : $products (Collection de Product), $dark (bool, optionnel —
+     voir storefront/partials/product-card.blade.php). --}}
+@php($dark = $dark ?? false)
 <div class="relative"
      x-data="{
         atStart: true,
@@ -19,7 +21,8 @@
      }"
      x-init="$nextTick(() => updateEdges())">
     <button type="button" @click="scrollByPage(-1)" x-show="!atStart" x-cloak
-            class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-10 h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full bg-white text-slate-700 shadow-lg border border-slate-100 hover:scale-105 active:scale-95 transition-transform"
+            class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-30 h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform
+                   {{ $dark ? 'bg-neutral-900 text-white border border-white/15' : 'bg-white text-slate-700 border border-slate-100' }}"
             aria-label="Précédent">
         <i class="bi bi-chevron-left"></i>
     </button>
@@ -28,13 +31,14 @@
          class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1 -mx-1 px-1">
         @foreach($products as $product)
             <div class="flex-none snap-start w-[46%] sm:w-[31%] lg:w-[23.5%]">
-                @include('storefront.partials.product-card', ['product' => $product])
+                @include('storefront.partials.product-card', ['product' => $product, 'dark' => $dark])
             </div>
         @endforeach
     </div>
 
     <button type="button" @click="scrollByPage(1)" x-show="!atEnd" x-cloak
-            class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-10 h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full bg-white text-slate-700 shadow-lg border border-slate-100 hover:scale-105 active:scale-95 transition-transform"
+            class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-30 h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform
+                   {{ $dark ? 'bg-neutral-900 text-white border border-white/15' : 'bg-white text-slate-700 border border-slate-100' }}"
             aria-label="Suivant">
         <i class="bi bi-chevron-right"></i>
     </button>
