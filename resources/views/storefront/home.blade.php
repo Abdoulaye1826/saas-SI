@@ -97,54 +97,6 @@
     </div>
 </section>
 
-{{-- ── Consoles en vitrine ──────────────────────────────────────────
-     Brief §3 : "consoles animées" — photos produit du commerçant,
-     flottement lent (jamais de rotation rapide), légère inclinaison 3D
-     au survol, glow et ombre dynamique dérivés de la couleur de marque. --}}
-@php
-    $consoleShowcase = [
-        ['file' => 'playstation 5.jpeg', 'label' => 'PlayStation 5', 'search' => 'PlayStation 5'],
-        ['file' => 'playsatation 4.jpeg', 'label' => 'PlayStation 4', 'search' => 'PlayStation 4'],
-        ['file' => 'xbox serie X.jpeg', 'label' => 'Xbox Series', 'search' => 'Xbox'],
-    ];
-@endphp
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14" data-reveal>
-    <div class="flex items-center gap-2 mb-6">
-        <span class="h-5 w-1 rounded-full" style="background: var(--store-primary);"></span>
-        <h2 class="font-display text-xl font-bold text-slate-900">Consoles</h2>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        @foreach($consoleShowcase as $i => $console)
-            <a href="{{ route('store.products.index', ['search' => $console['search']]) }}"
-               class="group block" style="perspective: 900px;">
-                <div class="relative rounded-3xl gaming-arena overflow-hidden p-8 pb-6 text-center transition-transform duration-500 ease-out"
-                     style="transform-style: preserve-3d;"
-                     onmouseover="if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){this.style.transform='rotateY(6deg) rotateX(-4deg) scale(1.02)'}"
-                     onmouseout="this.style.transform=''">
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" aria-hidden="true">
-                        <div class="absolute inset-x-0 top-0 h-1/2 blur-2xl" style="background: color-mix(in srgb, var(--store-primary) 30%, transparent);"></div>
-                    </div>
-                    {{-- Socle clair ("spotlight") plutôt qu'un détourage par
-                         fusion : fonctionne quelle que soit la photo (fond
-                         blanc, gris, transparent...), sans jamais assombrir
-                         les zones sombres du produit lui-même. --}}
-                    <div class="relative mx-auto w-fit rounded-2xl p-3 animate-float-slow" style="background: radial-gradient(circle, white 55%, color-mix(in srgb, white 85%, transparent) 100%); animation-delay:-{{ $i * 1.8 }}s;">
-                        <img src="{{ asset('images/photo/'.rawurlencode($console['file'])) }}" alt="{{ $console['label'] }}" loading="lazy"
-                             class="h-32 sm:h-40 w-auto object-contain"
-                             style="filter: drop-shadow(0 12px 14px rgba(0,0,0,.25));">
-                    </div>
-                    <div class="relative mx-auto mt-3 h-2.5 w-24 rounded-full blur-md bg-black/50"></div>
-                    <div class="relative mt-4 font-display font-semibold text-white text-sm tracking-wide">{{ $console['label'] }}</div>
-                    <span class="hud-corner hud-corner--tl"></span>
-                    <span class="hud-corner hud-corner--tr"></span>
-                    <span class="hud-corner hud-corner--bl"></span>
-                    <span class="hud-corner hud-corner--br"></span>
-                </div>
-            </a>
-        @endforeach
-    </div>
-</section>
-
 {{-- ── Catégories ────────────────────────────────────────────────── --}}
 @if($categories->isNotEmpty())
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14" data-reveal>
