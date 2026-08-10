@@ -215,6 +215,7 @@ class Product extends Model
             ->when($filters['category_id'] ?? null, fn ($q, $id) => $q->where('category_id', $id))
             ->when($filters['brand'] ?? null, fn ($q, $brand) => $q->where('brand', $brand))
             ->when(isset($filters['is_active']), fn ($q) => $q->where('is_active', $filters['is_active']))
+            ->when(isset($filters['show_on_store']), fn ($q) => $q->where('show_on_store', $filters['show_on_store']))
             ->when(($filters['stock_status'] ?? null) === 'low', fn ($q) => $q->lowStock())
             ->when(($filters['stock_status'] ?? null) === 'out', fn ($q) => $q->outOfStock());
     }

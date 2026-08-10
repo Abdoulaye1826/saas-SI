@@ -31,6 +31,9 @@ class ProductService
                 'is_active' => isset($filters['is_active']) && $filters['is_active'] !== ''
                     ? (bool) $filters['is_active']
                     : null,
+                'show_on_store' => isset($filters['show_on_store']) && $filters['show_on_store'] !== ''
+                    ? (bool) $filters['show_on_store']
+                    : null,
                 'stock_status' => $filters['stock_status'] ?? null,
             ])
             ->orderBy($sort, $direction)

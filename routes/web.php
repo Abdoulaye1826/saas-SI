@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\OnlineOrderController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\StoreMenuController;
 use App\Http\Controllers\Admin\StorePageController;
+use App\Http\Controllers\Admin\StoreProductController;
 use App\Http\Controllers\Admin\StoreSettingsController;
 use App\Http\Controllers\Storefront\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Storefront\Account\ProfileController as AccountProfileController;
@@ -176,6 +177,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::put('apparence', [StoreSettingsController::class, 'updateAppearance'])->name('appearance.update');
         Route::get('livraison', [StoreSettingsController::class, 'editDelivery'])->name('delivery.edit');
         Route::put('livraison', [StoreSettingsController::class, 'updateDelivery'])->name('delivery.update');
+    });
+
+    // ── Boutique en ligne > Produits (activer/désactiver la présence en
+    // ligne d'un produit sans ouvrir sa fiche complète) ─────────────────
+    Route::middleware('role:admin,manager')->prefix('boutique-admin/produits')->name('admin.store.products.')->group(function () {
+        Route::get('/', [StoreProductController::class, 'index'])->name('index');
+        Route::post('{product}/basculer', [StoreProductController::class, 'toggle'])->name('toggle');
     });
 
     // ── Commandes en ligne (Admin, Gestionnaire, Caissier) ──────

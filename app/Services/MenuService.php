@@ -147,6 +147,7 @@ class MenuService
                 'icon' => 'bi-shop',
                 'roles' => ['admin', 'manager'],
                 'children' => [
+                    ['label' => 'Produits', 'route' => 'admin.store.products.index', 'roles' => ['admin', 'manager']],
                     ['label' => 'Général', 'route' => 'admin.store.general.edit', 'roles' => ['admin', 'manager']],
                     ['label' => 'Apparence', 'route' => 'admin.store.appearance.edit', 'roles' => ['admin', 'manager']],
                     ['label' => 'Livraison', 'route' => 'admin.store.delivery.edit', 'roles' => ['admin', 'manager']],
