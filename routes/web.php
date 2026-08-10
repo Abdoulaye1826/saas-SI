@@ -180,10 +180,13 @@ Route::middleware(['auth', 'active'])->group(function () {
     });
 
     // ── Boutique en ligne > Produits (activer/désactiver la présence en
-    // ligne d'un produit sans ouvrir sa fiche complète) ─────────────────
+    // ligne / vedette / nouveauté d'un produit sans ouvrir sa fiche
+    // complète) ──────────────────────────────────────────────────────
     Route::middleware('role:admin,manager')->prefix('boutique-admin/produits')->name('admin.store.products.')->group(function () {
         Route::get('/', [StoreProductController::class, 'index'])->name('index');
-        Route::post('{product}/basculer', [StoreProductController::class, 'toggle'])->name('toggle');
+        Route::post('{product}/basculer/{field}', [StoreProductController::class, 'toggle'])
+            ->whereIn('field', ['show_on_store', 'is_featured', 'is_new'])
+            ->name('toggle');
     });
 
     // ── Commandes en ligne (Admin, Gestionnaire, Caissier) ──────

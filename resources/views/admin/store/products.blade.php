@@ -6,7 +6,7 @@
 @section('content')
 <div class="page-header">
   <h1><i class="bi bi-shop me-2"></i>Boutique en ligne</h1>
-  <p class="text-muted small mb-0">Activez ou désactivez la présence en ligne de chaque produit, sans ouvrir sa fiche complète.</p>
+  <p class="text-muted small mb-0">Activez ou désactivez la présence en ligne, le statut vedette ou nouveauté de chaque produit, sans ouvrir sa fiche complète.</p>
 </div>
 
 @include('admin.store._nav')
@@ -58,6 +58,8 @@
           <th class="text-center">Stock</th>
           <th class="text-center">Actif (comptoir)</th>
           <th class="text-center">Sur la boutique</th>
+          <th class="text-center">Vedette</th>
+          <th class="text-center">Nouveauté</th>
         </tr>
       </thead>
       <tbody>
@@ -90,21 +92,28 @@
                 <span class="badge bg-secondary">Inactif</span>
               @endif
             </td>
-            <td class="text-center">
-              <form method="POST" action="{{ route('admin.store.products.toggle', $product) }}" class="d-inline-block toggle-store-form">
-                @csrf
-                <div class="form-check form-switch d-flex justify-content-center m-0">
-                  <input class="form-check-input" type="checkbox" role="switch" style="cursor:pointer;"
-                         {{ $product->show_on_store ? 'checked' : '' }}
-                         onchange="this.closest('form').submit()"
-                         title="{{ $product->show_on_store ? 'Retirer de la boutique' : 'Afficher sur la boutique' }}">
-                </div>
-              </form>
-            </td>
+            @foreach([
+              'show_on_store' => 'Afficher sur la boutique|Retirer de la boutique',
+              'is_featured' => 'Mettre en vedette|Retirer de la vedette',
+              'is_new' => 'Marquer comme nouveauté|Retirer la nouveauté',
+            ] as $field => $titles)
+              @php([$onTitle, $offTitle] = explode('|', $titles))
+              <td class="text-center">
+                <form method="POST" action="{{ route('admin.store.products.toggle', [$product, $field]) }}" class="d-inline-block">
+                  @csrf
+                  <div class="form-check form-switch d-flex justify-content-center m-0">
+                    <input class="form-check-input" type="checkbox" role="switch" style="cursor:pointer;"
+                           {{ $product->{$field} ? 'checked' : '' }}
+                           onchange="this.closest('form').submit()"
+                           title="{{ $product->{$field} ? $offTitle : $onTitle }}">
+                  </div>
+                </form>
+              </td>
+            @endforeach
           </tr>
         @empty
           <tr>
-            <td colspan="6" class="text-center text-muted py-4">Aucun produit trouvé.</td>
+            <td colspan="8" class="text-center text-muted py-4">Aucun produit trouvé.</td>
           </tr>
         @endforelse
       </tbody>
