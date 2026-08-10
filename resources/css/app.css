@@ -23,6 +23,17 @@
     transform: translateY(0);
 }
 
+/* Carrousels produits (accueil, produits similaires) : défilement
+   horizontal au doigt/trackpad + flèches, sans barre de défilement
+   visible (les flèches et le glissement tactile suffisent). */
+.no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge historique */
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
 /* Numéraires (prix) : chiffres alignés en largeur fixe, jamais de
    "gigue" visuelle quand un montant change (panier, filtres). */
 .store-figures {

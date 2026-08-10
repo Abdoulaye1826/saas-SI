@@ -84,11 +84,7 @@
         </div>
         <a href="{{ route('store.products.index') }}" class="store-link text-sm font-medium hover:underline whitespace-nowrap">Voir tout →</a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach($featuredProducts as $product)
-            @include('storefront.partials.product-card', ['product' => $product])
-        @endforeach
-    </div>
+    @include('storefront.partials.product-carousel', ['products' => $featuredProducts])
 </section>
 @endif
 
@@ -105,11 +101,7 @@
         </div>
         <a href="{{ route('store.products.index', ['is_new' => 1]) }}" class="store-link text-sm font-medium hover:underline whitespace-nowrap">Voir tout →</a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach($newProducts as $product)
-            @include('storefront.partials.product-card', ['product' => $product])
-        @endforeach
-    </div>
+    @include('storefront.partials.product-carousel', ['products' => $newProducts])
 </section>
 @endif
 
@@ -126,11 +118,7 @@
         </div>
         <a href="{{ route('store.products.index', ['is_promo' => 1]) }}" class="store-link text-sm font-medium hover:underline whitespace-nowrap">Voir tout →</a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach($promoProducts as $product)
-            @include('storefront.partials.product-card', ['product' => $product])
-        @endforeach
-    </div>
+    @include('storefront.partials.product-carousel', ['products' => $promoProducts])
 </section>
 @endif
 
