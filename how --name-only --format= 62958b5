@@ -1,0 +1,83 @@
+33mcommit 62958b55a91bcde70b54c44a53a8738cbb7d3822<
+Author: ndiaye <abdoulaye01012002@gmail.com>
+Date:   Sun Aug 16 20:10:56 2026 +0000
+
+    Ajoute le mode « Cadeau / Produit offert »
+    
+    Nouveau type d'opération à côté de Vente/Échange, permettant d'enregistrer
+    un produit offert gratuitement à un client comme une sortie de stock
+    traçable — jamais comme une vente. Implémente le cahier des charges fourni
+    (14 points) :
+    
+    - Modèle Gift/GiftItem volontairement SÉPARÉ de Sale (pas un 3e sale_type) :
+      garantit par construction qu'un cadeau ne peut jamais alimenter le
+      chiffre d'affaires, la trésorerie, ni générer de facture/paiement — sans
+      dépendre d'exclusions à maintenir dans chaque requête (DashboardService
+      en a une dizaine). Voir le contexte détaillé dans le plan associé.
+    - GiftService::create() : garde explicite contre le stock négatif ("Stock
+      insuffisant pour offrir ce produit.", message exact du cahier), jamais le
+      clamp silencieux à 0 utilisé par SaleService::applyStockChanges() pour
+      les produits non suivis par IMEI.
+    - IMEI : nouveau statut ImeiStatus::Offered + colonnes gift_id/given_at sur
+      product_imeis (même schéma que sale_id/exchange_sale_id) — traçabilité
+      complète, IMEI jamais réutilisable tant que le cadeau n'est pas annulé.
+    - Stock : nouveau StockMovementType::Gift, réutilise l'infrastructure de
+      traçabilité stock existante (visible dans l'historique mouvements).
+    - GiftService::cancel() : restocke et marque "cancelled" sans jamais
+      supprimer la ligne — historique et corrections toujours traçables
+      (ActivityLogService, même mécanisme que ventes/factures/paiements).
+    - UI : 3e option dans le sélecteur de type déjà existant
+      (sales/_form.blade.php), qui masque les champs de paiement/garantie/statut
+      et poste vers gifts.store au lieu de sales.store — sales.store/
+      StoreSaleRequest/SaleService ne sont jamais impliqués pour ce type.
+      Bouton "Offrir un produit" sur la page Ventes + entrée dédiée au menu.
+    - Document « Bon de cadeau » (gabarit PDF séparé, jamais une facture) :
+      bandeau "PRODUIT OFFERT — AUCUN MONTANT À PAYER", aucune section
+      total/paiement/reste à payer.
+    - Historique des cadeaux dédié (resources/views/gifts/index.blade.php),
+      filtrable par client/produit/date/utilisateur.
+    - Tableau de bord : tuiles "Produits offerts"/"Valeur des cadeaux",
+      calculées uniquement sur les tables gifts/gift_items — ne peuvent pas
+      influencer le chiffre d'affaires par construction.
+    
+    Bug trouvé et corrigé en testant : la classe utilitaire Bootstrap .d-flex
+    (display:flex !important) empêchait le JS de repasser le bandeau
+    d'information cadeau en display:none au retour sur Vente/Échange — retiré
+    du bandeau, alignement géré en style inline à la place.
+    
+    Vérifié en navigateur (utilisateur admin) : cadeau produit simple (stock
+    26→25, StockMovement type=gift, aucune Invoice/Payment/TreasuryTransaction
+    créée), cadeau IMEI (statut Offered, stock resynchronisé à 0), garde stock
+    insuffisant (message exact, transaction annulée sans écriture partielle),
+    annulation (stock restauré à 26, statut cancelled, historique complet
+    préservé), PDF généré (75 Ko, aucune section paiement), tuiles dashboard
+    correctes (CA inchangé), non-régression vente/échange confirmée.
+    
+    Migrations exécutées en local (php artisan migrate). Non poussé sur le
+    dépôt distant à la demande explicite de l'utilisateur.
+
+ app/Enums/GiftStatus.php                           |  25 [32m++[m
+ app/Enums/ImeiStatus.php                           |   3 [32m+[m
+ app/Enums/StockMovementType.php                    |   2 [32m+[m
+ app/Http/Controllers/GiftController.php            |  90 [32m++++++[m
+ app/Http/Requests/StoreGiftRequest.php             |  29 [32m++[m
+ app/Models/Gift.php                                |  92 [32m++++++[m
+ app/Models/GiftItem.php                            |  46 [32m+++[m
+ app/Models/ProductImei.php                         |   9 [32m+[m
+ app/Services/DashboardService.php                  |  17 [32m+[m
+ app/Services/GiftService.php                       | 356 [32m+++++++++++++++++++++[m
+ app/Services/MenuService.php                       |   6 [32m+[m
+ .../2026_08_16_100000_create_gifts_table.php       |  36 [32m+++[m
+ .../2026_08_16_100001_create_gift_items_table.php  |  37 [32m+++[m
+ ...002_add_gift_columns_to_product_imeis_table.php |  32 [32m++[m
+ ..._16_100003_add_gift_to_stock_movements_type.php |  29 [32m++[m
+ ..._100004_add_offered_to_product_imeis_status.php |  22 [32m++[m
+ resources/views/dashboard/partials/kpis.blade.php  |  34 [32m+[m[31m-[m
+ resources/views/documents/gift_voucher.blade.php   | 237 [32m++++++++++++++[m
+ resources/views/gifts/index.blade.php              | 128 [32m++++++++[m
+ resources/views/sales/_form.blade.php              |  87 [32m++++[m[31m-[m
+ resources/views/sales/create.blade.php             |   6 [32m+[m[31m-[m
+ resources/views/sales/edit.blade.php               |   2 [32m+[m[31m-[m
+ resources/views/sales/index.blade.php              |  13 [32m+[m[31m-[m
+ routes/web.php                                     |  11 [32m+[m
+ 24 files changed, 1330 insertions(+), 19 deletions(-)
