@@ -102,6 +102,12 @@ class MenuService
                 'roles' => ['admin', 'manager', 'cashier'],
             ],
             [
+                'label' => 'Cadeaux',
+                'route' => 'gifts.index',
+                'icon' => 'bi-gift',
+                'roles' => ['admin', 'manager', 'cashier'],
+            ],
+            [
                 'label' => 'Garanties',
                 'route' => 'warranties.index',
                 'icon' => 'bi-shield-check',
