@@ -55,6 +55,12 @@
     <select id="sale_type" name="sale_type" class="form-select @error('sale_type') is-invalid @enderror" required>
       <option value="vente" @selected(old('sale_type', $sale?->sale_type->value ?? 'vente') === 'vente')>Vente</option>
       <option value="echange" @selected(old('sale_type', $sale?->sale_type->value ?? '') === 'echange')>Échange</option>
+      @if(!isset($sale))
+        {{-- Cadeau / Produit offert : jamais disponible en modification, on
+             ne convertit pas une vente existante en cadeau (voir GiftService,
+             volontairement séparé de Sale). --}}
+        <option value="cadeau" @selected(old('sale_type') === 'cadeau')>Cadeau / Produit offert</option>
+      @endif
     </select>
     @error('sale_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
@@ -64,6 +70,17 @@
            value="{{ old('sale_date', $sale?->sale_date?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s')) }}">
     <div class="form-text">La date est générée automatiquement par le serveur.</div>
   </div>
+</div>
+
+{{-- Bandeau explicite en mode cadeau (cahier §12 : « afficher une interface
+     adaptée aux cadeaux »), masqué/affiché par le même script que
+     #totalColumn/#paymentDetailsRow. --}}
+{{-- align-items/gap en inline plutôt que via les classes utilitaires
+     Bootstrap .d-flex (display:flex !important) : ce !important empêcherait
+     le JS ci-dessous de repasser l'élément en display:none via style.display. --}}
+<div class="alert alert-info" id="giftNotice" style="display: none; align-items: center; gap: .5rem;">
+  <i class="bi bi-gift-fill"></i>
+  <span>Produit offert : sortie de stock gratuite, aucun paiement ni facture ne sera généré. Le prix affiché reste indicatif.</span>
 </div>
 
 <div class="row">
@@ -322,7 +339,11 @@
     <input type="text" class="form-control fw-bold" id="remaining_amount_display" value="0" readonly>
   </div>
 </div>
-<div class="row">
+{{-- Champs paiement/garantie/statut : sans objet pour un cadeau (cahier §12
+     — ne pas afficher inutilement les champs de paiement), masqués par le
+     même script que #totalColumn ci-dessus. Restent affichés pour
+     vente/échange, comportement inchangé. --}}
+<div class="row" id="paymentDetailsRow">
   <div class="col-md-4 mb-3">
     <label for="payment_method" class="form-label">Mode de paiement</label>
     <select id="payment_method" name="payment_method" class="form-select @error('payment_method') is-invalid @enderror">
@@ -400,6 +421,13 @@
 
     const saleTypeField = document.getElementById('sale_type');
     const exchangeFields = document.getElementById('exchangeFields');
+    const paymentDetailsRow = document.getElementById('paymentDetailsRow');
+    const giftNotice = document.getElementById('giftNotice');
+    const saleForm = document.getElementById('saleForm');
+    // Action par défaut du formulaire (route sales.store, déjà en place côté
+    // serveur) — restaurée si l'utilisateur revient sur Vente/Échange après
+    // avoir sélectionné Cadeau.
+    const defaultFormAction = saleForm ? saleForm.action : null;
     const addSaleItemButton = document.getElementById('addSaleItemButton');
     const saleItemsContainer = document.getElementById('saleItemsContainer');
     const saleItemTemplate = document.getElementById('saleItemTemplate');
@@ -435,25 +463,60 @@
      * l'enregistrement du paiement choisi (le montant ajouté validé
      * apparaissait alors intégralement en "reste à payer").
      */
-    function syncAmountGivenAvailability(isEchange) {
+    function syncAmountGivenAvailability(hidePayment) {
       if (!amountGivenField) return;
-      amountGivenField.disabled = isEchange;
-      if (isEchange) {
+      amountGivenField.disabled = hidePayment;
+      if (hidePayment) {
         amountGivenField.value = '';
         amountGivenTouched = false;
       }
     }
 
-    syncAmountGivenAvailability(saleTypeField ? saleTypeField.value === 'echange' : false);
+    /**
+     * Bascule l'interface entre Vente/Échange/Cadeau (cahier §1, §12). Un
+     * cadeau réutilise le même formulaire (mêmes lignes produit/IMEI) mais
+     * masque tout ce qui concerne le paiement et poste vers gifts.store au
+     * lieu de sales.store — le pipeline vente/échange existant
+     * (sales.store/StoreSaleRequest/SaleService) n'est jamais impliqué pour
+     * ce type.
+     */
+    function syncSaleTypeUi(saleType) {
+      const isEchange = saleType === 'echange';
+      const isCadeau = saleType === 'cadeau';
 
-    if (saleTypeField && exchangeFields) {
-      saleTypeField.addEventListener('change', function () {
-        const isEchange = this.value === 'echange';
+      if (exchangeFields) {
         exchangeFields.style.display = isEchange ? 'block' : 'none';
-        if (totalColumn) {
-          totalColumn.style.display = isEchange ? 'none' : 'flex';
-        }
-        syncAmountGivenAvailability(isEchange);
+      }
+      if (totalColumn) {
+        totalColumn.style.display = (isEchange || isCadeau) ? 'none' : 'flex';
+      }
+      if (paymentDetailsRow) {
+        paymentDetailsRow.style.display = isCadeau ? 'none' : 'flex';
+      }
+      if (giftNotice) {
+        giftNotice.style.display = isCadeau ? 'flex' : 'none';
+      }
+      if (saleForm && defaultFormAction) {
+        saleForm.action = isCadeau ? saleForm.dataset.giftsUrl : defaultFormAction;
+      }
+      syncAmountGivenAvailability(isEchange || isCadeau);
+    }
+
+    // Préselection depuis le bouton "Offrir un produit" de sales/index.blade.php
+    // (sessionStorage plutôt qu'un paramètre d'URL : évite de complexifier
+    // sales.create, qui reste une simple route GET sans query string gérée).
+    if (saleTypeField && sessionStorage.getItem('presetSaleType') === 'cadeau') {
+      sessionStorage.removeItem('presetSaleType');
+      if ([...saleTypeField.options].some((opt) => opt.value === 'cadeau')) {
+        saleTypeField.value = 'cadeau';
+      }
+    }
+
+    syncSaleTypeUi(saleTypeField ? saleTypeField.value : 'vente');
+
+    if (saleTypeField) {
+      saleTypeField.addEventListener('change', function () {
+        syncSaleTypeUi(this.value);
         calculateTotals();
       });
     }

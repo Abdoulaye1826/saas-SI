@@ -22,11 +22,14 @@ class ProductImei extends Model
         'sale_id',
         'exchange_sale_id',
         'sold_at',
+        'gift_id',
+        'given_at',
     ];
 
     protected $casts = [
         'status' => ImeiStatus::class,
         'sold_at' => 'datetime',
+        'given_at' => 'datetime',
     ];
 
     // ─── Relations ───────────────────────────────────────────
@@ -46,6 +49,12 @@ class ProductImei extends Model
     public function exchangeSale(): BelongsTo
     {
         return $this->belongsTo(Sale::class, 'exchange_sale_id');
+    }
+
+    /** Cadeau ayant offert ce téléphone (sortie de stock gratuite). */
+    public function gift(): BelongsTo
+    {
+        return $this->belongsTo(Gift::class);
     }
 
     // ─── Scopes ──────────────────────────────────────────────

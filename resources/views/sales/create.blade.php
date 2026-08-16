@@ -15,7 +15,11 @@
 </div>
 
 <div class="form-shell form-shell--wide u-animate">
-  <form method="POST" action="{{ route('sales.store') }}" data-ui-form novalidate>
+  {{-- data-gifts-url : bascule ciblée par le JS de sales/_form.blade.php
+       quand "Cadeau / Produit offert" est sélectionné — le formulaire poste
+       alors vers gifts.store au lieu de sales.store, sans jamais toucher au
+       pipeline vente/échange existant. --}}
+  <form id="saleForm" method="POST" action="{{ route('sales.store') }}" data-gifts-url="{{ route('gifts.store') }}" data-ui-form novalidate>
     @csrf
     <div class="form-card">
       <div class="form-card__header">

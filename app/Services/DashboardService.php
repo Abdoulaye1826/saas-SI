@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\GiftStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OnlineOrderStatus;
 use App\Enums\QuoteStatus;
@@ -9,6 +10,8 @@ use App\Enums\SaleStatus;
 use App\Enums\SaleType;
 use App\Enums\WarrantyDuration;
 use App\Models\Customer;
+use App\Models\Gift;
+use App\Models\GiftItem;
 use App\Models\Invoice;
 use App\Models\OnlineOrder;
 use App\Models\Product;
@@ -171,6 +174,18 @@ class DashboardService
 
         $depenses = $this->treasuryService->getExpensesTotal($period);
 
+        // Cadeaux / produits offerts : calculés directement sur les tables
+        // gifts/gift_items (jamais sur `sales`) — ne peuvent donc jamais
+        // influencer $revenue/$salesCount ci-dessus, par construction plutôt
+        // que par un filtre à maintenir (cahier §10 : « ne doit PAS être
+        // ajoutée au chiffre d'affaires »).
+        $giftsCount = Gift::given()->whereBetween('gift_date', [$start, $end])->count();
+        $giftsValue = (float) GiftItem::query()
+            ->join('gifts', 'gift_items.gift_id', '=', 'gifts.id')
+            ->where('gifts.status', GiftStatus::Given->value)
+            ->whereBetween('gifts.gift_date', [$start, $end])
+            ->sum(DB::raw('gift_items.unit_value * gift_items.quantity'));
+
         return [
             'revenue' => $revenue,
             'sales_count' => $salesCount,
@@ -191,6 +206,8 @@ class DashboardService
             'average_sale' => $salesCount > 0 ? round($revenue / $salesCount, 2) : 0.0,
             'margin' => $margin,
             'margin_rate' => $revenue > 0 ? round(($margin / $revenue) * 100, 1) : 0.0,
+            'gifts_count' => $giftsCount,
+            'gifts_value' => $giftsValue,
         ];
     }
 

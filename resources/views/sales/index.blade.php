@@ -14,9 +14,16 @@
       </ol>
     </nav>
   </div>
-  <a href="{{ route('sales.create') }}" class="btn btn-primary">
-    <i class="bi bi-plus-lg me-1"></i>Nouvelle vente
-  </a>
+  <div class="d-flex gap-2">
+    {{-- Bouton clairement identifiable (cahier §12) — mène au même
+         formulaire, avec "Cadeau / Produit offert" pré-sélectionné. --}}
+    <a href="{{ route('sales.create') }}#sale_type" class="btn btn-outline-primary" onclick="sessionStorage.setItem('presetSaleType', 'cadeau')">
+      <i class="bi bi-gift me-1"></i>Offrir un produit
+    </a>
+    <a href="{{ route('sales.create') }}" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>Nouvelle vente
+    </a>
+  </div>
 </div>
 
 <div class="mb-3">

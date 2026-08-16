@@ -24,7 +24,7 @@
 </div>
 
 <div class="row g-3">
-  <div class="col-6">
+  <div class="col-6 col-md-3">
     <div class="kpi-card">
       <div class="d-flex align-items-center gap-3">
         <div class="kpi-icon bg-danger text-danger">
@@ -37,7 +37,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6">
+  <div class="col-6 col-md-3">
     <div class="kpi-card">
       <div class="d-flex align-items-center gap-3">
         <div class="kpi-icon bg-success text-success">
@@ -50,6 +50,36 @@
       </div>
     </div>
   </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon bg-info text-info">
+          <i class="bi bi-gift"></i>
+        </div>
+        <div>
+          <div class="kpi-label">Produits offerts</div>
+          <div class="kpi-value">{{ $p['gifts_count'] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon bg-info text-info">
+          <i class="bi bi-tag"></i>
+        </div>
+        <div>
+          {{-- Cahier §10 : valeur indicative, jamais comptée dans le CA. --}}
+          <div class="kpi-label" title="Valeur indicative — non comptée dans le chiffre d'affaires">Valeur des cadeaux</div>
+          <div class="kpi-value">{{ number_format($p['gifts_value'], 0, ',', ' ') }} FCFA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="small text-muted mt-2">
+  <i class="bi bi-info-circle me-1"></i>La valeur des cadeaux est indicative et n'est pas incluse dans le chiffre d'affaires.
 </div>
 
 <div class="text-end mb-2">

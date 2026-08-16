@@ -24,6 +24,7 @@ use App\Http\Controllers\Storefront\SeoController as StorefrontSeoController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GiftController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\NotificationController;
@@ -135,6 +136,16 @@ Route::middleware(['auth', 'active'])->group(function () {
         // ── Gestion des retours ──────────────────────────────
         Route::get('returns', [ReturnController::class, 'index'])->name('returns.index');
         Route::post('returns/{saleItem}', [ReturnController::class, 'store'])->name('returns.store');
+
+        // ── Cadeaux / produits offerts ────────────────────────
+        // Créés depuis le formulaire de vente (sale_type = cadeau, voir
+        // sales/_form.blade.php) mais volontairement un module séparé :
+        // jamais un Sale, jamais de facture/paiement/trésorerie.
+        Route::get('gifts', [GiftController::class, 'index'])->name('gifts.index');
+        Route::post('gifts', [GiftController::class, 'store'])->name('gifts.store');
+        Route::get('gifts/{gift}/print', [GiftController::class, 'print'])->name('gifts.print');
+        Route::get('gifts/{gift}/download', [GiftController::class, 'download'])->name('gifts.download');
+        Route::post('gifts/{gift}/cancel', [GiftController::class, 'cancel'])->name('gifts.cancel');
 
         // ── Garanties ─────────────────────────────────────────
         Route::get('warranties', [WarrantyController::class, 'index'])->name('warranties.index');

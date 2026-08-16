@@ -9,6 +9,7 @@ enum StockMovementType: string
     case Adjustment = 'adjustment';
     case Sale = 'sale';
     case Return = 'return';
+    case Gift = 'gift';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum StockMovementType: string
             self::Adjustment => 'Ajustement',
             self::Sale => 'Vente',
             self::Return => 'Retour',
+            self::Gift => 'Cadeau',
         };
     }
 }

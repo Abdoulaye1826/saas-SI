@@ -15,7 +15,7 @@
 </div>
 
 <div class="form-shell form-shell--wide u-animate">
-  <form method="POST" action="{{ route('sales.update', $sale) }}" data-ui-form novalidate>
+  <form id="saleForm" method="POST" action="{{ route('sales.update', $sale) }}" data-ui-form novalidate>
     @csrf @method('PUT')
     <div class="form-card">
       <div class="form-card__header">
